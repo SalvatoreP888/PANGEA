@@ -1,0 +1,98 @@
+
+> pangaea-depth@0.2.0 test
+> node --test tests/simulation.test.mjs
+
+TAP version 13
+# Subtest: Exactly four adult founders; same seed and actions produce the same complete state
+ok 1 - Exactly four adult founders; same seed and actions produce the same complete state
+  ---
+  duration_ms: 341.835571
+  type: 'test'
+  ...
+# Subtest: Save round-trip continues the seeded simulation without divergence
+ok 2 - Save round-trip continues the seeded simulation without divergence
+  ---
+  duration_ms: 285.859699
+  type: 'test'
+  ...
+# Subtest: Reject old, malformed, unsafe styling and invalid enum saves without mutating the original
+ok 3 - Reject old, malformed, unsafe styling and invalid enum saves without mutating the original
+  ---
+  duration_ms: 84.005193
+  type: 'test'
+  ...
+# Subtest: Spending checks all inputs atomically and never creates a negative inventory
+ok 4 - Spending checks all inputs atomically and never creates a negative inventory
+  ---
+  duration_ms: 4.714559
+  type: 'test'
+  ...
+# Subtest: Foraging depletes a node into carried inventory; storage changes only at delivery
+ok 5 - Foraging depletes a node into carried inventory; storage changes only at delivery
+  ---
+  duration_ms: 4.088682
+  type: 'test'
+  ...
+# Subtest: Construction reserves its material costs before a worker can add progress
+ok 6 - Construction reserves its material costs before a worker can add progress
+  ---
+  duration_ms: 3.686777
+  type: 'test'
+  ...
+# Subtest: Cooking transforms food and fuel without adding net rations
+ok 7 - Cooking transforms food and fuel without adding net rations
+  ---
+  duration_ms: 2.047061
+  type: 'test'
+  ...
+# Subtest: Fractional food does not trap hungry agents in impossible eating tasks
+ok 8 - Fractional food does not trap hungry agents in impossible eating tasks
+  ---
+  duration_ms: 2.003896
+  type: 'test'
+  ...
+# Subtest: Memory retrieval weights context and reflection changes food caution
+ok 9 - Memory retrieval weights context and reflection changes food caution
+  ---
+  duration_ms: 2.755298
+  type: 'test'
+  ...
+# Subtest: Children do not get adult labor or partnership decisions; close family is excluded
+ok 10 - Children do not get adult labor or partnership decisions; close family is excluded
+  ---
+  duration_ms: 2.186827
+  type: 'test'
+  ...
+# Subtest: Birth records both parents and is a person, not just a population increment
+ok 11 - Birth records both parents and is a person, not just a population increment
+  ---
+  duration_ms: 2.112497
+  type: 'test'
+  ...
+# Subtest: Regrowth is slower in drought and resources stay finite
+ok 12 - Regrowth is slower in drought and resources stay finite
+  ---
+  duration_ms: 4.457097
+  type: 'test'
+  ...
+# Subtest: A* uses adjacent walkable tiles and rejects water targets
+ok 13 - A* uses adjacent walkable tiles and rejects water targets
+  ---
+  duration_ms: 2.239706
+  type: 'test'
+  ...
+# Subtest: Death is recorded and partnership is released, without erasing family history
+ok 14 - Death is recorded and partnership is released, without erasing family history
+  ---
+  duration_ms: 1.921494
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 805.051022

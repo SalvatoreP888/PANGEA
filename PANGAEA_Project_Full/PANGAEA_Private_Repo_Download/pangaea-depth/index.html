@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081a22"><title>PANGAEA / A World Remembered</title>
+<style>:root{--bg:#081a22;--panel:#0c2028;--line:#36504b78;--text:#ebe9db;--muted:#a1b3a8;--faint:#718b80;--gold:#dfc18d;--sage:#a7c29c;--warn:#e0a47c;--shadow:0 14px 60px #00121855}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button{border:1px solid var(--line);background:#172e34;border-radius:4px;transition:background .15s,border-color .15s}button:hover{background:#29413f;border-color:#9d9f77}button:disabled{opacity:.5;cursor:default}button:disabled:hover{background:inherit}button.active,button.selected{color:var(--gold);background:#263a38;border-color:#70837088}.app{height:100%;display:flex;flex-direction:column}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;height:70px;flex-shrink:0;padding:0 25px;border-bottom:1px solid var(--line);background:#0a1b23;z-index:3}.identity{display:flex;align-items:center;gap:12px}.seal{font-size:32px;color:var(--gold);height:38px;width:38px;display:grid;place-items:center;border:1px solid #b5a77488;border-radius:50%;line-height:1;transform:rotate(-23deg)}.wordmark{font-size:16px;letter-spacing:.25em;font-weight:640}.wordmark small{font-size:7px;display:block;letter-spacing:.22em;margin-top:4px;color:var(--muted);font-weight:500}.version{border:1px solid #79866c66;color:#b8b08d;font-size:8px;letter-spacing:.13em;padding:5px 6px;margin-left:7px}.view-switch{display:flex;border:1px solid var(--line);padding:3px;border-radius:6px;background:#071820;gap:3px;margin-left:auto;margin-right:auto}.view-switch button{padding:8px 17px;background:transparent;border-color:transparent;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}.view-switch button.selected{background:#233b3b;color:#e3d5ae;border-color:#53635877}.top-stat{display:flex;gap:8px;align-items:center;white-space:nowrap}.top-stat span{font-family:Georgia,serif;font-size:23px}.top-stat small{font-size:8px;letter-spacing:.12em;color:var(--muted)}.top-stat i{height:22px;border-left:1px solid var(--line);margin:0 10px}.icon-btn{background:transparent;border:0;font-size:23px;line-height:1;padding:5px 8px;color:var(--muted)}.stage{position:relative;flex:1;min-height:0;overflow:hidden}.stage canvas{position:absolute;top:0;left:0;width:calc(100% - 350px);height:100%;display:block;touch-action:none;cursor:grab}.stage canvas:active{cursor:grabbing}.scene-label{position:absolute;top:33px;left:35px;pointer-events:none;max-width:320px;text-shadow:0 2px 20px #081b20c0}.eyebrow{font-size:9px;font-weight:650;letter-spacing:.2em;color:var(--gold);display:flex;gap:8px;align-items:center}.live-dot{background:#a5c197;width:5px;height:5px;border-radius:50%;box-shadow:0 0 10px #9bb98566;display:inline-block}.scene-label h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(34px,4vw,58px);line-height:1.04;letter-spacing:-.045em;margin:21px 0 13px}.scene-label p{font-size:12px;line-height:1.8;color:#b9c8b8;margin:0}.scene-label.town-label{top:24px;max-width:260px;padding:15px 20px 17px;background:linear-gradient(110deg,#0d252ce3,#1837319e);border-left:2px solid #bdaf76;border-radius:0 5px 5px 0}.scene-label.town-label h1{font-size:31px;margin:9px 0 7px}.scene-label.town-label p{font-size:10px}.map-tools{position:absolute;left:35px;bottom:122px;display:flex;gap:5px}.map-tools button{width:38px;height:37px;background:#0b232be8;font-size:19px;border-color:#879b756b;box-shadow:0 3px 9px #183d2322}.map-tools button:nth-child(2){font-family:Georgia,serif;font-size:15px}.layer-key{position:absolute;bottom:164px;left:35px;font-size:8px;letter-spacing:.13em;color:#d8d5b1;pointer-events:none;text-shadow:0 1px 6px #05232b}.world-meta{position:absolute;left:35px;bottom:92px;right:380px;display:flex;justify-content:space-between;gap:20px;color:#a7bbad;font-size:8px;letter-spacing:.1em;pointer-events:none;text-shadow:0 1px 8px #05232b}.inspector{position:absolute;right:14px;top:16px;bottom:18px;width:336px;background:#0c2028f5;border:1px solid #4b60524d;box-shadow:var(--shadow);border-radius:6px;display:flex;flex-direction:column;z-index:2;backdrop-filter:blur(16px)}.inspector-head{padding:20px 20px 17px;display:flex;align-items:center;justify-content:space-between}.inspector-head .eyebrow{color:#98ab9a;font-size:8px}.runtime-label{font-size:8px;letter-spacing:.12em;color:var(--sage)}.tabs{display:flex;gap:0;padding:0 13px;border-bottom:1px solid var(--line)}.tabs button{font-size:10px;background:transparent;border:none;border-radius:0;color:#8fa89b;padding:10px 9px 13px;flex:1;position:relative}.tabs button.active{color:#e7d3a6}.tabs button.active:after{content:'';position:absolute;bottom:-1px;left:7px;right:7px;height:2px;background:var(--gold)}.panel-scroll{flex:1;min-height:0;overflow:auto;padding:23px 20px;scrollbar-width:thin;scrollbar-color:#41584e transparent}.panel-scroll h2{font-family:Georgia,serif;font-weight:400;font-size:28px;margin:4px 0 6px;letter-spacing:-.025em}.panel-scroll p{color:#a9bbae;font-size:11px;line-height:1.75}.subtle{color:var(--faint);font-size:10px;line-height:1.65}.panel-subhead{display:flex;align-items:center;justify-content:space-between}.badge{padding:5px 7px;border:1px solid #b9aa6b55;border-radius:3px;font-size:8px;letter-spacing:.13em;color:#c8b884;background:#b9a76115}.big-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:21px 0 23px}.big-stats div{border-left:1px solid var(--line);padding-left:12px}.big-stats div:first-child{padding-left:0;border:0}.big-stats strong{font-family:Georgia,serif;display:block;font-weight:400;font-size:30px;line-height:1.15;color:#f0e9d3}.big-stats small{display:block;font-size:8px;letter-spacing:.12em;color:#8ea595;margin-top:5px}.section{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}.section-title{display:flex;justify-content:space-between;gap:10px;font-size:10px;font-weight:600;letter-spacing:.01em;margin-bottom:12px}.section-title small{font-size:9px;color:var(--faint);font-weight:400}.resources{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.resource{background:#18303670;border:1px solid #39524a66;padding:10px 9px;border-radius:4px}.resource strong{font-size:17px;font-weight:550;color:#e5dfc9;display:block}.resource small{display:block;color:#7f9c89;font-size:8px;margin-top:3px}.resource-icon{float:right;color:#b8b78a;font-size:12px}.intent{padding:14px 15px;border-left:2px solid #baaf7b;background:#7d936318;margin-top:20px}.intent .eyebrow{font-size:8px;letter-spacing:.14em;color:#9cb097}.intent strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400;margin-top:8px}.intent p{font-size:10px;margin:6px 0 0}.bar{height:4px;background:#29423e;overflow:hidden;margin-top:8px;border-radius:2px}.bar div{height:100%;background:#a9bb8c;transition:width .2s}.project-row{display:flex;justify-content:space-between;font-size:11px;color:#dfdccb;gap:10px}.project-row small{color:var(--gold);font-size:10px}.microcopy{font-size:9px!important;color:#89a18e!important;margin:9px 0 0}.spark{width:100%;height:51px;display:block;margin-top:6px}.sparkline{fill:none;stroke:#a8bb91;stroke-width:1.5;vector-effect:non-scaling-stroke}.sparkfill{fill:#9bb07c21}.keyvalue{display:flex;justify-content:space-between;gap:12px;margin:9px 0;font-size:10px;color:#95ad9c}.keyvalue strong{font-weight:500;color:#d5ddc9;text-align:right}.people{display:flex;flex-direction:column;gap:4px}.person-row{display:flex;align-items:center;gap:10px;width:100%;border-color:transparent;background:transparent;text-align:left;padding:10px 7px}.avatar{height:35px;width:35px;border-radius:50%;display:grid;place-items:center;font-family:Georgia,serif;font-size:18px;color:#1d342f;flex-shrink:0;border:2px solid #214037;box-shadow:0 0 0 1px #9aac8644}.person-row span.info{flex:1;min-width:0}.person-row strong{font-size:11px;font-weight:550;display:block}.person-row small{display:block;font-size:9px;color:#8fa99a;margin-top:3px}.job{text-align:right;font-size:9px;color:#c2b488;max-width:89px}.back-btn{background:transparent;border:0;color:#c6b581;padding:0 0 13px;font-size:10px}.profile-head{display:flex;gap:12px;align-items:center}.profile-head .avatar{width:50px;height:50px;font-size:28px}.profile-head h2{font-size:24px;margin-bottom:4px}.profile-head small{font-size:9px;color:#99ad9c}.need{margin:11px 0}.need .keyvalue{margin-bottom:4px}.need .bar{margin-top:3px}.thought{font-family:Georgia,serif;font-size:16px!important;line-height:1.6!important;color:#ddd6b6!important;padding:0 0 0 12px;border-left:1px solid #bcb680;margin:15px 0}.decision{padding:11px 12px;border:1px solid #5a72624a;border-radius:4px;margin:8px 0;background:#152d2e}.decision strong{font-size:11px;font-weight:550;color:#d4dcbf}.decision p{font-size:10px;margin:5px 0 0}.choice{display:flex;align-items:center;justify-content:space-between;margin:7px 0;font-size:9px;color:#96af9b}.choice .mini-bar{display:block;flex:1;height:3px;background:#223f36;margin:0 12px;max-width:105px}.choice .mini-bar i{height:100%;display:block;background:#b4b27a}.choice b{font-weight:500;font-size:10px;color:#d6c392}.memory{border-left:1px solid #607a564d;padding:0 0 0 12px;margin:14px 0}.memory p{font-family:Georgia,serif;font-size:12px;margin:4px 0;color:#c7d3bd;line-height:1.65}.memory small{font-size:8px;color:#7c9884;letter-spacing:.06em}.person-link{padding:1px 3px;border:0;border-bottom:1px dotted #7d997255;border-radius:0;background:transparent;color:#ccca9f;font-size:10px}.chronicle-item{display:flex;gap:12px;margin-bottom:22px}.event-marker{display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;border:1px solid #4b665752;border-radius:4px;color:#cdb881;font-size:13px}.chronicle-item strong{font-weight:500;color:#d8dec9;font-size:11px;line-height:1.65;display:block}.chronicle-item p{font-size:10px;margin:5px 0}.chronicle-item small{color:#78957d;font-size:8px;letter-spacing:.04em}.tech{border:1px solid #3b584962;border-radius:5px;padding:13px;margin:12px 0;background:#122a2d}.tech.unlocked{border-color:#a2af7355;background:#8096600d}.tech.locked{opacity:.48}.tech-head{display:flex;justify-content:space-between;align-items:center;gap:9px}.tech h3{font-size:12px;font-weight:550;margin:0}.tech p{font-size:10px;margin-bottom:4px}.tech small{font-size:9px;color:#90a68d}.tech-icon{color:var(--gold);font-size:17px}.inspector-foot{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:13px 17px}.inspector-foot span{font-size:7px;letter-spacing:.10em;color:#6f8b79}.inspector-foot button{font-size:8px;border:none;background:none;padding:0;color:#b6b086}.time-controls{position:absolute;left:35px;right:385px;bottom:20px;height:56px;padding:8px 13px;display:flex;align-items:center;gap:17px;border:1px solid #64705c70;border-radius:5px;background:#0a2029f0;box-shadow:0 9px 22px #00121644}.date{display:flex;gap:10px;align-items:center;min-width:148px}.season-icon{font-size:23px;color:#d6c18c}.date strong{font-size:11px;font-weight:550;display:block;color:#e3deca}.date small{font-size:8px;display:block;color:#96a994;margin-top:3px}.time-buttons{display:flex;gap:4px;align-items:center;margin-left:auto}.time-buttons button{border-color:transparent;background:transparent;padding:7px 8px;min-width:29px;font-size:10px;color:#9dad9b}.time-buttons button.active{background:#d5bc85;color:#132a2a;font-weight:650}.time-buttons button:first-child{border-right:1px solid #54644c70;font-size:15px;border-radius:0;margin-right:4px}.performance{font-size:8px;color:#748f7b;margin-left:3px;white-space:nowrap}.inspect-toggle{display:none;position:absolute;right:20px;top:22px;z-index:3;padding:9px 13px;color:var(--gold);background:#0d2731ed}.toast{position:absolute;bottom:89px;left:50%;transform:translateX(-70%);padding:12px 17px;background:#112e32f5;border:1px solid #9ba77977;color:#e8dfc0;border-radius:4px;font-size:11px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;max-width:360px;text-align:center;z-index:6}.toast.visible{opacity:1}.loading{position:absolute;inset:0;background:#081a22;display:grid;place-content:center;text-align:center;z-index:10}.loading p{font-family:Georgia,serif;font-size:16px;color:#9bae99}.loading .wordmark{font-size:25px;letter-spacing:.35em}.divider{border-top:1px solid var(--line);margin:23px 0}dialog{background:#10262d;color:var(--text);border:1px solid #82906d6b;border-radius:9px;padding:25px 29px;max-height:88vh;width:480px;max-width:calc(100vw - 26px);box-shadow:0 20px 120px #0009;overflow:auto;scrollbar-width:thin}dialog::backdrop{background:#03111cb0;backdrop-filter:blur(5px)}.dialog-top{display:flex;justify-content:space-between;align-items:center}dialog h2{font-family:Georgia,serif;font-size:30px;line-height:1.15;font-weight:400;margin:17px 0}dialog h3{font-family:Georgia,serif;font-size:20px;font-weight:400;margin:20px 0 9px}dialog p{font-size:12px;line-height:1.8;color:#a5b8a4}.small{font-size:10px!important}.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:20px 0 10px}.menu-grid button{padding:13px;font-size:11px}.primary{background:#d4bb86;color:#17312f;border-color:#d4bb86;padding:13px;font-weight:600}.primary:hover{background:#e3c991}.wide{width:100%}.input-row{display:flex;align-items:center;justify-content:space-between;color:#bec7ac;font-size:11px;gap:20px}.input-row input{width:180px;max-width:55%;background:#091d23;border:1px solid var(--line);padding:10px;color:var(--gold);border-radius:4px}.menu-status{min-height:15px;font-size:10px;color:var(--gold)}.empty-state{padding:30px 7px;color:#aab89e;text-align:center;line-height:1.8;font-size:12px}.dormant{color:#d99875}.legend-label{display:flex;justify-content:space-between;color:#839d89;font-size:8px;margin-top:16px}.settings-note{font-size:9px;color:#839d89;line-height:1.8}body.panel-hidden .inspector{display:none}body.panel-hidden .stage canvas{width:100%}body.panel-hidden .time-controls{right:35px;max-width:800px}body.panel-hidden .world-meta{right:35px}body.panel-hidden .inspect-toggle{display:block}
+@media(min-width:1600px){.inspector{width:366px}.stage canvas{width:calc(100% - 380px)}.time-controls{right:420px}.world-meta{right:420px}.panel-scroll{padding:26px}.tabs button{font-size:11px}.inspector-foot{padding:16px 22px}}
+@media(max-width:1250px){.performance{display:none}.time-controls{gap:8px}.date{min-width:134px}.time-buttons{gap:0}.topbar{gap:12px}.version{display:none}.time-buttons button{padding:7px}.scene-label{left:24px}.map-tools,.layer-key{left:24px}.time-controls{left:24px;right:374px}.world-meta{left:24px}.scene-label h1{font-size:45px}}
+@media(max-width:1030px){.top-stat{display:none}.topbar{padding:0 18px}.view-switch{margin-right:5px}.inspector{width:305px;right:10px}.stage canvas{width:calc(100% - 315px)}.time-controls{right:334px;left:18px;gap:7px;padding:8px}.date{min-width:0}.date strong{font-size:10px}.season-icon{display:none}.time-buttons button{font-size:9px;padding:6px 5px;min-width:27px}.time-buttons button:first-child{margin-right:2px}.world-meta{right:337px}.world-meta span:first-child{display:none}.panel-scroll{padding:20px 16px}.tabs{padding:0 6px}.tabs button{font-size:9px}.scene-label h1{font-size:36px}.scene-label{max-width:240px;top:24px}.scene-label.town-label{left:16px;max-width:210px}.scene-label.town-label h1{font-size:27px}}
+@media(max-width:760px){.identity{gap:8px}.seal{height:29px;width:29px;font-size:25px}.wordmark{font-size:12px;letter-spacing:.18em}.wordmark small{font-size:6px}.topbar{height:62px;padding:0 12px;gap:4px}.view-switch{padding:2px;gap:0;margin-left:auto}.view-switch button{font-size:10px;padding:7px 9px;gap:4px}.icon-btn{font-size:20px;padding:4px}.stage canvas{width:100%}.inspector{top:auto;bottom:84px;right:12px;left:12px;width:auto;max-height:49%;background:#0c2028fc}.inspector-head{padding:12px 16px 8px}.inspector-head .eyebrow{font-size:7px}.tabs button{padding:8px 5px 10px;font-size:10px}.panel-scroll{padding:18px;min-height:150px}.inspector-foot{padding:10px 16px}.inspector-foot span{font-size:6px}.inspect-toggle{display:block;right:13px;top:16px;padding:8px 10px;font-size:10px}.time-controls{left:12px;right:12px;bottom:16px;height:54px;padding:9px 12px}.date{min-width:132px}.date strong{font-size:11px}.time-buttons button{font-size:10px;padding:7px}.world-meta{display:none}.map-tools{left:16px;bottom:85px}.layer-key{bottom:126px;left:16px;font-size:7px}.scene-label{left:18px;top:21px;max-width:240px}.scene-label h1{font-size:39px;margin:14px 0 10px}.scene-label p{font-size:10px}.scene-label .eyebrow{font-size:8px}.scene-label.town-label{top:17px;left:14px;padding:11px 13px;max-width:210px}.scene-label.town-label h1{font-size:25px}.scene-label.town-label p{display:none}body:not(.panel-hidden) .map-tools,body:not(.panel-hidden) .layer-key{display:none}.toast{left:50%;transform:translateX(-50%);bottom:81px;width:80%;max-width:320px}.big-stats{margin:14px 0}.section{margin-top:16px}.view-switch button span{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="identity"><div class="seal" aria-hidden="true">◒</div><div class="wordmark">PANGAEA<small>A WORLD REMEMBERED</small></div><span class="version">DEPTH 0.2</span></div>
+    <nav class="view-switch" aria-label="World view"><button data-view="globe" class="selected" aria-pressed="true">◎ <span>World</span></button><button data-view="town" aria-pressed="false">▦ <span>Settlement</span></button></nav>
+    <div class="top-stat"><span id="globalPeople">4</span><small>LIVES</small><i></i><span id="globalTowns">1</span><small>HEARTHS</small></div>
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Save, load and world settings" title="World menu">☰</button>
+  </header>
+  <main class="stage" aria-label="Autonomous world simulation">
+    <canvas id="world" tabindex="0" aria-label="Interactive world. Drag to rotate or pan, wheel to zoom, click a person or building to inspect."></canvas>
+    <section class="scene-label" id="sceneLabel"><div class="eyebrow"><span class="live-dot"></span><span id="sceneEyebrow">THE FIRST CHAPTER</span></div><h1 id="sceneTitle">Four lives.<br>A world ahead.</h1><p id="sceneDescription">Watch a civilization find its way.</p></section>
+    <div class="map-tools" aria-label="Map tools"><button id="focusBtn" title="Focus settlement (F)" aria-label="Focus settlement">⌖</button><button id="labelBtn" title="Toggle name labels" aria-label="Toggle labels" aria-pressed="true">Aa</button><button id="layerBtn" title="Cycle natural, fertility, resources and activity layers" aria-label="Change map layer">▱</button></div>
+    <div class="layer-key" id="layerKey">NATURAL VIEW</div>
+    <div class="world-meta"><span id="worldCoordinates">00.0° N · 00.0° E</span><span id="mapHelp">DRAG TO ROTATE · CLICK A HEARTH TO VISIT</span></div>
+    <button id="inspectToggle" class="inspect-toggle" aria-label="Toggle observation panel" aria-expanded="true">◈ Observe</button>
+    <aside class="inspector" id="inspector" aria-label="Observation panel">
+      <div class="inspector-head"><span class="eyebrow">OBSERVATORY</span><span class="runtime-label" id="runtimeLabel">● LIVE</span></div>
+      <div class="tabs" role="tablist" aria-label="Observation details"><button role="tab" data-tab="settlement" aria-selected="true" class="active">Settlement</button><button role="tab" data-tab="people" aria-selected="false">People</button><button role="tab" data-tab="knowledge" aria-selected="false">Knowledge</button><button role="tab" data-tab="chronicle" aria-selected="false">Chronicle</button></div>
+      <div class="panel-scroll" id="panel" role="tabpanel"></div>
+      <div class="inspector-foot"><span>RULE-BASED AUTONOMY</span><button id="helpBtn">About & research ↗</button></div>
+    </aside>
+    <section class="time-controls" aria-label="Simulation time controls">
+      <div class="date"><span class="season-icon" id="seasonIcon">✺</span><div><strong id="date">Year 1 · Spring</strong><small id="day">Day 1 · Dawn</small></div></div>
+      <div class="time-buttons"><button id="pauseBtn" aria-label="Pause simulation" title="Pause / resume (Space)">Ⅱ</button><button data-speed="1">1×</button><button data-speed="16" class="active">16×</button><button data-speed="64">64×</button><button data-speed="256">256×</button></div>
+      <span class="performance" id="performance">0 calls · Local simulation</span>
+    </section>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="loading" id="loading"><span class="wordmark">PANGAEA</span><p>Making room for a world.</p></div>
+  </main>
+</div>
+<dialog id="menuDialog"><div class="dialog-top"><span class="eyebrow">YOUR WORLD</span><button data-close="menuDialog" class="icon-btn" aria-label="Close world menu">×</button></div><h2>A history worth keeping.</h2><p>Save the simulation in this browser or export a portable world file. Nothing is sent to a server.</p><div class="menu-grid"><button id="saveBtn">Save locally</button><button id="loadBtn">Load local save</button><button id="exportBtn">Export world</button><button id="importBtn">Import world</button></div><input id="importInput" type="file" accept=".json,application/json" hidden><div class="divider"></div><h3>Start another story</h3><label class="input-row">World seed<input id="seedInput" type="number" min="1" max="2147483647" value="481217"></label><p class="small">A new world always begins with four adults. Export the current world first to keep it.</p><button class="primary wide" id="newBtn">Create new world</button><div class="divider"></div><h3>Climate experiment</h3><p class="small">An optional intervention. Watch how food, work priorities and memories respond.</p><div class="menu-grid"><button id="droughtBtn">60-day drought</button><button id="stormBtn">Coastal storm</button></div><p class="menu-status" id="menuStatus"></p></dialog>
+<dialog id="helpDialog"><div class="dialog-top"><span class="eyebrow">THE DEPTH BUILD</span><button data-close="helpDialog" class="icon-btn" aria-label="Close about dialog">×</button></div><h2>A world with reasons.</h2><p>People choose work from needs, skills, community shortages and memories. They walk legal routes, gather finite resources, carry supplies home, build, form households and pass knowledge to children.</p><h3>What is actually running</h3><p>Deterministic utility AI, bounded episodic memory, rule-based reflection, kinship tracking, seasonal crops, stockpile accounting, six discoveries and land-based migration. No LLM, cloud account or paid API is required.</p><h3>Research roots</h3><p><b>Generative Agents</b>: importance, recency and relevance in memory retrieval.<br><b>Humanoid Agents</b>: needs and social closeness.<br><b>GovSim</b>: finite shared resources and sustainability.<br><b>Concordia</b>: separate proposed intentions from authoritative world outcomes.</p><p class="small">These are original, simplified game implementations inspired by the papers, not ports or reproductions of their research systems. The source package contains the cited research review and integration roadmap.</p><h3>Honest boundaries</h3><p class="small">Still a prototype, not AAA production. Local maps are generated from a settlement's seed and biome, not a seamless globe-to-room landscape. Provision-convoy labour is abstracted. No combat, player-written laws, generated dialogue, genetic model, trained neural policy or city-scale performance guarantee. Childhood, family size, technology and seasons use game rules. Version 0.1 saves cannot be imported.</p><h3>Controls</h3><p class="small">Drag to move the view. Scroll to zoom. Click a person or building to inspect. Space pauses; G opens the world; C opens the settlement; F recentres. High speed is a target, limited by the available CPU. The world does not progress after its tab is closed.</p></dialog>
+<script>(()=>{'use strict';
+
+// ----- world.mjs -----
+/** Seeded geography and walkable settlement grids. No renderer or wall clock dependency. */
+const TAU = Math.PI * 2, RAD = Math.PI / 180;
+const GRID_W = 96, GRID_H = 80, TILE = 20;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const mix = (a, b, t) => a + (b - a) * t;
+function hash(x, y, seed = 1) {
+  let n = Math.imul((x | 0) ^ seed, 374761393) + Math.imul((y | 0) ^ seed, 668265263);
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+}
+function noise(x, y, seed) {
+  const ix = Math.floor(x), iy = Math.floor(y);
+  let tx = x - ix, ty = y - iy; tx *= tx * (3 - 2 * tx); ty *= ty * (3 - 2 * ty);
+  return mix(mix(hash(ix, iy, seed), hash(ix + 1, iy, seed), tx), mix(hash(ix, iy + 1, seed), hash(ix + 1, iy + 1, seed), tx), ty);
+}
+function fbm(x, y, seed) {
+  let a = .5, total = 0;
+  for (let i = 0; i < 4; i++) { total += noise(x, y, seed + i * 19) * a; x *= 2; y *= 2; a *= .5; }
+  return total / .9375;
+}
+const ell = (u, v, x, y, rx, ry) => 1 - ((u - x) / rx) ** 2 - ((v - y) / ry) ** 2;
+function geography(u, v, seed) {
+  const mass = Math.max(ell(u, v, .505, .50, .235, .35), ell(u, v, .60, .37, .18, .22), ell(u, v, .40, .34, .17, .23), ell(u, v, .575, .72, .145, .19), ell(u, v, .32, .55, .145, .11));
+  const field = mass + (fbm(u * 13, v * 13, seed) - .49) * .5 + (fbm(u * 32, v * 29, seed + 32) - .5) * .17;
+  const moisture = fbm(u * 11 + 9, v * 10 + 3, seed + 17);
+  const ridge = fbm(u * 20, v * 19, seed + 12) * .54 + Math.max(0, field) * .25;
+  return { field, moisture, ridge, land: field > .018, coast: field < .20, biome: moisture > .58 ? 'Temperate forest' : moisture > .39 ? 'Grassland' : 'Dry steppe' };
+}
+function geoAt(lon, lat, seed) { return geography(((lon / TAU + .5) % 1 + 1) % 1, .5 - lat / Math.PI, seed); }
+function findFirstSite(seed) {
+  let best, score = -Infinity;
+  for (let y = -12; y < 30; y += 2) for (let x = -80; x < -22; x += 2) {
+    const lon = x * RAD, lat = y * RAD, g = geoAt(lon, lat, seed);
+    if (!g.land || g.field < .05 || g.field > .5) continue;
+    const s = -Math.abs(g.field - .22) * 3 + g.moisture - Math.abs(lat - .12) * .3;
+    if (s > score) { best = { lon, lat }; score = s; }
+  }
+  return best || { lon: -.5, lat: .1 };
+}
+/** A small original binary heap used by A*. This is not a copied library. */
+class MinHeap {
+  constructor() { this.items = []; }
+  push(id, score) {
+    const a = this.items, item = { id, score }; let i = a.length; a.push(item);
+    while (i > 0) { const p = (i - 1) >> 1; if (a[p].score <= score) break; a[i] = a[p]; i = p; } a[i] = item;
+  }
+  pop() {
+    const a = this.items, root = a[0], last = a.pop(); if (!a.length) return root;
+    let i = 0; while (i * 2 + 1 < a.length) { let c = i * 2 + 1; if (c + 1 < a.length && a[c + 1].score < a[c].score) c++; if (a[c].score >= last.score) break; a[i] = a[c]; i = c; } a[i] = last; return root;
+  }
+  get length() { return this.items.length; }
+}
+function generateLocal(seed, town) {
+  const s = (seed + town.id * 1987) >>> 0, geo = geoAt(town.lon, town.lat, seed);
+  const tiles = [], nodes = [], roads = new Array(GRID_W * GRID_H).fill(0);
+  for (let y = 0; y < GRID_H; y++) for (let x = 0; x < GRID_W; x++) {
+    const coast = 14 + 7 * Math.sin(y * .063 + town.id) + 5 * (fbm(y * .07, 4, s) - .5);
+    const river = 78 + Math.sin(y * .09 + town.id) * 7;
+    const water = geo.coast && x < coast;
+    const stream = Math.abs(x - river) < .9;
+    const ford = stream && (Math.abs(y - 22) < 2 || Math.abs(y - 57) < 2);
+    const n = fbm(x * .072, y * .072, s);
+    const safe = Math.hypot(x - 47, y - 40) < 13;
+    const type = water ? 'water' : stream && !safe ? (ford ? 'ford' : 'river') : geo.coast && x < coast + 2 ? 'sand' : n > .65 ? 'rock' : 'grass';
+    const fertility = clamp(.45 + noise(x * .08, y * .08, s + 73) * .65 + (Math.abs(x - river) < 7 ? .15 : 0), .3, 1);
+    tiles.push({ type, fertility, forest: !safe && n > .48, walkable: type !== 'water' && type !== 'river' });
+    if (safe || type === 'water' || type === 'river' || type === 'ford') continue;
+    const r = hash(x, y, s + 121); let kind = null;
+    if (n > .47 && r > .83) kind = 'wood';
+    else if (r < .011 && n < .67) kind = 'food';
+    else if (n > .59 && r < .06) kind = 'stone';
+    else if (r > .79 && r < .795) kind = 'herbs';
+    if (kind) { const max = { wood: 36, food: 60, stone: 170, herbs: 24 }[kind]; nodes.push({ id: nodes.length, x, y, kind, amount: max, max }); }
+  }
+  // A guaranteed reachable starter grove avoids seed-specific unwinnable openings.
+  for (const [kind, x, y] of [['food', 37, 30], ['food', 35, 35], ['food', 40, 26], ['wood', 59, 34], ['wood', 59, 35], ['stone', 57, 50]]) {
+    const max = { food: 70, wood: 50, stone: 170 }[kind];
+    nodes.push({ id: nodes.length, x, y, kind, amount: max, max });
+    tiles[y * GRID_W + x] = { type: 'grass', fertility: .85, forest: kind === 'wood', walkable: true };
+  }
+  return { tiles, nodes, roads, revision: 0 };
+}
+function footprint(building) {
+  const w = building.type === 'farm' ? 5 : building.type === 'hall' ? 5 : 3;
+  const h = building.type === 'farm' ? 4 : building.type === 'hall' ? 4 : 3;
+  return { x0: building.x - Math.floor(w / 2), y0: building.y - Math.floor(h / 2), w, h };
+}
+function walkable(town, x, y) {
+  if (x < 1 || y < 1 || x >= GRID_W - 1 || y >= GRID_H - 1 || !town.land.tiles[y * GRID_W + x]?.walkable) return false;
+  for (const b of town.buildings) {
+    if (b.type === 'fire' || b.type === 'farm' || b.type === 'well') continue;
+    const f = footprint(b); if (x >= f.x0 && x < f.x0 + f.w && y >= f.y0 && y < f.y0 + f.h) return false;
+  }
+  return true;
+}
+function entrance(b) { const f = footprint(b); return { x: b.x, y: f.y0 + f.h }; }
+/** Four-neighbour A*: no corner cutting, no water crossing; foot traffic lowers cost. */
+function findPath(town, ax, ay, bx, by) {
+  const sx = Math.round(ax), sy = Math.round(ay), tx = Math.round(bx), ty = Math.round(by);
+  if (!walkable(town, tx, ty)) return null;
+  const start = sy * GRID_W + sx, goal = ty * GRID_W + tx;
+  if (start === goal) return [];
+  const g = new Float32Array(GRID_W * GRID_H); g.fill(Infinity); g[start] = 0;
+  const parent = new Int32Array(g.length); parent.fill(-1); const closed = new Uint8Array(g.length), open = new MinHeap();
+  open.push(start, 0); let count = 0;
+  while (open.length && count++ < 6000) {
+    const id = open.pop().id; if (closed[id]) continue; closed[id] = 1;
+    if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return path.reverse(); }
+    const x = id % GRID_W, y = Math.floor(id / GRID_W);
+    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+      if (!walkable(town, nx, ny)) continue;
+      const ni = ny * GRID_W + nx, tile = town.land.tiles[ni];
+      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, town.land.roads[ni] * .003);
+      const value = g[id] + cost;
+      if (value < g[ni]) { g[ni] = value; parent[ni] = id; open.push(ni, value + .75 * (Math.abs(tx - nx) + Math.abs(ty - ny))); }
+    }
+  }
+  return null;
+}
+/** Migration routes stay on a coarse land grid; detailed local maps are separate views. */
+function globalRoute(seed, from, to) {
+  const w = 180, h = 90, cell = p => ({ x: clamp(Math.round((p.lon / TAU + .5) * w), 0, w - 1), y: clamp(Math.round((.5 - p.lat / Math.PI) * h), 1, h - 2) });
+  const a = cell(from), b = cell(to), start = a.y * w + a.x, end = b.y * w + b.x;
+  const parent = new Int32Array(w * h); parent.fill(-1); parent[start] = start; const q = [start]; let head = 0;
+  while (head < q.length) {
+    const id = q[head++]; if (id === end) break;
+    const x = id % w, y = Math.floor(id / w);
+    for (const [xx, yy] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+      const nx = (xx + w) % w; if (yy <= 0 || yy >= h - 1) continue; const ni = yy * w + nx;
+      if (parent[ni] !== -1 || !geography(nx / w, yy / h, seed).land) continue; parent[ni] = id; q.push(ni);
+    }
+  }
+  if (parent[end] === -1) return null;
+  const out = []; let id = end;
+  while (id !== start) { out.push({ lon: ((id % w) / w - .5) * TAU, lat: (.5 - Math.floor(id / w) / h) * Math.PI }); id = parent[id]; }
+  out.push(from); out.reverse(); return out;
+}
+
+
+// ----- data.mjs -----
+/** All progression is explicit game data, not claims about real human development. */
+const YEAR = 360, STEPS_PER_DAY = 4, MAX_POPULATION = 250;
+const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter'];
+const COLORS = ['#d6ac76', '#8bbab3', '#c89aa0', '#98b78b', '#aaa3ca', '#c79c67', '#9bb7d1', '#c0b77e'];
+const GIVEN = ['Iris','Rowan','Mara','Tomas','Elowen','Kael','Liora','Finn','Sera','Ash','Nora','Orin','Eira','Bram','Mila','Theo','Ada','Maren','Silas','Rhea','Leif','Tala','Nico','Mae','Arlo','Vera','Pax','Eden','Cora','Jasper','Freya','Oren','Tess','Dara','Lucan','Wren','Hale','Aster','Reed','June'];
+const TOWN_NAMES = ['First Hearth','Willow Reach','Stonewater','Northwatch','Ember Vale','Dawnfield','Greyhaven','Fox Hollow','Oakmere','Windrest','Stillwater','Sunward'];
+const BUILDINGS = {
+  fire: { name: 'Common hearth', cost: {wood: 8, stone: 4}, work: 10, tech: null, desc: 'A place to cook, socialize and keep warm.' },
+  hut: { name: 'Timber home', cost: {wood: 28, stone: 6}, work: 32, tech: null, desc: 'Shelter for four people. Occupants sleep here.' },
+  farm: { name: 'Crop field', cost: {wood: 16, stone: 3}, work: 22, tech: 'agriculture', desc: 'Requires sowing and harvesting. Growth follows seasons and soil.' },
+  well: { name: 'Village well', cost: {wood: 15, stone: 25}, work: 36, tech: 'masonry', desc: 'Reduces illness risk and softens drought damage to crops.' },
+  store: { name: 'Granary', cost: {wood: 42, stone: 18}, work: 50, tech: 'preservation', desc: 'Reduces spoilage and raises the community food reserve target.' },
+  workshop: { name: 'Tool workshop', cost: {wood: 46, stone: 28}, work: 62, tech: 'craft', desc: 'Turns wood and stone into tools that accelerate productive work.' },
+  hall: { name: 'Meeting hall', cost: {wood: 76, stone: 48}, work: 94, tech: 'civic', desc: 'Improves research and provides a permanent gathering place.' },
+  clinic: { name: 'Herbalist hut', cost: {wood: 35, stone: 20}, work: 48, tech: 'medicine', desc: 'Allows active treatment with gathered herbs.' }
+};
+const TECH = [
+  {id:'agriculture', name:'Cultivation', cost:80, parents:[], effect:'Sow fields instead of relying on wild food.'},
+  {id:'masonry', name:'Masonry', cost:150, parents:['agriculture'], effect:'Wells reduce illness and drought losses.'},
+  {id:'preservation', name:'Food preservation', cost:240, parents:['agriculture'], effect:'Granaries reduce food spoilage.'},
+  {id:'craft', name:'Craftsmanship', cost:360, parents:['masonry'], effect:'Build workshops and craft durable tools.'},
+  {id:'medicine', name:'Herbal medicine', cost:420, parents:['preservation'], effect:'Build herbalist huts and treat illness.'},
+  {id:'civic', name:'Shared institutions', cost:580, parents:['craft','preservation'], effect:'Meeting halls accelerate shared learning.'}
+];
+const RESOURCE_NAMES = {food:'Raw food', meals:'Cooked meals', wood:'Timber', stone:'Stone', tools:'Tools', herbs:'Herbs'};
+const SKILLS = ['foraging','forestry','building','farming','insight','care'];
+const TRAITS = ['Kind','Curious','Industrious','Cautious','Sociable','Restless'];
+const ACTION_NAMES = {eat:'Eating',rest:'Resting',social:'Socializing',forage:'Gathering food',wood:'Felling timber',stone:'Quarrying',build:'Building',farm:'Tending crops',cook:'Cooking',study:'Studying',craft:'Making tools',herbs:'Gathering herbs',care:'Giving care',play:'Playing',learn:'Learning',deliver:'Carrying supplies',travel:'Travelling',idle:'Taking a moment'};
+
+
+// ----- sim.mjs -----
+/**
+ * PANGAEA / Depth 0.2
+ * Authoritative, deterministic, renderer-independent simulation.
+ * Original implementations inspired by cited agent research; no LLM calls.
+ * Every production job must reach a legal tile. Inventories move explicitly.
+ */
+
+
+class Simulation {
+  constructor(seed = 481217, options = {}) {
+    if (!Number.isInteger(seed)) throw new Error('Seed must be an integer.');
+    this.state = {version:2,seed:seed>>>0,rng:(seed^0x85671abc)>>>0,tick:0,nextPerson:1,nextTown:1,nextBuilding:1,nextEvent:1,nextTrip:1,
+      people:[],towns:[],trips:[],events:[],history:[],ledger:[],totals:{births:0,deaths:0,buildings:0,migrations:0,deliveries:0,meals:0},
+      options:{memory:true,events:true,...options}};
+    const site = findFirstSite(seed), t = this.addTown(site, null, {food:120,meals:8,wood:62,stone:22,tools:0,herbs:4});
+    const founders = [['Iris','F',23,'Kind'],['Rowan','M',26,'Industrious'],['Mara','F',22,'Curious'],['Tomas','M',25,'Cautious']];
+    for (const [name,sex,age,trait] of founders) this.addPerson(t, {name,sex,age,trait});
+    this.state.people[0].skills.foraging=6; this.state.people[1].skills.building=7;
+    this.state.people[2].skills.insight=7; this.state.people[3].skills.forestry=6;
+    this.event('founding','Four lives at the edge of the world','Iris, Rowan, Mara and Tomas have food, timber, stone and no permanent homes.',t.id);
+    this.planTown(t); this.recordHistory();
+  }
+  get day() { return this.state.tick / STEPS_PER_DAY; }
+  get season() { return Math.floor(this.day % YEAR / 90); }
+  get year() { return Math.floor(this.day / YEAR) + 1; }
+  get alive() { return this.state.people.filter(p=>p.alive); }
+  random() { this.state.rng=(Math.imul(this.state.rng,1664525)+1013904223)>>>0; return this.state.rng/4294967296; }
+  integer(a,b) { return a + Math.floor(this.random()*(b-a+1)); }
+  person(id) { return this.state.people.find(p=>p.id===id); }
+  town(id) { return this.state.towns.find(t=>t.id===id); }
+  residents(t) { return this.state.people.filter(p=>p.alive&&p.townId===t.id&&!p.tripId); }
+  adults(t) { return this.residents(t).filter(p=>p.ageDays>=18*YEAR); }
+  buildings(t,type) { return t.buildings.filter(b=>b.complete&&b.type===type); }
+  capacity(t) { return this.buildings(t,'hut').length*4; }
+  foodDays(t) { return (t.res.food+t.res.meals)/Math.max(.1,this.residents(t).reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)); }
+  level(t) { const n=this.residents(t).length; return n>=40?'Town':n>=16?'Village':n>=7?'Hamlet':'Camp'; }
+  knowledge(t,id) { return t.knowledge.includes(id); }
+  currentTech(t) { return TECH.find(k=>!t.knowledge.includes(k.id)&&k.parents.every(id=>t.knowledge.includes(id))); }
+  event(type,title,detail,townId=null,people=[]) {
+    const e={id:this.state.nextEvent++,day:this.day,type,title,detail,townId,people};
+    this.state.events.unshift(e); if(this.state.events.length>350)this.state.events.length=350; return e;
+  }
+  transaction(t,kind,amount,reason) {
+    if(!Number.isFinite(amount))throw new Error('Invalid resource transaction');
+    if(amount<0 && t.res[kind]+amount < -1e-7) return false;
+    t.res[kind]=Math.max(0,(t.res[kind]||0)+amount);
+    if(Math.abs(amount)>.05){this.state.ledger.unshift({day:this.day,townId:t.id,kind,amount,reason});if(this.state.ledger.length>160)this.state.ledger.length=160;}
+    return true;
+  }
+  afford(t,cost) { return Object.entries(cost).every(([k,n])=>t.res[k]>=n); }
+  spend(t,cost,reason) { if(!this.afford(t,cost))return false; for(const[k,n]of Object.entries(cost))this.transaction(t,k,-n,reason);return true; }
+  addTown(site,parentId,resources) {
+    const id=this.state.nextTown++, t={id,name:TOWN_NAMES[id-1]||`Hearth ${id}`,lon:site.lon,lat:site.lat,parentId,created:this.day,
+      res:{food:0,meals:0,wood:0,stone:0,tools:0,herbs:0,...resources},buildings:[],projectId:null,knowledge:[],research:0,
+      weather:{kind:'Clear',until:0},policy:'Find shelter',policyReason:'Four people need permanent roofs.',reserve:18,scarcity:0,
+      lastMigration:-99999,lastAid:-99999,lastElection:0,leaderId:null,stats:{foodProduced:0,foodConsumed:0,waste:0},lastPlan:-99};
+    t.land=generateLocal(this.state.seed,t); this.state.towns.push(t); return t;
+  }
+  addPerson(t,{name,sex,age=0,trait,parents=[],family}={}) {
+    const id=this.state.nextPerson++;
+    const p={id,name:name||GIVEN[this.integer(4,GIVEN.length-1)],family:family||(['Vale','Reed','Ash','Stone'][((id-1)%4)]),sex:sex||(this.random()<.5?'F':'M'),
+      ageDays:age*YEAR,alive:true,born:this.day,deathDay:null,townId:t.id,tripId:null,parents,generation:parents.length?1+Math.max(...parents.map(i=>this.person(i)?.generation||0)):0,
+      partnerId:null,children:[],due:null,lastBirth:-99999,houseId:null,trait:trait||TRAITS[this.integer(0,TRAITS.length-1)],
+      needs:{food:85,energy:88,social:75,warmth:80},health:100,mood:76,sick:0,x:47+(id%4),y:43,task:null,carry:{},
+      skills:Object.fromEntries(SKILLS.map(k=>[k,2+this.random()*3])),memories:[],reflection:'A safe home comes first.',beliefs:{foodSafety:0,community:.5},
+      choices:[],why:'Getting to know the coast.',color:COLORS[(id-1)%COLORS.length],lastMemory:{},workCount:0};
+    this.state.people.push(p);
+    this.remember(p,'belonging',age?'We arrived together at First Hearth.':'I was born into this community.',7,8,parents);
+    return p;
+  }
+  remember(p,tag,text,importance=5,mood=0,people=[]) {
+    if(!this.state.options.memory)return;
+    const prior=p.lastMemory[tag], cooldown=({hunger:90,comfort:45,friendship:45,ecology:90,illness:90,home:100000})[tag]||0;
+    if(prior!==undefined&&this.day-prior<cooldown)return;
+    p.lastMemory[tag]=this.day;
+    p.memories.unshift({id:`${p.id}:${this.state.tick}:${tag}`,day:this.day,tag,text,importance,mood,people});
+    if(p.memories.length>45){p.memories.sort((a,b)=>this.memoryScore(b,'')-this.memoryScore(a,''));p.memories.length=40;p.memories.sort((a,b)=>b.day-a.day);}
+  }
+  memoryScore(m,context) { return m.importance*.5 + Math.exp(-(this.day-m.day)/180)*3 + (m.tag===context?4:0); }
+  retrieve(p,context,n=3) { return [...p.memories].sort((a,b)=>this.memoryScore(b,context)-this.memoryScore(a,context)).slice(0,n); }
+  reflect(p) {
+    if(!this.state.options.memory){p.beliefs.foodSafety=0;return;}
+    const fear=p.memories.filter(m=>m.tag==='hunger').reduce((a,m)=>a+m.importance/10*Math.exp(-(this.day-m.day)/720),0);
+    p.beliefs.foodSafety=clamp(fear,0,2);
+    const social=p.memories.filter(m=>m.tag==='friendship').length;
+    p.beliefs.community=clamp(.45+social*.03,0,1);
+    const strongest=this.retrieve(p,fear>.2?'hunger':'belonging',1)[0];
+    p.reflection=fear>.2?'I remember going hungry. We should keep a larger food reserve.':p.partnerId?'A home is more than shelter now. My family needs a future.':social>2?'These people have helped me. I want to do my part.':p.trait==='Curious'?'Surviving is not enough. There is still so much we could learn.':'A warm home and a full pantry are worth working for.';
+    p.reflectionEvidence=strongest?.id||null;
+  }
+  related(a,b) {
+    if(a.id===b.id||a.parents.includes(b.id)||b.parents.includes(a.id))return true;
+    if(a.parents.some(id=>b.parents.includes(id)))return true;
+    const grandparents=p=>p.parents.flatMap(id=>this.person(id)?.parents||[]);
+    return grandparents(a).includes(b.id)||grandparents(b).includes(a.id);
+  }
+  relationship(a,b) { return (a.relations||{})[b.id]||0; }
+  bond(a,b,amount=3) {
+    if(a.id===b.id)return;a.relations||={};b.relations||={};a.relations[b.id]=clamp((a.relations[b.id]||0)+amount,-100,100);b.relations[a.id]=clamp((b.relations[a.id]||0)+amount,-100,100);
+  }
+  assignHomes(t) {
+    const houses=this.buildings(t,'hut'), residents=this.residents(t), usage={};
+    for(const p of residents){if(!houses.some(h=>h.id===p.houseId))p.houseId=null;if(p.houseId)usage[p.houseId]=(usage[p.houseId]||0)+1;}
+    for(const p of residents.filter(p=>!p.houseId)){
+      const family=[this.person(p.partnerId),...p.parents.map(id=>this.person(id))].filter(Boolean);
+      const home=houses.find(h=>family.some(f=>f.houseId===h.id)&&(usage[h.id]||0)<4)||houses.find(h=>(usage[h.id]||0)<4);
+      if(home){p.houseId=home.id;usage[home.id]=(usage[home.id]||0)+1;this.remember(p,'home','For the first time, I slept under our own roof.',8,8);}
+    }
+  }
+  homePoint(p,t) { const b=t.buildings.find(b=>b.id===p.houseId);return b?entrance(b):{x:47,y:43}; }
+  project(t) { return t.buildings.find(b=>b.id===t.projectId)||null; }
+  siteFor(t,type) {
+    if(type==='fire')return {x:47,y:40};
+    let best=null,bestScore=-Infinity;
+    for(let r=6;r<37;r+=4)for(let i=0;i<20;i++){
+      const angle=i/20*Math.PI*2 + hash(t.id,r,this.state.seed)*.4;
+      const x=Math.round(47+Math.cos(angle)*r),y=Math.round(40+Math.sin(angle)*r*.82);
+      const f=footprint({x,y,type});let legal=true;
+      for(let yy=f.y0-1;yy<=f.y0+f.h;yy++)for(let xx=f.x0-1;xx<=f.x0+f.w;xx++){
+        if(!walkable(t,xx,yy)||t.land.nodes.some(n=>n.x===xx&&n.y===yy&&n.amount>0)){legal=false;break;}
+        if(t.buildings.some(b=>{const q=footprint(b);return xx>=q.x0-1&&xx<=q.x0+q.w&&yy>=q.y0-1&&yy<=q.y0+q.h;})){legal=false;break;}
+      }
+      if(!legal)continue;
+      const door=entrance({x,y,type});if(!findPath(t,47,43,door.x,door.y))continue;
+      const fertility=t.land.tiles[y*GRID_W+x].fertility;
+      const score=-r + (type==='farm'?fertility*10+(y>40?3:0):0)+hash(x,y,t.id)*3;
+      if(score>bestScore){bestScore=score;best={x,y};}
+    }
+    return best;
+  }
+  planTown(t) {
+    const people=this.residents(t), pop=people.length;if(!pop)return;
+    t.lastPlan=this.day;
+    const safety=people.reduce((a,p)=>a+p.beliefs.foodSafety,0)/pop;
+    t.reserve=18+(this.season===2?18:this.season===3?12:0)+safety*10+(this.buildings(t,'store').length?10:0);
+    const food=this.foodDays(t), capacity=this.capacity(t);
+    t.policy=food<8?'Secure food':capacity<pop?'Shelter everyone':food<t.reserve*.65?'Build reserves':this.buildings(t,'farm').length<Math.ceil(pop/4)?'Cultivate the land':'Learn & flourish';
+    t.policyReason=food<8?`Only ${food.toFixed(1)} days of food remain.`:capacity<pop?`${pop-capacity} people are without a permanent bed.`:food<t.reserve*.65?`A ${Math.round(t.reserve)}-day reserve protects the next generation.`:'Stable households can invest in knowledge and future settlements.';
+    const old=this.project(t);if(old&&!old.complete)return;
+    let next=null;
+    if(!this.buildings(t,'fire').length)next='fire';
+    else if(capacity<pop+2)next='hut';
+    else if(this.knowledge(t,'agriculture')&&this.buildings(t,'farm').length<Math.max(2,Math.ceil(pop/3)))next='farm';
+    else if(this.knowledge(t,'masonry')&&!this.buildings(t,'well').length)next='well';
+    else if(this.knowledge(t,'preservation')&&!this.buildings(t,'store').length)next='store';
+    else if(this.knowledge(t,'craft')&&!this.buildings(t,'workshop').length)next='workshop';
+    else if(this.knowledge(t,'medicine')&&!this.buildings(t,'clinic').length)next='clinic';
+    else if(this.knowledge(t,'civic')&&!this.buildings(t,'hall').length)next='hall';
+    if(!next){t.projectId=null;return;}
+    const site=this.siteFor(t,next);if(!site){t.projectId=null;return;}
+    const b={id:this.state.nextBuilding++,type:next,...site,complete:false,funded:false,progress:0,created:this.day,
+      crop:{sown:false,growth:0,yield:0},condition:100};
+    t.buildings.push(b);t.projectId=b.id;t.land.revision++;
+    this.event('plan',`${t.name} plans ${BUILDINGS[next].name.toLowerCase()}`,t.policyReason,t.id);
+  }
+  chooseNode(p,t,kind) {
+    const nodes=t.land.nodes.filter(n=>n.kind===kind&&n.amount>=1&&walkable(t,n.x,n.y));
+    nodes.sort((a,b)=>(Math.abs(a.x-p.x)+Math.abs(a.y-p.y))-(Math.abs(b.x-p.x)+Math.abs(b.y-p.y)));
+    for(const n of nodes.slice(0,16)){
+      const reserved=this.residents(t).filter(q=>q.id!==p.id&&q.task?.nodeId===n.id).length;if(reserved>=2)continue;
+      const path=findPath(t,p.x,p.y,n.x,n.y);if(path)return {node:n,path};
+    }
+    return null;
+  }
+  scoreActions(p,t) {
+    const people=this.residents(t), adults=people.filter(q=>q.ageDays>=18*YEAR), pop=people.length;
+    const jobs=k=>adults.filter(q=>q.id!==p.id&&q.task?.kind===k).length;
+    const project=this.project(t), costs=project&&!project.funded?BUILDINGS[project.type].cost:{};
+    const fd=this.foodDays(t), fear=p.beliefs.foodSafety, n=p.needs, choices=[];
+    const add=(kind,score,reason,extra={})=>{if(Number.isFinite(score)&&score>0)choices.push({kind,score,reason,...extra});};
+    if(t.res.food>=1 || t.res.meals>=1 || (p.carry.food||0)>=1)add('eat',(100-n.food)*1.25+(n.food<30?110:0),`Fullness is ${Math.round(n.food)}%.`);
+    add('rest',(100-n.energy)*1.05+(n.energy<25?120:0),`Energy is ${Math.round(n.energy)}%.`);
+    if(p.ageDays<18*YEAR){
+      add('learn',42+p.skills.insight,'Observe the adults and gradually learn their skills.');
+      add('play',38+(100-n.social)*.8,'A child needs companionship and time to play.');return choices.sort((a,b)=>b.score-a.score);
+    }
+    const availableFood=t.land.nodes.some(r=>r.kind==='food'&&r.amount>=1);
+    if(availableFood&&fd<t.reserve*1.4&&jobs('forage')<Math.max(1,Math.ceil(pop/3)))add('forage',clamp((t.reserve-fd)/t.reserve,0,1)*105+p.skills.foraging*2+fear*12+(fd<5?45:0)-(jobs('forage')*18),`${fd.toFixed(1)} food days; ${Math.round(t.reserve)} desired${fear>.2?'; hunger memories raise urgency':''}.`);
+    const woodNeed=(costs.wood||0)+35+(this.season===3?pop*5:0);
+    if(t.res.wood<woodNeed&&jobs('wood')<Math.max(1,Math.ceil(pop/10)))add('wood',40+clamp((woodNeed-t.res.wood)/woodNeed,0,1)*45+p.skills.forestry*2,`${Math.floor(t.res.wood)} timber available; ${Math.ceil(woodNeed)} needed for projects and fuel.`);
+    const stoneNeed=(costs.stone||0)+18;
+    if(t.res.stone<stoneNeed&&jobs('stone')<Math.max(1,Math.ceil(pop/14)))add('stone',35+clamp((stoneNeed-t.res.stone)/stoneNeed,0,1)*40+p.skills.forestry,`${Math.floor(t.res.stone)} stone available; ${Math.ceil(stoneNeed)} wanted.`);
+    if(project?.funded&&!project.complete&&jobs('build')<Math.max(1,Math.ceil(adults.length/6)))add('build',65+(this.capacity(t)<pop?24:0)+p.skills.building*2,`${BUILDINGS[project.type].name} has materials and needs labour.`,{buildingId:project.id});
+    const farms=this.buildings(t,'farm').filter(b=>b.crop.yield>0||(!b.crop.sown&&this.season!==3));
+    if(farms.length&&jobs('farm')<farms.length){
+      const farm=farms.find(b=>!adults.some(q=>q.id!==p.id&&q.task?.buildingId===b.id));
+      if(farm)add('farm',(farm.crop.yield>0?85:57)+p.skills.farming*2+(fd<10?24:0),farm.crop.yield>0?'Mature crops need harvesting before they spoil.':'Sow a new crop for a future harvest.',{buildingId:farm.id});
+    }
+    if(this.buildings(t,'fire').length&&t.res.food>=4&&t.res.meals<pop*2&&t.res.wood>=2&&!jobs('cook'))add('cook',35+p.skills.care*2+(t.res.meals<pop?12:0),'Convert raw food and fuel into comforting cooked meals.');
+    if(this.currentTech(t)&&fd>5&&jobs('study')<Math.max(1,Math.ceil(adults.length/8)))add('study',28+p.skills.insight*2+(p.trait==='Curious'?16:0)+(fd>t.reserve?12:0),`Investigate ${this.currentTech(t).name.toLowerCase()}; the pantry can support some study.`);
+    if(this.buildings(t,'workshop').length&&t.res.tools<Math.max(5,adults.length)&&this.afford(t,{wood:3,stone:2})&&!jobs('craft'))add('craft',45+p.skills.building,'Tools improve gathering and construction, but wear with use.');
+    if(this.buildings(t,'clinic').length&&t.res.herbs<10&&!jobs('herbs'))add('herbs',35+p.skills.care,'Stock herbs for the sick.');
+    const patient=people.find(q=>q.health<75||q.sick>0);
+    if(patient&&this.buildings(t,'clinic').length&&t.res.herbs>=1&&!jobs('care'))add('care',65+p.skills.care*2,'A neighbour is unwell and treatment is available.',{patientId:patient.id});
+    add('social',22+(100-n.social)*.90+(p.trait==='Sociable'?10:0),'Spend time with neighbours; closeness grows through contact.');
+    return choices.sort((a,b)=>b.score-a.score||a.kind.localeCompare(b.kind));
+  }
+  decide(p,t) {
+    // Carried inventory is never erased when replanning.
+    if(Object.values(p.carry).some(n=>n>0)){
+      if((p.carry.food||0)>=1&&p.needs.food<30){p.carry.food--;p.needs.food=clamp(p.needs.food+62,0,100);p.why='Eat one of the gathered rations before carrying the rest home.';return;}
+      this.makeTask(p,t,{kind:'deliver',score:200,reason:'Resources only enter the communal stockpile when delivered.'},{x:47,y:43});return;
+    }
+    const choices=this.scoreActions(p,t);p.choices=choices.slice(0,5).map(x=>({...x,score:Math.round(x.score)}));
+    for(const choice of choices){
+      let target=this.homePoint(p,t), extra={};
+      if(['forage','wood','stone','herbs'].includes(choice.kind)){
+        const result=this.chooseNode(p,t,choice.kind==='forage'?'food':choice.kind);if(!result)continue;
+        target=result.node;extra={nodeId:result.node.id,path:result.path};
+      } else if(choice.kind==='build'||choice.kind==='farm') {const b=t.buildings.find(b=>b.id===choice.buildingId);if(!b)continue;target=entrance(b);extra.buildingId=b.id;}
+      else if(['study','cook','social','play','learn'].includes(choice.kind))target={x:46+this.integer(0,4),y:43+this.integer(0,2)};
+      else if(choice.kind==='craft'){target=entrance(this.buildings(t,'workshop')[0]);}
+      else if(choice.kind==='care'){target=entrance(this.buildings(t,'clinic')[0]);extra.patientId=choice.patientId;}
+      if(this.makeTask(p,t,choice,target,extra))return;
+    }
+    p.task={kind:'idle',stage:'work',work:1};p.why='No reachable task currently meets the requirements.';
+  }
+  makeTask(p,t,choice,target,extra={}) {
+    const path=extra.path||findPath(t,p.x,p.y,target.x,target.y);if(path===null)return false;
+    p.task={kind:choice.kind,stage:path.length?'walk':'work',path,index:0,tx:target.x,ty:target.y,work:0,...extra};
+    p.why=choice.reason;return true;
+  }
+  stepPerson(p,t) {
+    const child=p.ageDays<12*YEAR, n=p.needs;
+    n.food=clamp(n.food-(child?6.6:10.8),0,100);n.energy=clamp(n.energy-5.6,0,100);n.social=clamp(n.social-1.4,0,100);
+    const winter=this.season===3, warm=this.capacity(t)>=this.residents(t).length || !!p.houseId;
+    n.warmth=clamp(n.warmth+(winter?(warm?.6:-3):2),0,100);
+    if(n.food<=0){p.health-=.38;p.starveTicks=(p.starveTicks||0)+1;if(p.starveTicks>=8)this.remember(p,'hunger','There was not enough to eat. I do not want to feel that again.',9,-12);}else p.starveTicks=0;
+    if(n.food>40&&!p.sick)p.health=clamp(p.health+.14,0,100);
+    if(n.warmth<20)p.health-=.20;
+    if(p.sick>0){p.sick--;p.health-=.16;}
+    if(p.health<=0){this.die(p,'hardship');return;}
+    let memoryMood=0;const felt=new Set();for(const m of p.memories){if(felt.has(m.tag))continue;felt.add(m.tag);memoryMood+=m.mood*Math.exp(-(this.day-m.day)/60)*.4;}memoryMood=clamp(memoryMood,-28,22);
+    p.mood=clamp(28+n.food*.20+n.social*.17+n.warmth*.10+(p.houseId?8:0)+memoryMood-(p.sick?12:0),0,100);
+    // Emergency needs preempt a job; inventory survives the interruption.
+    if(p.task && p.task.kind!=='eat'&&p.task.kind!=='rest'&&p.task.kind!=='deliver'&&(n.food<13||n.energy<12))p.task=null;
+    if(!p.task)this.decide(p,t);if(!p.task)return;
+    const task=p.task;
+    if(task.stage==='walk'){
+      const distance=18+(p.trait==='Industrious'?2:0);
+      for(let i=0;i<distance&&task.index<task.path.length;i++){
+        const next=task.path[task.index];if(!walkable(t,next.x,next.y)){p.task=null;return;}
+        p.x=next.x;p.y=next.y;task.index++;
+        const tile=p.y*GRID_W+p.x;t.land.roads[tile]=Math.min(120,t.land.roads[tile]+.5);
+      }
+      if(task.index>=task.path.length)task.stage='work';else return;
+    }
+    this.work(p,t);
+  }
+  work(p,t) {
+    const task=p.task;if(!task)return;task.work++;
+    const skillName={forage:'foraging',wood:'forestry',stone:'forestry',build:'building',farm:'farming',study:'insight',cook:'care',care:'care',craft:'building',herbs:'care'}[task.kind];
+    const skill=skillName?p.skills[skillName]:0;
+    let rate=1+skill*.035;
+    if(t.res.tools>.015&&['wood','stone','build','farm'].includes(task.kind)){rate*=1.25;t.res.tools=Math.max(0,t.res.tools-.012);}
+    let done=true;
+    switch(task.kind){
+      case 'eat':{
+        let kind=t.res.meals>=1?'meals':'food';
+        if(this.transaction(t,kind,-1,'A resident ate a ration')){
+          p.needs.food=clamp(p.needs.food+62,0,100);t.stats.foodConsumed++;
+          if(kind==='meals'){p.mood=clamp(p.mood+4,0,100);this.remember(p,'comfort','A warm meal made a difficult day better.',3,3);}
+        }break;
+      }
+      case 'rest':p.needs.energy=clamp(p.needs.energy+(p.houseId?80:61),0,100);if(p.houseId)p.needs.warmth=clamp(p.needs.warmth+24,0,100);break;
+      case 'forage':case 'wood':case 'stone':case 'herbs':{
+        const node=t.land.nodes.find(n=>n.id===task.nodeId);if(!node||node.amount<=0)break;
+        const amount=Math.min(node.amount,({food:5.5,wood:5,stone:4,herbs:3}[node.kind])*rate);
+        node.amount-=amount;p.carry[node.kind]=(p.carry[node.kind]||0)+amount;
+        if(node.kind==='food')t.stats.foodProduced+=amount;
+        t.land.revision++;
+        done=task.work>=2||node.amount<1;
+        if(node.amount<1&&node.kind==='food')this.remember(p,'ecology','The nearby berry patch is exhausted. We must give it time to regrow.',5,-2);
+        break;
+      }
+      case 'deliver':{
+        for(const[k,v]of Object.entries(p.carry))if(v>0)this.transaction(t,k,v,`${p.name} delivered ${k}`);
+        p.carry={};this.state.totals.deliveries++;break;
+      }
+      case 'build':{
+        const b=t.buildings.find(b=>b.id===task.buildingId);if(!b||b.complete||!b.funded)break;
+        b.progress+=2.2*rate;
+        done=b.progress>=BUILDINGS[b.type].work||task.work>=5;
+        if(b.progress>=BUILDINGS[b.type].work){
+          b.complete=true;b.progress=BUILDINGS[b.type].work;t.projectId=null;this.state.totals.buildings++;t.land.revision++;
+          this.event('build',`${BUILDINGS[b.type].name} completed`,`${p.name} finished the work at ${t.name}. Materials were consumed before construction.`,t.id,[p.id]);
+          this.remember(p,'achievement',`I helped build the ${BUILDINGS[b.type].name.toLowerCase()}.`,7,7);
+          this.assignHomes(t);this.planTown(t);
+        }break;
+      }
+      case 'farm':{
+        const b=t.buildings.find(b=>b.id===task.buildingId);if(!b||!b.complete)break;
+        if(b.crop.yield>0){const amount=Math.min(b.crop.yield,12*rate);b.crop.yield-=amount;p.carry.food=(p.carry.food||0)+amount;t.stats.foodProduced+=amount;if(b.crop.yield<.001){b.crop.sown=false;b.crop.growth=0;}done=true;}
+        else if(!b.crop.sown&&this.season!==3){b.crop.sown=true;b.crop.growth=0;done=true;}
+        break;
+      }
+      case 'cook':if(this.spend(t,{food:3,wood:.6},'Cooking inputs')){this.transaction(t,'meals',3,'Cooked meal output');this.state.totals.meals+=3;}break;
+      case 'study':{
+        const tech=this.currentTech(t);if(!tech)break;
+        t.research+=1.0*rate*(this.buildings(t,'hall').length?1.7:1);
+        if(t.research>=tech.cost){t.research-=tech.cost;t.knowledge.push(tech.id);this.event('knowledge',`${t.name} learned ${tech.name.toLowerCase()}`,tech.effect,t.id,[p.id]);this.remember(p,'knowledge',`Our work led to ${tech.name.toLowerCase()}.`,8,9);this.planTown(t);}
+        done=task.work>=3;break;
+      }
+      case 'craft':if(this.spend(t,{wood:3,stone:2},'Toolmaking inputs'))this.transaction(t,'tools',1,'Toolmaking output');break;
+      case 'care':{
+        const patient=this.person(task.patientId);if(patient?.alive&&this.spend(t,{herbs:1},'Treatment')){patient.health=clamp(patient.health+7*rate,0,100);patient.sick=Math.max(0,patient.sick-12);this.bond(p,patient,4);this.remember(patient,'friendship',`${p.name} cared for me while I was unwell.`,8,8,[p.id]);}break;
+      }
+      case 'learn':{
+        const mentor=this.adults(t).sort((a,b)=>b.skills.insight-a.skills.insight)[0];
+        if(mentor){const top=SKILLS.reduce((a,b)=>mentor.skills[a]>mentor.skills[b]?a:b);p.skills[top]=Math.min(mentor.skills[top],p.skills[top]+.035);this.bond(p,mentor,.5);}p.needs.social=clamp(p.needs.social+17,0,100);break;
+      }
+      case 'social':case 'play':{
+        const others=this.residents(t).filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<20);
+        const compatible=others.filter(q=>(q.ageDays>=18*YEAR) === (p.ageDays>=18*YEAR));
+        const pool=compatible.length?compatible:others, q=pool.length?pool[this.integer(0,pool.length-1)]:null;
+        p.needs.social=clamp(p.needs.social+48,0,100);
+        if(q){q.needs.social=clamp(q.needs.social+18,0,100);this.bond(p,q,p.trait==='Kind'?5:3.5);if(this.relationship(p,q)>30)this.remember(p,'friendship',`Sharing time with ${q.name} makes this place feel like home.`,5,5,[q.id]);}
+        break;
+      }
+    }
+    if(skillName){p.skills[skillName]=Math.min(20,p.skills[skillName]+.013);p.workCount++;}
+    if(done)p.task=null;
+  }
+  die(p,cause) {
+    if(!p.alive)return;p.alive=false;p.deathDay=this.day;p.task=null;p.due=null;this.state.totals.deaths++;
+    const t=this.town(p.townId);if(t)for(const[k,v]of Object.entries(p.carry))if(v>0)this.transaction(t,k,v,'Recovered belongings after a death');p.carry={};
+    this.event('death',`${p.name} ${p.family} died`,`${Math.floor(p.ageDays/YEAR)} years old. Cause: ${cause}.`,p.townId,[p.id]);
+    for(const q of this.alive)if(q.partnerId===p.id||q.parents.includes(p.id)||this.relationship(q,p)>40){
+      this.remember(q,'grief',`I miss ${p.name}. Their absence changed our home.`,10,-20,[p.id]);if(q.partnerId===p.id)q.partnerId=null;
+    }
+  }
+  demographics(t) {
+    const people=this.residents(t);
+    if(Math.floor(this.day)%12===0){
+      const singles=people.filter(p=>p.ageDays>=18*YEAR&&!p.partnerId&&p.mood>30);
+      for(const p of singles){if(p.partnerId)continue;
+        const candidates=singles.filter(q=>q.id!==p.id&&!q.partnerId&&q.sex!==p.sex&&!this.related(p,q)&&Math.abs(p.ageDays-q.ageDays)<20*YEAR&&this.relationship(p,q)>=35);
+        candidates.sort((a,b)=>this.relationship(p,b)-this.relationship(p,a));const q=candidates[0];
+        if(q){p.partnerId=q.id;q.partnerId=p.id;this.event('family',`${p.name} and ${q.name} became partners`,'Closeness grew through repeated contact, not an automatic pairing timer.',t.id,[p.id,q.id]);this.remember(p,'belonging',`${q.name} and I chose a life together.`,10,15,[q.id]);this.remember(q,'belonging',`${p.name} and I chose a life together.`,10,15,[p.id]);}
+      }
+    }
+    for(const p of people){
+      if(p.sex!=='F')continue;
+      if(p.due!==null&&this.day>=p.due){
+        p.due=null;p.lastBirth=this.day;const other=p.pregnantWith;p.pregnantWith=null;
+        const child=this.addPerson(t,{parents:[p.id,other].filter(Boolean),family:p.family});p.children.push(child.id);if(other&&this.person(other))this.person(other).children.push(child.id);
+        child.x=p.x;child.y=p.y;this.state.totals.births++;this.assignHomes(t);
+        this.event('birth',`${child.name} ${child.family} was born`,`Generation ${child.generation+1}. ${p.name}'s household has grown.`,t.id,[p.id,child.id]);
+        this.remember(p,'family',`The day ${child.name} was born changed everything.`,10,18,[child.id]);
+      } else if(p.due===null&&p.ageDays>=18*YEAR&&p.ageDays<43*YEAR&&p.partnerId&&this.alive.length+this.alive.filter(q=>q.due!==null).length<MAX_POPULATION){
+        const partner=this.person(p.partnerId), expecting=people.filter(q=>q.due!==null).length;
+        const possible=partner?.alive&&!partner.tripId&&partner.townId===t.id&&partner.ageDays>=18*YEAR&&this.day-p.lastBirth>690&&p.health>65&&p.mood>40&&this.foodDays(t)>12&&this.capacity(t)>=people.length+expecting+1;
+        if(possible&&this.random()<.006){p.due=this.day+270;p.pregnantWith=partner.id;this.event('family',`${p.name} and ${partner.name} are expecting`,'Food, health and a spare place at home made a new child possible.',t.id,[p.id,partner.id]);}
+      }
+    }
+  }
+  dailyTown(t) {
+    const residents=this.residents(t);if(!residents.length)return;
+    const season=this.season;
+    if(t.weather.until<=this.day)t.weather={kind:'Clear',until:0};
+    const drought=t.weather.kind==='Drought', winter=season===3;
+    const regen=[1,1.3,.65,.12][season]*(drought?.2:1);
+    for(const n of t.land.nodes){
+      const base=n.kind==='food'?.10:n.kind==='wood'?.009:n.kind==='herbs'?.025:0;
+      if(base)n.amount=Math.min(n.max,n.amount+base*regen);
+    }
+    for(const b of this.buildings(t,'farm')){
+      if(b.crop.yield>0){if(winter)b.crop.yield*=.994;continue;}
+      if(!b.crop.sown)continue;
+      const fertility=t.land.tiles[b.y*GRID_W+b.x].fertility;
+      b.crop.growth+=1.8*fertility*[1,1.4,.8,0][season]*(drought?(this.buildings(t,'well').length?.65:.20):1);
+      if(b.crop.growth>=80){b.crop.growth=80;b.crop.yield=135*fertility;}
+    }
+    const spoil=this.buildings(t,'store').length?.0006:.0025;
+    for(const kind of ['food','meals']){const lost=t.res[kind]*(kind==='meals'?spoil*1.8:spoil);t.res[kind]-=lost;t.stats.waste+=lost;}
+    if(winter&&this.buildings(t,'fire').length){const fuel=Math.min(t.res.wood,residents.length*.025);t.res.wood-=fuel;if(fuel>0)for(const p of residents)p.needs.warmth=clamp(p.needs.warmth+5,0,100);}
+    const pr=this.project(t);if(pr&&!pr.funded&&this.spend(t,BUILDINGS[pr.type].cost,`Reserved materials for ${BUILDINGS[pr.type].name}`))pr.funded=true;
+    if(Math.floor(this.day)%5===0){this.planTown(t);this.assignHomes(t);}
+    if(Math.floor(this.day)%28===0){for(const p of residents)this.reflect(p);this.elect(t);}
+    if(Math.floor(this.day)%90===0){
+      if(this.state.options.events&&this.random()<.16)this.weatherEvent(t,this.random()<.5?'Storm':'Drought');
+      this.tryMigration(t);this.tryAid(t);
+    }
+    for(const p of residents){
+      if(p.ageDays>74*YEAR&&this.random()<.0004*(1+(p.ageDays/YEAR-74)*.18))this.die(p,'old age');
+      else if(this.state.options.events&&p.ageDays>3*YEAR&&this.random()<(this.buildings(t,'well').length?.00006:.00015)){
+        p.sick=48;this.remember(p,'illness','Illness has made even simple work exhausting.',6,-7);
+      }
+    }
+    this.demographics(t);
+  }
+  elect(t) {
+    const adults=this.adults(t);if(!adults.length)return;
+    adults.sort((a,b)=>{
+      const respect=p=>p.skills.insight+p.skills.care*.5+adults.reduce((s,q)=>s+this.relationship(q,p)*.01,0)+(p.trait==='Kind'?2:0);
+      return respect(b)-respect(a)||a.id-b.id;
+    });
+    const leader=adults[0];if(t.leaderId!==leader.id){t.leaderId=leader.id;this.event('council',`${leader.name} is the community's trusted voice`,'Experience, care and social ties determine whom the settlement respects.',t.id,[leader.id]);}
+  }
+  weatherEvent(t,kind='Drought') {
+    t.weather={kind,until:this.day+(kind==='Drought'?60:12)};
+    if(kind==='Storm'){
+      const loss=t.res.food*.08;this.transaction(t,'food',-loss,'Storm damaged food stores');
+      for(const p of this.residents(t))if(!p.houseId)p.health=Math.max(1,p.health-8);
+    }
+    this.event('weather',`${kind} at ${t.name}`,kind==='Drought'?'For sixty days, wild regrowth and crop growth slow. Wells soften the impact.':'Some food was lost. People without shelter were exposed.',t.id);
+    for(const p of this.residents(t))this.remember(p,'weather',`We endured a ${kind.toLowerCase()} together.`,6,-5);
+  }
+  tryMigration(t) {
+    if(this.day<8*YEAR||this.day-t.lastMigration<3*YEAR||this.state.towns.length>=12)return;
+    const residents=this.residents(t), adults=this.adults(t);
+    if(residents.length<14||adults.length<6||this.foodDays(t)<23||!this.afford(t,{food:100,wood:90,stone:24}))return;
+    const candidates=adults.filter(p=>p.partnerId&&p.sex==='F'&&!p.due&&p.ageDays<45*YEAR);
+    candidates.sort((a,b)=>(b.trait==='Restless'?20:0)-(a.trait==='Restless'?20:0)||a.ageDays-b.ageDays);
+    for(const p of candidates){
+      const q=this.person(p.partnerId);if(!q?.alive||q.tripId||q.townId!==t.id)continue;
+      const family=[p,q,...residents.filter(c=>c.ageDays<18*YEAR&&(c.parents.includes(p.id)||c.parents.includes(q.id)))];
+      if(residents.length-family.length<8)continue;
+      let site=null,route=null;
+      for(let a=0;a<16;a++){
+        const angle=this.random()*Math.PI*2,dist=.22+this.random()*.35;
+        const s={lon:t.lon+Math.cos(angle)*dist,lat:clamp(t.lat+Math.sin(angle)*dist,-1.1,1.1)},g=geoAt(s.lon,s.lat,this.state.seed);
+        if(!g.land||g.field<.08||g.field>.8||this.state.towns.some(v=>Math.hypot(v.lon-s.lon,v.lat-s.lat)<.16))continue;
+        route=globalRoute(this.state.seed,t,s);if(route?.length){site=s;break;}
+      }
+      if(!site)continue;
+      const duration=Math.min(45,14+route.length),needed=family.length*.82*duration+80;
+      if(t.res.food<needed+residents.length*8)continue;
+      const cargo={food:needed,meals:0,wood:90,stone:24,tools:0,herbs:2};if(!this.afford(t,cargo))continue;
+      this.spend(t,cargo,'Supplies packed for a new settlement');
+      const trip={id:this.state.nextTrip++,kind:'migration',from:t.id,to:null,site,route,start:this.day,arrival:this.day+duration,
+        cargo,people:family.map(p=>p.id),knowledge:[...t.knowledge],research:0};
+      this.state.trips.push(trip);for(const member of family){member.tripId=trip.id;member.houseId=null;member.task=null;
+        for(const[k,v]of Object.entries(member.carry))cargo[k]=(cargo[k]||0)+v;member.carry={};}
+      t.lastMigration=this.day;this.state.totals.migrations++;this.event('migration',`${p.name}'s household sets out`,`They packed ${Math.round(needed)} food, 90 timber and 24 stone. The land journey will take ${duration} days.`,t.id,trip.people);return;
+    }
+  }
+  tryAid(t) {
+    if(this.day-t.lastAid<180||this.foodDays(t)<35)return;
+    const target=this.state.towns.find(q=>q.id!==t.id&&this.residents(q).length>0&&this.foodDays(q)<12);
+    if(!target)return;const route=globalRoute(this.state.seed,t,target);if(!route)return;
+    const amount=Math.min(80,t.res.food*.15);if(amount<10)return;
+    this.transaction(t,'food',-amount,'Provision convoy dispatched');
+    this.state.trips.push({id:this.state.nextTrip++,kind:'aid',from:t.id,to:target.id,route,start:this.day,arrival:this.day+Math.min(35,route.length+5),cargo:{food:amount},people:[]});t.lastAid=this.day;
+    this.event('aid',`${t.name} sends provisions to ${target.name}`,`${Math.round(amount)} food leaves the donor's stockpile now and arrives only after travel. Transport labour is abstracted in this prototype.`,t.id);
+  }
+  dailyTrips() {
+    for(const trip of [...this.state.trips]){
+      if(trip.kind==='migration')for(const id of trip.people){const p=this.person(id);if(!p?.alive)continue;
+        const ration=p.ageDays<12*YEAR?.48:.82,ate=Math.min(trip.cargo.food,ration);trip.cargo.food-=ate;
+        p.needs.food=clamp(p.needs.food+(ate>=ration?8:-20),0,100);p.needs.energy=clamp(p.needs.energy+5,0,100);if(!ate)p.health-=1;
+        if(p.health<=0)this.die(p,'starvation while travelling');
+      }
+      if(this.day<trip.arrival)continue;
+      if(trip.kind==='migration'){
+        const t=this.addTown(trip.site,trip.from,trip.cargo);t.knowledge=[...trip.knowledge];
+        for(const id of trip.people){const p=this.person(id);if(!p?.alive)continue;p.townId=t.id;p.tripId=null;p.x=47+(p.id%3);p.y=43;p.task=null;this.remember(p,'belonging',`We founded ${t.name}. A new chapter begins.`,10,12);}
+        this.planTown(t);this.event('migration',`${t.name} was founded`,'The travellers arrived with their remaining supplies and shared knowledge.',t.id,trip.people);
+      } else {const target=this.town(trip.to);if(target){for(const[k,v]of Object.entries(trip.cargo))this.transaction(target,k,v,'Provision convoy arrived');this.event('aid',`Provisions arrived at ${target.name}`,'The cargo has reached its destination.',target.id);}}
+      this.state.trips=this.state.trips.filter(x=>x.id!==trip.id);
+    }
+  }
+  recordHistory() {
+    const people=this.alive, food=this.state.towns.reduce((n,t)=>n+t.res.food+t.res.meals,0), homes=this.state.towns.reduce((n,t)=>n+this.capacity(t),0);
+    this.state.history.push({day:this.day,pop:people.length,towns:this.state.towns.length,food,homes,mood:people.reduce((n,p)=>n+p.mood,0)/Math.max(1,people.length)});
+    if(this.state.history.length>360)this.state.history.shift();
+  }
+  step(count=1) {
+    for(let i=0;i<count;i++){
+      this.state.tick++;
+      for(const p of this.state.people)if(p.alive)p.ageDays+=1/STEPS_PER_DAY;
+      for(const t of this.state.towns){
+        const people=this.residents(t);
+        // Rotate the processing order deterministically so founder #1 cannot monopolize jobs.
+        const offset=people.length?this.state.tick%people.length:0;
+        for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive)this.stepPerson(p,t);}
+      }
+      if(this.state.tick%STEPS_PER_DAY===0){
+        for(const t of [...this.state.towns])this.dailyTown(t);
+        this.dailyTrips();if(Math.floor(this.day)%30===0)this.recordHistory();
+      }
+    }
+  }
+  advanceDays(days) { this.step(Math.floor(days*STEPS_PER_DAY)); }
+  snapshot() { return JSON.parse(JSON.stringify(this.state)); }
+  static fromSnapshot(data) {
+    validateSave(data);const sim=Object.create(Simulation.prototype);sim.state=JSON.parse(JSON.stringify(data));return sim;
+  }
+  invariants() {
+    const issues=[], ids=new Set();
+    for(const p of this.state.people){if(ids.has(p.id))issues.push('duplicate person');ids.add(p.id);
+      if(!Number.isFinite(p.ageDays)||p.ageDays<0)issues.push(`bad age ${p.id}`);
+      if(p.partnerId){const q=this.person(p.partnerId);if(p.alive&&(!q?.alive||q.partnerId!==p.id))issues.push(`nonreciprocal partner ${p.id}`);}
+      if(p.alive&&!p.tripId){const t=this.town(p.townId);if(!t||!walkable(t,p.x,p.y))issues.push(`unwalkable position ${p.id}`);}
+      for(const [k,n]of Object.entries(p.needs))if(!Number.isFinite(n)||n<0||n>100)issues.push(`bad need ${p.id}:${k}`);
+      for(const n of Object.values(p.carry))if(n<0||!Number.isFinite(n))issues.push('bad carried resource');
+    }
+    for(const t of this.state.towns){for(const v of Object.values(t.res))if(!Number.isFinite(v)||v<-.00001)issues.push(`bad resource ${t.id}`);
+      for(const n of t.land.nodes)if(!Number.isFinite(n.amount)||n.amount<-.001||n.amount>n.max+.001)issues.push('bad natural stock');}
+    return [...new Set(issues)];
+  }
+}
+/** Reject malformed/oversized inputs before replacing a running simulation. */
+function validateSave(s) {
+  const fail=()=>{throw new Error('Invalid or incompatible PANGAEA Depth save. Version 0.1 saves are not compatible.');};
+  if(!s||s.version!==2||!Number.isInteger(s.seed)||!Number.isInteger(s.rng)||!Number.isInteger(s.tick)||s.tick<0||s.tick>1e9)fail();
+  if(!Array.isArray(s.people)||s.people.length>3000||!Array.isArray(s.towns)||!s.towns.length||s.towns.length>20||!Array.isArray(s.trips)||s.trips.length>40)fail();
+  const numeric=v=>typeof v==='number'&&Number.isFinite(v);
+  const walk=(obj,depth=0)=>{if(depth>20)fail();if(typeof obj==='number'&&!Number.isFinite(obj))fail();if(typeof obj==='string'&&obj.length>4000)fail();if(Array.isArray(obj)&&obj.length>9000)fail();if(obj&&typeof obj==='object')for(const[k,v]of Object.entries(obj)){if(['__proto__','constructor','prototype'].includes(k))fail();walk(v,depth+1);}};walk(s);
+  const ids=new Set();for(const p of s.people){if(!Number.isInteger(p.id)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>80||!numeric(p.ageDays)||p.ageDays<0||!p.needs||!p.skills||!Array.isArray(p.memories)||!Array.isArray(p.parents)||!p.carry)fail();ids.add(p.id);
+    if(p.id<1||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=GRID_W||p.y<0||p.y>=GRID_H||!/^#[0-9a-f]{6}$/i.test(p.color)||typeof p.family!=='string'||!['F','M'].includes(p.sex)||!TRAITS.includes(p.trait)||typeof p.alive!=='boolean'||!Array.isArray(p.children)||!Array.isArray(p.choices)||!p.beliefs||!p.lastMemory||!numeric(p.health)||!numeric(p.mood))fail();
+    for(const k of ['food','energy','social','warmth'])if(!numeric(p.needs[k])||p.needs[k]<0||p.needs[k]>100)fail();
+    for(const k of SKILLS)if(!numeric(p.skills[k])||p.skills[k]<0)fail();
+    for(const v of Object.values(p.carry))if(!numeric(v)||v<0)fail();
+    if(!numeric(p.beliefs.foodSafety)||!numeric(p.beliefs.community)||p.memories.some(m=>!numeric(m.day)||!numeric(m.importance)||!numeric(m.mood)||typeof m.text!=='string'||typeof m.tag!=='string'))fail();
+    if(p.task){if(!Object.hasOwn(ACTION_NAMES,p.task.kind)||!['walk','work'].includes(p.task.stage)||!numeric(p.task.work))fail();if(p.task.stage==='walk'&&(!Array.isArray(p.task.path)||!Number.isInteger(p.task.index)||p.task.index<0||p.task.index>p.task.path.length||p.task.path.some(q=>!Number.isInteger(q.x)||!Number.isInteger(q.y)||q.x<0||q.x>=GRID_W||q.y<0||q.y>=GRID_H)))fail();}
+  }
+  const tids=new Set();for(const t of s.towns){if(!Number.isInteger(t.id)||tids.has(t.id)||!t.land||t.land.tiles?.length!==GRID_W*GRID_H||t.land.roads?.length!==GRID_W*GRID_H||!Array.isArray(t.land.nodes)||!Array.isArray(t.buildings)||t.buildings.length>500||!Array.isArray(t.knowledge))fail();tids.add(t.id);
+    for(const k of ['food','meals','wood','stone','tools','herbs'])if(!numeric(t.res?.[k])||t.res[k]<0)fail();
+    if(typeof t.name!=='string'||!numeric(t.lon)||!numeric(t.lat)||Math.abs(t.lat)>Math.PI/2||!numeric(t.research)||!numeric(t.reserve)||!t.stats||!t.weather||!['Clear','Drought','Storm'].includes(t.weather.kind)||!numeric(t.weather.until)||t.knowledge.some(k=>!TECH.some(q=>q.id===k)))fail();
+    if(t.land.tiles.some(q=>!q||!['grass','sand','rock','river','ford','water'].includes(q.type)||!numeric(q.fertility)||q.fertility<0||q.fertility>1||typeof q.walkable!=='boolean')||t.land.roads.some(n=>!numeric(n)||n<0))fail();
+    if(t.land.nodes.some(n=>!['food','wood','stone','herbs'].includes(n.kind)||!Number.isInteger(n.x)||!Number.isInteger(n.y)||n.x<0||n.x>=GRID_W||n.y<0||n.y>=GRID_H||!numeric(n.amount)||!numeric(n.max)||n.amount<0||n.max<=0||n.amount>n.max+.001))fail();
+    for(const b of t.buildings)if(!Object.hasOwn(BUILDINGS,b.type)||!Number.isInteger(b.id)||!Number.isInteger(b.x)||!Number.isInteger(b.y)||b.x<2||b.x>=GRID_W-2||b.y<2||b.y>=GRID_H-2||!b.crop||!numeric(b.progress)||!numeric(b.crop.growth)||!numeric(b.crop.yield)||typeof b.complete!=='boolean'||typeof b.funded!=='boolean')fail();
+  }
+  for(const p of s.people)if(!tids.has(p.townId)||p.parents.some(id=>!ids.has(id))||(p.partnerId&&!ids.has(p.partnerId)))fail();
+  for(const tr of s.trips){if(!['migration','aid'].includes(tr.kind)||!tids.has(tr.from)||(!tids.has(tr.to)&&tr.to!==null)||!numeric(tr.start)||!numeric(tr.arrival)||!Array.isArray(tr.route)||!tr.route.length||!Array.isArray(tr.people)||tr.people.some(id=>!ids.has(id))||!tr.cargo||Object.values(tr.cargo).some(v=>!numeric(v)||v<0))fail();if(tr.kind==='migration'&&(!tr.site||!numeric(tr.site.lon)||!numeric(tr.site.lat)||!Array.isArray(tr.knowledge)))fail();}
+  if(!Array.isArray(s.events)||!Array.isArray(s.history)||!Array.isArray(s.ledger)||!s.options||!s.totals)fail();
+  for(const k of ['nextPerson','nextTown','nextBuilding','nextEvent','nextTrip'])if(!Number.isInteger(s[k])||s[k]<1)fail();
+  if(typeof s.options.memory!=='boolean'||typeof s.options.events!=='boolean')fail();
+  if(s.nextPerson<=Math.max(0,...ids)||s.nextTown<=Math.max(0,...tids))fail();
+  return true;
+}
+
+
+// ----- render.mjs -----
+
+
+/** Canvas renderer. Never modifies simulation state; animation uses its own clock. */
+class WorldRenderer {
+  constructor(canvas,sim) {
+    this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.sim=sim;this.mode='globe';this.townId=1;
+    this.camera={x:48*TILE,y:40*TILE,zoom:.72};this.orbit={lon:sim.state.towns[0].lon+.26,lat:.12,zoom:1};
+    this.selected=null;this.layer='natural';this.labels=true;this.hits=[];this.terrainCache=new Map();this.dirty=true;this.texture=null;this.globe=null;
+    this.width=800;this.height=700;this.dpr=1;this.resize();this.makeTexture();
+  }
+  get town(){return this.sim.town(this.townId)||this.sim.state.towns[0];}
+  resize(){const r=this.canvas.getBoundingClientRect();this.width=Math.max(200,r.width);this.height=Math.max(200,r.height);this.dpr=Math.min(devicePixelRatio||1,1.65);this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);this.dirty=true;}
+  reset(sim){this.sim=sim;this.townId=1;this.selected=null;this.camera={x:48*TILE,y:40*TILE,zoom:.72};this.orbit={lon:sim.state.towns[0].lon+.26,lat:.12,zoom:1};this.terrainCache.clear();this.makeTexture();}
+  geometry(){return{r:Math.min(this.width*.39,this.height*.41)*this.orbit.zoom,x:this.width*.52,y:this.height*.53};}
+  project(lon,lat){const dl=lon-this.orbit.lon,cl=Math.cos(lat),sl=Math.sin(lat),ca=Math.cos(this.orbit.lat),sa=Math.sin(this.orbit.lat),g=this.geometry();
+    const x=cl*Math.sin(dl),y=sl*ca-cl*Math.cos(dl)*sa,z=sl*sa+cl*Math.cos(dl)*ca;return{x:g.x+x*g.r,y:g.y-y*g.r,z,visible:z>0};}
+  makeTexture(){
+    const w=1000,h=500,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d'),im=ctx.createImageData(w,h),seed=this.sim.state.seed;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const u=x/w,v=y/h,p=geography(u,v,seed),i=(y*w+x)*4,grain=(hash(x,y,seed+16)-.5)*(p.land?28:9);let col;
+      if(!p.land){const shore=clamp((p.field+.15)/.16,0,1);col=[mix(12,46,shore),mix(42,90,shore),mix(57,96,shore)];}
+      else if(p.field<.048)col=[203,187,132];
+      else if(p.ridge>.63)col=[165,158,135];
+      else if(p.ridge>.57)col=[140,145,112];
+      else if(p.moisture>.56){const shade=clamp((p.moisture-.56)*3,0,1);col=[mix(112,52,shade),mix(140,98,shade),mix(77,57,shade)];}
+      else if(p.moisture>.43)col=[169,174,112];else col=[191,170,111];
+      const ridgeShade=1+(geography(u-.001,v-.001,seed).ridge-p.ridge)*12;
+      im.data[i]=clamp(col[0]*(p.land?ridgeShade:1)+grain,0,255);im.data[i+1]=clamp(col[1]*(p.land?ridgeShade:1)+grain,0,255);im.data[i+2]=clamp(col[2]*(p.land?ridgeShade:1)+grain,0,255);im.data[i+3]=255;
+    }
+    ctx.putImageData(im,0,0);this.texture={data:im.data,w,h};this.dirty=true;
+  }
+  shadeGlobe(){
+    const size=600;if(!this.globe){this.globe=document.createElement('canvas');this.globe.width=size;this.globe.height=size;}
+    const ctx=this.globe.getContext('2d'),im=ctx.createImageData(size,size),pix=im.data,cl=Math.cos(this.orbit.lat),sl=Math.sin(this.orbit.lat),t=this.texture;
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      const nx=(2*x+1)/size-1,ny=1-(2*y+1)/size,r=nx*nx+ny*ny,i=(y*size+x)*4;if(r>=1)continue;
+      const z=Math.sqrt(1-r),lat=Math.asin(clamp(ny*cl+z*sl,-1,1)),lon=this.orbit.lon+Math.atan2(nx,z*cl-ny*sl);
+      const u=((lon/TAU+.5)%1+1)%1,v=.5-lat/Math.PI,tx=Math.floor(u*t.w),ty=clamp(Math.floor(v*t.h),0,t.h-1),j=(ty*t.w+tx)*4;
+      const light=.24+.81*clamp(-nx*.45+ny*.34+z*.86,0,1),rim=.89+.11*z;
+      pix[i]=t.data[j]*light*rim;pix[i+1]=t.data[j+1]*light*rim;pix[i+2]=t.data[j+2]*light*rim;pix[i+3]=255;
+    }
+    ctx.putImageData(im,0,0);this.dirty=false;
+  }
+  draw(time){const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);this.hits=[];if(this.mode==='globe')this.drawGlobe(time);else this.drawTown(time);}
+  drawGlobe(time){
+    const c=this.ctx,W=this.width,H=this.height,g=this.geometry();
+    const bg=c.createRadialGradient(g.x,g.y,20,g.x,g.y,Math.max(W,H)*.8);bg.addColorStop(0,'#183641');bg.addColorStop(.55,'#09212d');bg.addColorStop(1,'#06131d');c.fillStyle=bg;c.fillRect(0,0,W,H);
+    for(let i=0;i<230;i++){c.globalAlpha=.10+hash(i,1,77)*.4;c.fillStyle='#d1ded7';c.fillRect(hash(i,2,88)*W,hash(i,3,98)*H,hash(i,4,34)>.93?1.7:.7,.9);}c.globalAlpha=1;
+    const glow=c.createRadialGradient(g.x,g.y,g.r*.92,g.x,g.y,g.r*1.17);glow.addColorStop(0,'#72a7a133');glow.addColorStop(.42,'#759da033');glow.addColorStop(1,'#63959500');c.fillStyle=glow;c.beginPath();c.arc(g.x,g.y,g.r*1.17,0,TAU);c.fill();
+    if(this.dirty)this.shadeGlobe();c.drawImage(this.globe,g.x-g.r,g.y-g.r,g.r*2,g.r*2);
+    c.strokeStyle='#b9d8cb44';c.lineWidth=1.2;c.beginPath();c.arc(g.x,g.y,g.r,0,TAU);c.stroke();
+    c.strokeStyle='#d4dccb15';c.lineWidth=.7;
+    for(let lat=-60;lat<=60;lat+=30){c.beginPath();let open=false;for(let lon=-180;lon<=180;lon+=3){const p=this.project(lon*RAD,lat*RAD);if(p.visible){if(!open)c.moveTo(p.x,p.y);else c.lineTo(p.x,p.y);open=true;}else open=false;}c.stroke();}
+    for(let lon=-180;lon<180;lon+=30){c.beginPath();let open=false;for(let lat=-85;lat<=85;lat+=2){const p=this.project(lon*RAD,lat*RAD);if(p.visible){if(!open)c.moveTo(p.x,p.y);else c.lineTo(p.x,p.y);open=true;}else open=false;}c.stroke();}
+    for(const town of this.sim.state.towns){
+      if(town.parentId){const parent=this.sim.town(town.parentId);if(parent){const a=this.project(parent.lon,parent.lat),b=this.project(town.lon,town.lat);if(a.visible&&b.visible){c.setLineDash([2,5]);c.strokeStyle='#dfbf7777';c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();c.setLineDash([]);}}}
+      const p=this.project(town.lon,town.lat);if(!p.visible)continue;
+      const n=this.sim.residents(town).length,selected=town.id===this.townId;
+      c.fillStyle='#d6b87518';c.beginPath();c.arc(p.x,p.y,(selected?20:13)+Math.sin(time*1.8)*1.3,0,TAU);c.fill();
+      c.strokeStyle=selected?'#e5c789cc':'#d7bb7266';c.lineWidth=1;c.beginPath();c.arc(p.x,p.y,selected?12:8,0,TAU);c.stroke();
+      c.fillStyle=n?'#f0d49a':'#7a9990';c.beginPath();c.arc(p.x,p.y,selected?4.7:3.7,0,TAU);c.fill();
+      if(this.labels){this.shadowText(town.name,p.x+19,p.y-4,13,'#f2e8cb');this.shadowText(`${n} lives · ${this.sim.level(town)}`,p.x+19,p.y+13,10,'#b5c9b2');}
+      this.hits.push({x:p.x,y:p.y,r:20,kind:'town',id:town.id});
+    }
+    for(const trip of this.sim.state.trips){
+      c.strokeStyle=trip.kind==='migration'?'#e2c58fcc':'#91c6b0bb';c.lineWidth=2;c.setLineDash([3,5]);c.lineDashOffset=-time*8;c.beginPath();let started=false;
+      for(const point of trip.route){const p=this.project(point.lon,point.lat);if(p.visible){if(!started)c.moveTo(p.x,p.y);else c.lineTo(p.x,p.y);started=true;}else started=false;}c.stroke();c.setLineDash([]);
+      const f=clamp((this.sim.day-trip.start)/(trip.arrival-trip.start),0,1),a=trip.route[Math.min(trip.route.length-1,Math.floor(f*trip.route.length))];
+      if(a){const p=this.project(a.lon,a.lat);if(p.visible){c.fillStyle='#fff5cf';c.fillRect(p.x-3,p.y-3,6,6);}}
+    }
+    c.fillStyle='#c6d7c050';c.font='10px ui-monospace,monospace';c.textAlign='center';c.fillText('P A N G A E A   /   O N E   C O N T I N E N T',g.x,g.y+g.r+37);c.textAlign='left';
+  }
+  shadowText(text,x,y,size,color){const c=this.ctx;c.save();c.font=`${size>=12?'600 ':''}${size}px system-ui`;c.textAlign='left';c.fillStyle=color;c.shadowColor='#061922';c.shadowBlur=6;c.fillText(text,x,y);c.restore();}
+  baseTerrain(t){
+    const key=`${t.id}:${this.sim.season}:${this.layer}`;if(this.terrainCache.has(key))return this.terrainCache.get(key);
+    const cv=document.createElement('canvas');cv.width=GRID_W*TILE;cv.height=GRID_H*TILE;const c=cv.getContext('2d');
+    const winter=this.sim.season===3,autumn=this.sim.season===2,seed=this.sim.state.seed+t.id*7;
+    for(let y=0;y<GRID_H;y++)for(let x=0;x<GRID_W;x++){
+      const tile=t.land.tiles[y*GRID_W+x],n=hash(x,y,seed),water=tile.type==='water'||tile.type==='river'||tile.type==='ford';
+      let col;
+      if(water)col=tile.type==='water'?`rgb(${27+n*7},${65+n*12},${78+n*13})`:tile.type==='ford'?'#63817b':'#3a7277';
+      else if(tile.type==='sand')col='#c4b17e';
+      else if(tile.type==='rock')col=`rgb(${139+n*13},${143+n*13},${116+n*11})`;
+      else if(winter)col=`rgb(${172+n*18},${178+n*16},${151+n*17})`;
+      else if(autumn)col=`rgb(${147+n*22},${151+n*19},${92+n*16})`;
+      else col=`rgb(${139+n*20},${158+n*20},${93+n*18})`;
+      c.fillStyle=col;c.fillRect(x*TILE,y*TILE,TILE,TILE);
+      for(let k=0;k<7;k++){
+        const q=hash(x*9+k,y,seed+50);c.fillStyle=water?(q>.5?'#9ec5b51a':'#102c3620'):(q>.72?'#f5eab33b':'#4e692626');
+        c.fillRect(x*TILE+hash(x,y*9+k,seed+2)*TILE,y*TILE+q*TILE,q>.7?2:1,q>.8?2:1);
+      }
+      if(!water&&this.layer==='fertility'){c.fillStyle=`rgba(${Math.round(170*(1-tile.fertility))},140,90,0.45)`;c.fillRect(x*TILE,y*TILE,TILE,TILE);}
+    }
+    this.terrainCache.set(key,cv);if(this.terrainCache.size>10)this.terrainCache.delete(this.terrainCache.keys().next().value);return cv;
+  }
+  drawTown(time){
+    const c=this.ctx,t=this.town,W=this.width,H=this.height,z=this.camera.zoom;c.fillStyle='#122d37';c.fillRect(0,0,W,H);
+    c.save();c.translate(W/2,H/2);c.scale(z,z);c.translate(-this.camera.x,-this.camera.y);c.imageSmoothingEnabled=false;c.drawImage(this.baseTerrain(t),0,0);
+    const bounds={x0:Math.floor((this.camera.x-W/2/z)/TILE)-4,x1:Math.ceil((this.camera.x+W/2/z)/TILE)+4,y0:Math.floor((this.camera.y-H/2/z)/TILE)-4,y1:Math.ceil((this.camera.y+H/2/z)/TILE)+4};
+    for(let y=Math.max(0,bounds.y0);y<Math.min(GRID_H,bounds.y1);y++)for(let x=Math.max(0,bounds.x0);x<Math.min(GRID_W,bounds.x1);x++){
+      const traffic=t.land.roads[y*GRID_W+x];if(traffic<2)continue;
+      c.fillStyle=this.layer==='activity'?`rgba(236,177,91,${clamp(traffic/100,.08,.65)})`:`rgba(136,108,68,${clamp(traffic/70,.06,.5)})`;
+      c.fillRect(x*TILE+TILE*.23,y*TILE+TILE*.23,TILE*.54,TILE*.54);
+      if(x+1<GRID_W&&t.land.roads[y*GRID_W+x+1]>2)c.fillRect(x*TILE+TILE*.7,y*TILE+TILE*.23,TILE*.58,TILE*.54);
+      if(y+1<GRID_H&&t.land.roads[(y+1)*GRID_W+x]>2)c.fillRect(x*TILE+TILE*.23,y*TILE+TILE*.7,TILE*.54,TILE*.58);
+    }
+    const objects=[];
+    for(const n of t.land.nodes)if(n.x>=bounds.x0&&n.x<=bounds.x1&&n.y>=bounds.y0&&n.y<=bounds.y1)objects.push({y:n.y,kind:'node',item:n});
+    for(const b of t.buildings)objects.push({y:b.y+1,kind:'building',item:b});
+    for(const p of this.sim.residents(t))objects.push({y:p.y+.5,kind:'person',item:p});
+    objects.sort((a,b)=>a.y-b.y);
+    for(const o of objects){if(o.kind==='node')this.drawNode(o.item,time);else if(o.kind==='building')this.drawBuilding(o.item,time);else this.drawPerson(o.item,time);}
+    if(this.selected?.kind==='person'){
+      const p=this.sim.person(this.selected.id);
+      if(p?.task?.path){c.strokeStyle='#f1df9faa';c.lineWidth=1.8;c.setLineDash([3,5]);c.beginPath();c.moveTo(p.x*TILE+10,p.y*TILE+10);for(const pt of p.task.path.slice(p.task.index))c.lineTo(pt.x*TILE+10,pt.y*TILE+10);c.stroke();c.setLineDash([]);}
+    }
+    c.restore();
+    const tint=c.createLinearGradient(0,0,0,H);tint.addColorStop(0,'#08212b30');tint.addColorStop(.32,'#103d1900');tint.addColorStop(1,'#061a2450');c.fillStyle=tint;c.fillRect(0,0,W,H);
+    if(t.weather.kind==='Storm'){
+      c.strokeStyle='#dde7d835';c.lineWidth=1;for(let i=0;i<80;i++){const x=(hash(i,7,35)*W+time*55)%W,y=(hash(i,8,49)*H+time*250)%H;c.beginPath();c.moveTo(x,y);c.lineTo(x-5,y+15);c.stroke();}
+    }
+    if(t.weather.kind==='Drought'){c.fillStyle='#d6a96416';c.fillRect(0,0,W,H);}
+  }
+  screen(x,y){return{x:(x*TILE+TILE/2-this.camera.x)*this.camera.zoom+this.width/2,y:(y*TILE+TILE/2-this.camera.y)*this.camera.zoom+this.height/2};}
+  drawNode(n,time){
+    const c=this.ctx,x=n.x*TILE+10,y=n.y*TILE+12,seed=this.sim.state.seed,amount=n.amount/n.max;
+    if(n.kind==='wood'){
+      if(amount<.05){c.fillStyle='#6d583b';c.fillRect(x-3,y-4,6,6);c.fillStyle='#aa8c5b';c.fillRect(x-3,y-5,6,2);return;}
+      const h=22+hash(n.x,n.y,seed)*12;
+      c.fillStyle='#253e322d';c.beginPath();c.ellipse(x+7,y+2,12,5,-.25,0,TAU);c.fill();
+      c.fillStyle='#6b6043';c.fillRect(x-2,y-14,4,15);
+      const autumn=this.sim.season===2,winter=this.sim.season===3;
+      c.fillStyle=winter?'#5e7867':autumn?'#757d41':'#466b42';
+      c.beginPath();c.moveTo(x,y-h);c.lineTo(x+11,y-7);c.lineTo(x-10,y-7);c.closePath();c.fill();
+      c.fillStyle=winter?'#8b9d80':autumn?'#9c9551':'#6b8a4d';c.beginPath();c.moveTo(x,y-h);c.lineTo(x+1,y-7);c.lineTo(x-10,y-7);c.closePath();c.fill();
+      c.fillStyle='#b7c18244';c.fillRect(x-5,y-h+13,3,2);
+    }else if(n.kind==='stone'){
+      if(amount<.05)return;c.fillStyle='#334a322e';c.beginPath();c.ellipse(x+3,y+2,9,4,0,0,TAU);c.fill();
+      c.fillStyle='#a3a58f';c.beginPath();c.moveTo(x-8,y);c.lineTo(x-7,y-8);c.lineTo(x,y-13);c.lineTo(x+8,y-7);c.lineTo(x+9,y);c.closePath();c.fill();c.fillStyle='#c6c3a3';c.beginPath();c.moveTo(x-7,y-8);c.lineTo(x,y-13);c.lineTo(x+3,y-4);c.closePath();c.fill();
+    }else{
+      c.fillStyle=n.kind==='food'?'#668342':'#799556';c.beginPath();c.ellipse(x,y-3,7,5,0,0,TAU);c.fill();
+      if(amount>.2){c.fillStyle=n.kind==='food'?'#a9a2b1':'#e1d3a0';for(let j=0;j<4;j++)c.fillRect(x-4+(j%2)*5,y-6+Math.floor(j/2)*3,2,2);}
+    }
+    if(this.layer==='resources'&&amount>.1){c.fillStyle=n.kind==='food'?'#eed08c':n.kind==='wood'?'#adcf9c':n.kind==='stone'?'#dee0d1':'#cba8cb';c.fillRect(x-2,y+6,4,4);}
+  }
+  drawBuilding(b,time){
+    const c=this.ctx,x=b.x*TILE+10,y=b.y*TILE+10,f=footprint(b),w=f.w*TILE,h=f.h*TILE,px=f.x0*TILE,py=f.y0*TILE;
+    if(this.selected?.kind==='building'&&this.selected.id===b.id){c.strokeStyle='#f4d58c';c.lineWidth=2;c.strokeRect(px-5,py-7,w+10,h+14);}
+    const screen=this.screen(b.x,b.y);this.hits.push({x:screen.x,y:screen.y,r:Math.max(20,w*this.camera.zoom*.6),kind:'building',id:b.id});
+    if(!b.complete){
+      c.fillStyle='#705a3f55';c.fillRect(px,py,w,h);c.strokeStyle=b.funded?'#d8c48a':'#b0bca2';c.lineWidth=1.5;c.setLineDash([5,4]);c.strokeRect(px,py,w,h);c.setLineDash([]);
+      c.strokeStyle='#af8d5a';c.lineWidth=3;for(let i=0;i<3;i++){c.beginPath();c.moveTo(px+i*w/2,py+h);c.lineTo(px+i*w/2,py);c.stroke();}c.beginPath();c.moveTo(px,py);c.lineTo(px+w,py+h);c.stroke();
+      c.fillStyle='#152c28';c.fillRect(px,py+h+6,w,4);c.fillStyle='#dfc589';c.fillRect(px,py+h+6,w*b.progress/BUILDINGS[b.type].work,4);
+      return;
+    }
+    if(b.type==='fire'){
+      c.fillStyle='#4b482e38';c.beginPath();c.ellipse(x+6,y+8,26,12,0,0,TAU);c.fill();
+      c.strokeStyle='#888773';c.lineWidth=5;c.beginPath();c.ellipse(x,y+2,12,8,0,0,TAU);c.stroke();c.fillStyle='#d98c43';c.beginPath();c.moveTo(x-6,y+4);c.lineTo(x-3,y-9-Math.sin(time*8)*2);c.lineTo(x+2,y-4);c.lineTo(x+5,y-12);c.lineTo(x+8,y+4);c.fill();c.fillStyle='#f4ce7a';c.fillRect(x-2,y-4,4,8);this.smoke(x,y-16,time,b.id);return;
+    }
+    if(b.type==='farm'){
+      c.fillStyle='#a89c67';c.fillRect(px-3,py-3,w+6,h+6);c.fillStyle='#786344';c.fillRect(px,py,w,h);
+      for(let row=0;row<6;row++){
+        c.fillStyle='#524c3266';c.fillRect(px+4,py+7+row*12,w-8,3);
+        if(b.crop.sown||b.crop.yield>0)for(let col=0;col<9;col++){
+          const growth=b.crop.yield>0?1:b.crop.growth/80;
+          c.fillStyle=growth>.8?'#c6bd70':'#83a04d';c.fillRect(px+7+col*10,py+5+row*12,4,2+growth*6);
+          c.fillStyle=growth>.8?'#eee1a1':'#abc574';c.fillRect(px+7+col*10,py+4+row*12,2,2);
+        }
+      }return;
+    }
+    if(b.type==='well'){
+      c.fillStyle='#b1af91';c.fillRect(x-12,y-6,25,17);c.fillStyle='#34606a';c.fillRect(x-8,y-4,17,9);c.fillStyle='#736446';c.fillRect(x-13,y-24,3,25);c.fillRect(x+11,y-24,3,25);c.fillStyle='#a17b4f';c.beginPath();c.moveTo(x-18,y-24);c.lineTo(x,y-35);c.lineTo(x+18,y-24);c.fill();return;
+    }
+    // Layered walls, pitched roofs, rafters, glazing, chimneys and ground props.
+    c.fillStyle='#233a3035';c.beginPath();c.moveTo(px+6,py+h);c.lineTo(px+w+18,py+h+10);c.lineTo(px+w+23,py+12);c.lineTo(px+w,py);c.closePath();c.fill();
+    const wall=b.type==='clinic'?'#c0bca0':b.type==='hall'?'#b7b199':'#b8aa84';
+    c.fillStyle='#635b44';c.fillRect(px+3,py+9,w-6,h-5);c.fillStyle=wall;c.fillRect(px+4,py+8,w-8,h-8);
+    c.fillStyle='#72664b';for(let k=8;k<w-4;k+=18)c.fillRect(px+k,py+h-21,3,21);
+    c.fillStyle='#3e4838';c.fillRect(x-6,py+h-19,12,19);c.fillStyle='#e4cb82';c.fillRect(px+12,py+h-17,8,8);c.fillRect(px+w-21,py+h-17,8,8);
+    c.fillStyle='#92704b';c.beginPath();c.moveTo(px-5,py+h*.47);c.lineTo(px+4,py-12);c.lineTo(px+w-4,py-12);c.lineTo(px+w+5,py+h*.47);c.closePath();c.fill();
+    c.fillStyle=b.type==='hall'?'#8c7660':b.type==='workshop'?'#947357':'#b39161';c.beginPath();c.moveTo(px-5,py+h*.47);c.lineTo(px+4,py-12);c.lineTo(x,py-12);c.lineTo(x,py+h*.47);c.closePath();c.fill();
+    c.strokeStyle='#5f574547';c.lineWidth=1;for(let yy=py-6;yy<py+h*.47;yy+=8){c.beginPath();c.moveTo(px+2,yy);c.lineTo(px+w-2,yy);c.stroke();}
+    c.fillStyle='#cec299';c.fillRect(px+2,py-14,w-4,3);c.fillStyle='#a0a38c';c.fillRect(px+w-18,py-17,8,14);c.fillStyle='#646958';c.fillRect(px+w-19,py-20,10,4);this.smoke(px+w-14,py-23,time,b.id);
+    if(b.type==='store'){c.fillStyle='#9c8457';c.fillRect(px+w+3,py+h-14,9,14);c.fillStyle='#d0b775';c.fillRect(px+w+2,py+h-15,11,3);}
+    if(b.type==='workshop'){c.fillStyle='#6b614c';c.fillRect(px-10,py+h-11,10,8);c.fillStyle='#a2a38d';c.fillRect(px-13,py+h-14,16,4);}
+    if(b.type==='clinic'){c.fillStyle='#71916d';c.fillRect(x-5,py+h-32,10,9);c.fillStyle='#ded8ad';c.fillRect(x-1,py+h-31,2,7);c.fillRect(x-4,py+h-29,8,2);}
+  }
+  smoke(x,y,time,seed){const c=this.ctx;for(let j=0;j<3;j++){const f=((time*.25+j*.33+hash(seed,j,88))%1);c.fillStyle=`rgba(219,222,199,${(1-f)*.15})`;c.beginPath();c.arc(x+Math.sin(f*4+seed)*6,y-f*29,2+f*5,0,TAU);c.fill();}}
+  drawPerson(p,time){
+    const c=this.ctx,x=p.x*TILE+10,y=p.y*TILE+10,child=p.ageDays<12*YEAR,scale=child?.75:1,selected=this.selected?.kind==='person'&&this.selected.id===p.id;
+    c.save();c.translate(x,y);c.scale(scale,scale);
+    c.fillStyle='#203f3444';c.beginPath();c.ellipse(2,2,6,3,0,0,TAU);c.fill();
+    if(selected){c.strokeStyle='#ffe2a0';c.lineWidth=1.5;c.beginPath();c.ellipse(0,1,11,6,0,0,TAU);c.stroke();}
+    const walking=p.task?.stage==='walk', stride=walking?Math.sin(time*12+p.id)*2:0;
+    c.fillStyle='#37483c';c.fillRect(-3+stride,-4,3,7);c.fillRect(1-stride,-4,3,7);
+    c.fillStyle=p.color;c.fillRect(-5,-14,10,11);c.fillStyle='#e0bc94';c.fillRect(-3,-22,7,8);c.fillStyle='#62533a';c.fillRect(-4,-24,8,4);
+    c.fillStyle='#e3c69d';c.fillRect(-7,-12-stride,2,6);c.fillRect(5,-12+stride,2,6);
+    if(Object.values(p.carry).some(n=>n>0)){c.fillStyle='#a38757';c.fillRect(-9,-10,6,7);c.strokeStyle='#e2c48a';c.strokeRect(-9,-10,6,7);}
+    if(p.sick){c.fillStyle='#cad2a0';c.fillRect(6,-25,3,3);}
+    c.restore();
+    if(this.labels&&(selected||this.camera.zoom>.62)){c.font=`${selected?'600 ':''}10px system-ui`;c.textAlign='center';const w=c.measureText(p.name).width;c.fillStyle='#19382ec9';c.fillRect(x-w/2-4,y-39,w+8,14);c.fillStyle=selected?'#fff1c8':'#e4e5d1';c.fillText(p.name,x,y-29);c.textAlign='left';}
+    const pt=this.screen(p.x,p.y);this.hits.unshift({x:pt.x,y:pt.y-9*this.camera.zoom,r:Math.max(12,13*this.camera.zoom),kind:'person',id:p.id});
+  }
+  hit(x,y){return this.hits.find(h=>Math.hypot(h.x-x,h.y-y)<=h.r)||null;}
+  pan(dx,dy){if(this.mode==='globe'){this.orbit.lon-=dx/this.width*4;this.orbit.lat=clamp(this.orbit.lat+dy/this.height*2.5,-1.3,1.3);this.dirty=true;}else{this.camera.x=clamp(this.camera.x-dx/this.camera.zoom,0,GRID_W*TILE);this.camera.y=clamp(this.camera.y-dy/this.camera.zoom,0,GRID_H*TILE);}}
+  zoom(delta,x,y){const factor=delta>0?.88:1.14;if(this.mode==='globe'){this.orbit.zoom=clamp(this.orbit.zoom*factor,.65,1.4);this.dirty=true;}else{const wx=(x-this.width/2)/this.camera.zoom+this.camera.x,wy=(y-this.height/2)/this.camera.zoom+this.camera.y;this.camera.zoom=clamp(this.camera.zoom*factor,.35,1.9);this.camera.x=wx-(x-this.width/2)/this.camera.zoom;this.camera.y=wy-(y-this.height/2)/this.camera.zoom;}}
+  focus(){if(this.mode==='globe'){this.orbit.lon=this.town.lon;this.orbit.lat=this.town.lat;this.dirty=true;}else{this.camera.x=48*TILE;this.camera.y=40*TILE;this.camera.zoom=Math.min(.9,this.width/1200);}}
+}
+
+
+// ----- ui.mjs -----
+
+
+
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>Math.floor(v).toLocaleString('en-US');
+const initials=p=>esc(p.name.slice(0,1));
+const eventIcons={founding:'✦',build:'⌂',plan:'⌁',family:'♡',birth:'✳',knowledge:'✧',council:'◈',weather:'☂',migration:'➤',death:'✝',aid:'⇄'};
+let simulation=new Simulation(481217),renderer=new WorldRenderer($('world'),simulation);
+let tab='settlement',paused=false,speed=16,accumulator=0,last=0,lastUI=0,toastTimer=0;
+let frameCount=0,perfAt=0,perfDay=0,actualRate=0,autoStopped=false;
+if(innerWidth<=760)document.body.classList.add('panel-hidden');
+function toast(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4000);}
+function personLink(id){const p=simulation.person(id);return p?`<button class="person-link" data-person="${p.id}">${esc(p.name)}${!p.alive?' †':''}</button>`:'Unknown';}
+function fmtDay(d){const day=Math.floor(d),year=Math.floor(day/YEAR)+1,season=SEASONS[Math.floor((day%YEAR)/90)];return `Year ${year} · ${season} · Day ${day%90+1}`;}
+function miniBar(n,color=''){return `<div class="bar"><div style="width:${clamp(n,0,100).toFixed(1)}%;${color?`background:${color}`:''}"></div></div>`;}
+function sparkline(){
+  const h=simulation.state.history,values=h.length>1?h:[{pop:4},{pop:4}],max=Math.max(8,...values.map(p=>p.pop));
+  const points=values.map((p,i)=>[i/(values.length-1)*280,45-p.pop/max*37]);
+  const line=points.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  return `<div class="legend-label"><span>POPULATION THROUGH TIME</span><span>${num(simulation.state.totals.births)} BIRTHS · ${num(simulation.state.totals.deaths)} DEATHS</span></div><svg class="spark" viewBox="0 0 280 50" preserveAspectRatio="none" role="img" aria-label="Population history"><path class="sparkfill" d="${line} L280,50 L0,50 Z"></path><path class="sparkline" d="${line}"></path></svg>`;
+}
+function settlementPanel(){
+  const t=renderer.town,pop=simulation.residents(t).length,project=simulation.project(t),leader=simulation.person(t.leaderId),fd=simulation.foodDays(t);
+  const forests=t.land.nodes.filter(n=>n.kind==='wood'),forest=forests.reduce((a,n)=>a+n.amount/n.max,0)/Math.max(1,forests.length)*100;
+  const foodNodes=t.land.nodes.filter(n=>n.kind==='food'),wild=foodNodes.reduce((a,n)=>a+n.amount/n.max,0)/Math.max(1,foodNodes.length)*100;
+  const icons={food:'◇',meals:'♨',wood:'♧',stone:'◆',tools:'⚒',herbs:'✿'};
+  return `<div class="panel-subhead"><div class="eyebrow" style="font-size:8px;color:#8da994">${esc(simulation.level(t).toUpperCase())} · EST. YEAR ${Math.floor(t.created/YEAR)+1}</div><span class="badge">${esc(t.weather.kind)}</span></div>
+    <h2>${esc(t.name)}</h2><div class="subtle">${esc(renderer.mode==='globe'?'A small light on a very large continent.':'Lives unfolding, one decision at a time.')}</div>
+    <div class="big-stats"><div><strong>${pop}</strong><small>RESIDENTS</small></div><div><strong>${simulation.capacity(t)}</strong><small>BEDS</small></div><div><strong style="${fd<8?'color:#e3a780':''}">${fd>999?'999+':Math.floor(fd)}</strong><small>FOOD DAYS</small></div></div>
+    ${renderer.mode==='globe'?'<button class="primary wide" id="visitBtn">Visit this settlement ↗</button>':''}
+    ${sparkline()}
+    <div class="section"><div class="section-title"><span>The common store</span><small>DELIVERED INVENTORY</small></div><div class="resources">${Object.entries(RESOURCE_NAMES).map(([key,title])=>`<div class="resource"><span class="resource-icon">${icons[key]}</span><strong>${num(t.res[key])}</strong><small>${esc(title)}</small></div>`).join('')}</div></div>
+    <div class="intent"><span class="eyebrow">COMMUNITY INTENT</span><strong>${esc(t.policy)}</strong><p>${esc(t.policyReason)}</p>${leader?`<p>Trusted voice: ${personLink(leader.id)}</p>`:''}</div>
+    <div class="section"><div class="section-title"><span>Taking shape</span><small>${t.buildings.filter(b=>b.complete).length} COMPLETED</small></div>
+    ${project?`<div class="project-row"><span>${esc(BUILDINGS[project.type].name)}</span><small>${Math.floor(project.progress/BUILDINGS[project.type].work*100)}%</small></div>${miniBar(project.progress/BUILDINGS[project.type].work*100)}<p class="microcopy">${project.funded?'Materials reserved. A builder must reach the site and complete the work.':`Waiting for ${Object.entries(BUILDINGS[project.type].cost).map(([k,n])=>`${n} ${k} (${num(t.res[k])} available)`).join(' · ')}`}</p>`:'<p class="microcopy">Current building needs are met. People can invest time in food, family and learning.</p>'}</div>
+    <div class="section"><div class="section-title"><span>The land gives back</span><small>FINITE RESOURCES</small></div><div class="keyvalue"><span>Standing timber</span><strong>${Math.floor(forest)}%</strong></div>${miniBar(forest)}<div class="keyvalue"><span>Wild-food reserves</span><strong>${Math.floor(wild)}%</strong></div>${miniBar(wild)}<div class="keyvalue"><span>Active crop fields</span><strong>${simulation.buildings(t,'farm').length}</strong></div><div class="keyvalue"><span>Planned food buffer</span><strong>${Math.round(t.reserve)} days</strong></div><p class="microcopy">Harvested patches deplete. Regrowth slows in winter and drought. Crops need workers, soil and time.</p></div>
+    ${simulation.state.trips.length?`<div class="section"><div class="section-title">On the road</div>${simulation.state.trips.map(tr=>`<p class="microcopy">${tr.kind==='migration'?`${tr.people.length} travellers seeking a new home`:'A provision convoy'} · ${Math.max(0,Math.ceil(tr.arrival-simulation.day))} days remaining.</p>`).join('')}</div>`:''}`;
+}
+function peoplePanel(){
+  const residents=simulation.residents(renderer.town);
+  return `<div class="panel-subhead"><div class="eyebrow" style="font-size:8px;color:#99af99">LIVING STORIES</div><span class="badge">${residents.length} PEOPLE</span></div><h2>No two lives alike.</h2><p class="microcopy" style="margin-bottom:16px">Inspect a person to see their needs, family, skills and the actual scores behind their next decision.</p><div class="people">${residents.map(p=>`<button class="person-row" data-person="${p.id}"><span class="avatar" style="background:${p.color}">${initials(p)}</span><span class="info"><strong>${esc(p.name)} ${esc(p.family)}</strong><small>${Math.floor(p.ageDays/YEAR)} years · ${esc(p.trait)} · Gen ${p.generation+1}</small></span><span class="job">${esc(ACTION_NAMES[p.task?.kind]||'Choosing work')}</span></button>`).join('')}</div>${!residents.length?'<p class="empty-state">This hearth has fallen silent. Its history remains in the chronicle.</p>':''}`;
+}
+function personPanel(p){
+  const needs=[['food','Fullness'],['energy','Energy'],['social','Belonging'],['warmth','Warmth']];
+  const sorted=[...p.memories].sort((a,b)=>b.day-a.day).slice(0,8),scoreMax=Math.max(1,...p.choices.map(c=>c.score));
+  return `<button class="back-btn" id="backPeople">← All people</button><div class="profile-head"><span class="avatar" style="background:${p.color}">${initials(p)}</span><div><h2>${esc(p.name)} ${esc(p.family)}</h2><small>${Math.floor(p.ageDays/YEAR)} years · ${esc(p.trait)} · Generation ${p.generation+1}${p.alive?'':' · Remembered'}</small></div></div>
+    <div class="section"><div class="section-title"><span>${p.alive?'A life, right now':'Their final chapter'}</span><small>MOOD ${Math.floor(p.mood)} / 100</small></div>${needs.map(([key,name])=>`<div class="need"><div class="keyvalue"><span>${name}</span><strong>${Math.floor(p.needs[key])}%</strong></div>${miniBar(p.needs[key],p.needs[key]<25?'#d79d76':'')}</div>`).join('')}<div class="keyvalue"><span>Health${p.sick?' · Unwell':''}</span><strong>${Math.floor(p.health)}%</strong></div></div>
+    <div class="section"><div class="section-title"><span>Decision inspector</span><small>UTILITY AI</small></div><div class="decision"><strong>${esc(ACTION_NAMES[p.task?.kind]||'Choosing the next task')}${p.task?.stage==='walk'?' · En route':''}</strong><p>${esc(p.why)}</p></div>${p.choices.slice(0,4).map(choice=>`<div class="choice"><span>${esc(ACTION_NAMES[choice.kind]||choice.kind)}</span><span class="mini-bar"><i style="width:${choice.score/scoreMax*100}%"></i></span><b>${choice.score}</b></div>`).join('')}<p class="microcopy">Scores come from current needs, shortages and abilities. Memories ${simulation.state.options.memory?'are enabled':'are disabled'}. This is not a generated internal monologue.</p>${Object.values(p.carry).some(n=>n>0)?`<p class="microcopy">Carrying: ${Object.entries(p.carry).filter(([k,n])=>n>0).map(([k,n])=>`${n.toFixed(1)} ${esc(k)}`).join(', ')}. Not yet in storage.</p>`:''}</div>
+    <div class="section"><div class="section-title"><span>What experience changed</span><small>REFLECTION</small></div><p class="thought">“${esc(p.reflection)}”</p><div class="keyvalue"><span>Extra caution about food</span><strong>${p.beliefs.foodSafety.toFixed(2)} / 2</strong></div></div>
+    <div class="section"><div class="section-title"><span>People who matter</span></div><div class="keyvalue"><span>Partner</span><strong>${p.partnerId?personLink(p.partnerId):'Not partnered'}</strong></div><div class="keyvalue"><span>Parents</span><strong>${p.parents.length?p.parents.map(personLink).join(' & '):'One of the four founders'}</strong></div><div class="keyvalue"><span>Children</span><strong>${p.children.length?p.children.map(personLink).join(', '):'None'}</strong></div>${p.due!==null?`<p class="microcopy">Expecting a child in about ${Math.ceil(p.due-simulation.day)} days.</p>`:''}<div class="keyvalue"><span>Home</span><strong>${p.houseId?'Timber home #'+p.houseId:p.tripId?'Travelling':'No permanent bed'}</strong></div></div>
+    <div class="section"><div class="section-title"><span>Skills earned through use</span></div>${SKILLS.map(key=>`<div class="keyvalue"><span>${key[0].toUpperCase()+key.slice(1)}</span><strong>${p.skills[key].toFixed(1)} / 20</strong></div>${miniBar(p.skills[key]*5)}`).join('')}</div>
+    <div class="section"><div class="section-title"><span>Remembered moments</span><small>${p.memories.length} RETAINED</small></div>${sorted.map(m=>`<div class="memory"><small>${esc(fmtDay(m.day))} · ${esc(m.tag.toUpperCase())}</small><p>${esc(m.text)}</p></div>`).join('')||'<p class="microcopy">No memories recorded.</p>'}</div>`;
+}
+function buildingPanel(b){
+  const t=renderer.town,occupants=simulation.residents(t).filter(p=>p.houseId===b.id),def=BUILDINGS[b.type];
+  return `<button class="back-btn" id="backSettlement">← Settlement overview</button><span class="eyebrow" style="font-size:8px">${b.complete?'COMPLETED STRUCTURE':'CONSTRUCTION SITE'} #${b.id}</span><h2>${esc(def.name)}</h2><p>${esc(def.desc)}</p><div class="section"><div class="section-title"><span>Construction</span><small>${Math.floor(b.progress/def.work*100)}%</small></div>${miniBar(b.progress/def.work*100)}<div class="keyvalue"><span>Materials</span><strong>${b.funded?'Reserved and consumed':'Not yet available'}</strong></div>${Object.entries(def.cost).map(([k,n])=>`<div class="keyvalue"><span>${esc(k)}</span><strong>${n}</strong></div>`).join('')}<p class="microcopy">A building never appears just because time passed. Its inputs and labour must be supplied.</p></div>
+    ${b.type==='farm'?`<div class="section"><div class="section-title">Crop lifecycle</div><div class="keyvalue"><span>Status</span><strong>${b.crop.yield>0?'Ready for harvest':b.crop.sown?'Growing':'Needs sowing'}</strong></div>${miniBar(b.crop.growth/80*100)}<div class="keyvalue"><span>Standing harvest</span><strong>${Math.floor(b.crop.yield)} food</strong></div><p class="microcopy">Standing crops are not yet usable food. Someone must harvest and deliver them.</p></div>`:''}
+    ${occupants.length?`<div class="section"><div class="section-title">This is home to</div>${occupants.map(p=>`<div class="keyvalue">${personLink(p.id)}<span>${Math.floor(p.ageDays/YEAR)} years</span></div>`).join('')}</div>`:''}`;
+}
+function knowledgePanel(){
+  const t=renderer.town,current=simulation.currentTech(t);
+  return `<span class="eyebrow" style="font-size:8px;color:#9bb18e">KNOWLEDGE, NOT A TIMER</span><h2>The things we learn.</h2><p class="microcopy">Someone must choose to study. New discoveries unlock practical improvements; children learn skills from experienced adults.</p>${TECH.map(k=>{const unlocked=t.knowledge.includes(k.id),active=current?.id===k.id;return `<article class="tech ${unlocked?'unlocked':active?'':'locked'}"><div class="tech-head"><h3>${esc(k.name)}</h3><span class="tech-icon">${unlocked?'✓':active?'◈':'◇'}</span></div><p>${esc(k.effect)}</p>${active?`${miniBar(t.research/k.cost*100)}<small>${Math.floor(t.research)} / ${k.cost} insight</small>`:`<small>${unlocked?'Shared within the community':`Requires ${k.parents.map(id=>TECH.find(k=>k.id===id).name).join(' + ')||'observation'}`}</small>`}</article>`;}).join('')}<p class="settings-note">This is an authored six-discovery progression tree, not open-ended scientific invention. Migrating families carry the knowledge their home settlement acquired.</p>`;
+}
+function chroniclePanel(){
+  const events=simulation.state.events.slice(0,90);
+  return `<span class="eyebrow" style="font-size:8px;color:#9bb18e">THE WORLD REMEMBERS</span><h2>A history of small things.</h2><p class="microcopy" style="margin-bottom:25px">Each entry records an actual state change. No language model invents outcomes.</p>${events.map(e=>`<article class="chronicle-item"><div class="event-marker">${eventIcons[e.type]||'·'}</div><div><strong>${esc(e.title)}</strong><p>${esc(e.detail)}</p><small>${esc(fmtDay(e.day))}${e.townId?' · '+esc(simulation.town(e.townId)?.name||''):''}</small>${e.people?.length?`<div style="margin-top:7px">${e.people.slice(0,4).map(personLink).join(' ')}</div>`:''}</div></article>`).join('')}`;
+}
+function updateUI(){
+  const t=renderer.town,residents=simulation.residents(t),season=simulation.season;
+  $('globalPeople').textContent=num(simulation.alive.length);$('globalTowns').textContent=simulation.state.towns.length;
+  $('date').textContent=`Year ${simulation.year} · ${SEASONS[season]}`;
+  $('day').textContent=`Day ${Math.floor(simulation.day%90)+1} · ${['Dawn','Midday','Evening','Night'][simulation.state.tick%4]}`;
+  $('seasonIcon').textContent=['✺','☀','❧','❄'][season];
+  $('runtimeLabel').textContent=simulation.alive.length===0?'○ DORMANT':paused?'Ⅱ PAUSED':'● LIVE';
+  $('pauseBtn').textContent=paused?'▶':'Ⅱ';$('pauseBtn').setAttribute('aria-label',paused?'Resume simulation':'Pause simulation');
+  $('sceneLabel').classList.toggle('town-label',renderer.mode==='town');
+  if(renderer.mode==='globe'){
+    $('sceneEyebrow').textContent=simulation.state.towns.length>1?'A CIVILIZATION TAKES ROOT':'THE FIRST CHAPTER';
+    $('sceneTitle').innerHTML=simulation.state.towns.length>1?'A world woven<br>from small lives.':simulation.alive.length>4?'One hearth.<br>Growing roots.':'Four lives.<br>A world ahead.';
+    $('sceneDescription').textContent=`${simulation.alive.length} people · ${simulation.state.towns.length} ${simulation.state.towns.length===1?'settlement':'settlements'} · Generation ${Math.max(0,...simulation.alive.map(p=>p.generation))+1}`;
+  }else{
+    $('sceneEyebrow').textContent=`${simulation.level(t).toUpperCase()} · ${t.weather.kind.toUpperCase()}`;$('sceneTitle').textContent=t.name;
+    $('sceneDescription').textContent=`${residents.length} lives · ${t.buildings.filter(b=>b.complete).length} structures · ${Math.floor(simulation.foodDays(t))} food days`;
+  }
+  $('worldCoordinates').textContent=`${Math.abs(t.lat/RAD).toFixed(1)}° ${t.lat>=0?'N':'S'} · ${Math.abs(t.lon/RAD).toFixed(1)}° ${t.lon>=0?'E':'W'}`;
+  $('mapHelp').textContent=renderer.mode==='globe'?'DRAG TO ROTATE · CLICK A HEARTH TO VISIT':'DRAG TO PAN · SCROLL TO ZOOM · CLICK TO INSPECT';
+  const scroll=$('panel').scrollTop;
+  if(renderer.selected?.kind==='person'){const p=simulation.person(renderer.selected.id);$('panel').innerHTML=p?personPanel(p):peoplePanel();}
+  else if(renderer.selected?.kind==='building'){const b=t.buildings.find(b=>b.id===renderer.selected.id);$('panel').innerHTML=b?buildingPanel(b):settlementPanel();}
+  else $('panel').innerHTML=tab==='people'?peoplePanel():tab==='knowledge'?knowledgePanel():tab==='chronicle'?chroniclePanel():settlementPanel();
+  $('panel').scrollTop=scroll;
+  document.querySelectorAll('[data-tab]').forEach(b=>{const selected=b.dataset.tab===tab;b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected));});
+}
+function setView(view){renderer.mode=view;renderer.selected=null;document.querySelectorAll('[data-view]').forEach(b=>{const selected=b.dataset.view===view;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});renderer.dirty=true;updateUI();}
+function setTab(next){tab=next;renderer.selected=null;$('panel').scrollTop=0;updateUI();}
+function selectPerson(id){const p=simulation.person(id);if(!p)return;renderer.selected={kind:'person',id};renderer.townId=p.townId;tab='people';showPanel(true);$('panel').scrollTop=0;updateUI();}
+function showPanel(show){document.body.classList.toggle('panel-hidden',!show);$('inspectToggle').setAttribute('aria-expanded',String(show));requestAnimationFrame(()=>renderer.resize());}
+function loadState(state){const next=Simulation.fromSnapshot(state);simulation=next;renderer.reset(next);accumulator=0;paused=true;autoStopped=false;last=0;perfAt=0;perfDay=simulation.day;updateUI();}
+function saveLocal(){try{localStorage.setItem('pangaea-depth-v02',JSON.stringify(simulation.snapshot()));toast('World saved in this browser.');$('menuStatus').textContent='Saved successfully.';}catch(e){toast('Browser storage is full or unavailable. Export the world instead.');}}
+function downloadWorld(){const blob=new Blob([JSON.stringify(simulation.snapshot())],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`pangaea-depth-year-${simulation.year}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Portable world exported.');}
+function modalOpen(){return document.querySelector('dialog[open]')!==null;}
+$('menuBtn').addEventListener('click',()=>{$('menuStatus').textContent='';$('menuDialog').showModal();});
+$('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));
+$('pauseBtn').addEventListener('click',()=>{paused=!paused;updateUI();});
+document.querySelectorAll('[data-speed]').forEach(b=>b.addEventListener('click',()=>{speed=Number(b.dataset.speed);paused=false;document.querySelectorAll('[data-speed]').forEach(x=>x.classList.toggle('active',x===b));updateUI();}));
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+$('focusBtn').addEventListener('click',()=>{renderer.focus();});
+$('labelBtn').addEventListener('click',()=>{renderer.labels=!renderer.labels;$('labelBtn').setAttribute('aria-pressed',String(renderer.labels));});
+$('layerBtn').addEventListener('click',()=>{const layers=['natural','fertility','resources','activity'];renderer.layer=layers[(layers.indexOf(renderer.layer)+1)%layers.length];$('layerKey').textContent=renderer.layer.toUpperCase()+' VIEW';if(renderer.mode==='globe')setView('town');toast(renderer.layer==='natural'?'Natural terrain':renderer.layer==='fertility'?'Soil fertility: greener ground is more productive.':renderer.layer==='resources'?'Resource nodes: food, wood, stone and herbs.':'Foot traffic becomes lower-cost paths.');});
+$('inspectToggle').addEventListener('click',()=>showPanel(document.body.classList.contains('panel-hidden')));
+$('panel').addEventListener('click',e=>{const p=e.target.closest('[data-person]');if(p){selectPerson(Number(p.dataset.person));return;}if(e.target.id==='backPeople')setTab('people');if(e.target.id==='backSettlement')setTab('settlement');if(e.target.id==='visitBtn'){setView('town');renderer.focus();}});
+$('saveBtn').addEventListener('click',saveLocal);$('exportBtn').addEventListener('click',downloadWorld);
+$('loadBtn').addEventListener('click',()=>{try{const raw=localStorage.getItem('pangaea-depth-v02');if(!raw){toast('No Depth save exists in this browser yet.');return;}loadState(JSON.parse(raw));$('menuDialog').close();toast('Saved world restored, paused.');}catch(e){toast('Could not load: '+e.message);}});
+$('importBtn').addEventListener('click',()=>$('importInput').click());
+$('importInput').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>25*1024*1024)throw new Error('World file exceeds 25 MB.');loadState(JSON.parse(await file.text()));$('menuDialog').close();toast('World imported, paused.');}catch(error){toast(error.message);$('menuStatus').textContent=error.message;}e.target.value='';});
+$('newBtn').addEventListener('click',()=>{const seed=Number($('seedInput').value);if(!Number.isInteger(seed)||seed<1||seed>2147483647){$('menuStatus').textContent='Use an integer seed from 1 to 2147483647.';return;}simulation=new Simulation(seed);renderer.reset(simulation);accumulator=0;paused=false;autoStopped=false;setView('globe');$('menuDialog').close();toast('Four founders. A new beginning.');perfAt=0;perfDay=0;});
+$('droughtBtn').addEventListener('click',()=>{simulation.weatherEvent(renderer.town,'Drought');$('menuDialog').close();updateUI();toast('A sixty-day drought has begun.');});
+$('stormBtn').addEventListener('click',()=>{simulation.weatherEvent(renderer.town,'Storm');$('menuDialog').close();updateUI();toast('A storm has reached the settlement.');});
+let pointer=null;const canvas=$('world');
+canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;canvas.setPointerCapture(e.pointerId);pointer={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};});
+canvas.addEventListener('pointermove',e=>{if(!pointer)return;const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;if(Math.hypot(e.clientX-pointer.startX,e.clientY-pointer.startY)>5)pointer.moved=true;if(pointer.moved)renderer.pan(dx,dy);pointer.x=e.clientX;pointer.y=e.clientY;});
+canvas.addEventListener('pointerup',e=>{if(!pointer)return;const moved=pointer.moved;pointer=null;if(moved)return;const rect=canvas.getBoundingClientRect(),hit=renderer.hit(e.clientX-rect.left,e.clientY-rect.top);if(!hit)return;if(hit.kind==='town'){renderer.townId=hit.id;setView('town');renderer.focus();setTab('settlement');}else if(hit.kind==='person')selectPerson(hit.id);else{renderer.selected={kind:'building',id:hit.id};tab='settlement';showPanel(true);$('panel').scrollTop=0;updateUI();}});
+canvas.addEventListener('pointercancel',()=>{pointer=null;});
+canvas.addEventListener('wheel',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();renderer.zoom(e.deltaY,e.clientX-r.left,e.clientY-r.top);},{passive:false});
+window.addEventListener('resize',()=>renderer.resize());
+document.addEventListener('keydown',e=>{if(e.target.matches('input,select,textarea')||modalOpen())return;if(e.code==='Space'){e.preventDefault();paused=!paused;updateUI();}else if(e.key.toLowerCase()==='g')setView('globe');else if(e.key.toLowerCase()==='c')setView('town');else if(e.key.toLowerCase()==='f')renderer.focus();else if(e.key.toLowerCase()==='i')showPanel(document.body.classList.contains('panel-hidden'));else if(e.key==='Escape'){renderer.selected=null;updateUI();}});
+document.addEventListener('visibilitychange',()=>{last=0;accumulator=0;});
+function frame(now){
+  const dt=last?Math.min(.1,(now-last)/1000):0;last=now;
+  if(!paused&&!modalOpen()&&!document.hidden){
+    accumulator=Math.min(accumulator+dt*speed*STEPS_PER_DAY,2000);const begin=performance.now();let steps=0;
+    while(accumulator>=1&&steps<280&&performance.now()-begin<10){simulation.step();accumulator--;steps++;}
+  }
+  if(!simulation.alive.length&&!autoStopped){paused=true;autoStopped=true;toast('The last hearth has fallen silent. Its story remains.');}
+  renderer.draw(now/1000);
+  if(now-lastUI>500){updateUI();lastUI=now;}
+  frameCount++;
+  if(!perfAt){perfAt=now;perfDay=simulation.day;}
+  if(now-perfAt>1500){actualRate=(simulation.day-perfDay)/((now-perfAt)/1000);$('performance').textContent=`${Math.round(actualRate)} days/s · 0 model calls`;perfDay=simulation.day;perfAt=now;frameCount=0;}
+  requestAnimationFrame(frame);
+}
+// Local development hooks for reproducible headless tests and save validation.
+window.PANGAEA={get simulation(){return simulation;},get renderer(){return renderer;},get paused(){return paused;},pause(){paused=true;updateUI();},resume(){paused=false;updateUI();},advance(days){paused=true;simulation.advanceDays(days);updateUI();renderer.draw(performance.now()/1000);return simulation.snapshot();},snapshot:()=>simulation.snapshot(),load:loadState,setView,selectPerson,setTab,
+  inspect:()=>({version:'0.2',seed:simulation.state.seed,day:simulation.day,population:simulation.alive.length,towns:simulation.state.towns.length,issues:simulation.invariants(),actualDaysPerSecond:actualRate})};
+updateUI();renderer.draw(0);$('loading').remove();requestAnimationFrame(frame);
+
+})();</script>
+</body></html>

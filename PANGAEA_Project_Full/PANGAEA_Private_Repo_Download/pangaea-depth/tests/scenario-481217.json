@@ -1,0 +1,60 @@
+{
+  "seed": 481217,
+  "years": 40,
+  "elapsedMs": 26113,
+  "node": "v22.16.0",
+  "checkpoints": [
+    {
+      "elapsedYears": 10,
+      "day": 3600,
+      "population": 11,
+      "towns": 1,
+      "births": 7,
+      "deaths": 0,
+      "buildings": 14,
+      "migrations": 0,
+      "deliveries": 4190,
+      "meals": 26181,
+      "issues": []
+    },
+    {
+      "elapsedYears": 20,
+      "day": 7200,
+      "population": 16,
+      "towns": 1,
+      "births": 12,
+      "deaths": 0,
+      "buildings": 17,
+      "migrations": 0,
+      "deliveries": 10875,
+      "meals": 61965,
+      "issues": []
+    },
+    {
+      "elapsedYears": 30,
+      "day": 10800,
+      "population": 20,
+      "towns": 2,
+      "births": 16,
+      "deaths": 0,
+      "buildings": 27,
+      "migrations": 1,
+      "deliveries": 21207,
+      "meals": 120252,
+      "issues": []
+    },
+    {
+      "elapsedYears": 40,
+      "day": 14400,
+      "population": 29,
+      "towns": 4,
+      "births": 25,
+      "deaths": 0,
+      "buildings": 49,
+      "migrations": 3,
+      "deliveries": 36154,
+      "meals": 203418,
+      "issues": []
+    }
+  ]
+}

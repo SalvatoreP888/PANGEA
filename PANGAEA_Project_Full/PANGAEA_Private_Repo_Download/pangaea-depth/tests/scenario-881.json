@@ -1,0 +1,21 @@
+{
+  "seed": 881,
+  "years": 10,
+  "elapsedMs": 2489,
+  "node": "v22.16.0",
+  "checkpoints": [
+    {
+      "elapsedYears": 10,
+      "day": 3600,
+      "population": 10,
+      "towns": 1,
+      "births": 6,
+      "deaths": 0,
+      "buildings": 13,
+      "migrations": 0,
+      "deliveries": 3993,
+      "meals": 26481,
+      "issues": []
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Full PANGAEA project files. The original Git object database was excluded solely to reduce download size. All source, references, saves, screenshots and the master prompt remain. PUBLISH_TO_GITHUB.ps1 initializes Git, creates a new private GitHub repository and pushes it.

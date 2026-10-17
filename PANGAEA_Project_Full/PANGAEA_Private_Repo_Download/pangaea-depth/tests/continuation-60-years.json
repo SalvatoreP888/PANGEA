@@ -1,0 +1,54 @@
+{
+  "startCheckpoint": "seed-481217-after-40-years.json",
+  "elapsedMs": 30317,
+  "checkpoints": [
+    {
+      "elapsedYears": 45,
+      "population": 33,
+      "towns": 4,
+      "births": 29,
+      "deaths": 0,
+      "buildings": 50,
+      "migrations": 3,
+      "deliveries": 45969,
+      "meals": 254697,
+      "issues": []
+    },
+    {
+      "elapsedYears": 50,
+      "population": 37,
+      "towns": 4,
+      "births": 33,
+      "deaths": 0,
+      "buildings": 54,
+      "migrations": 3,
+      "deliveries": 56945,
+      "meals": 311880,
+      "issues": []
+    },
+    {
+      "elapsedYears": 55,
+      "population": 35,
+      "towns": 4,
+      "births": 35,
+      "deaths": 4,
+      "buildings": 54,
+      "migrations": 3,
+      "deliveries": 69221,
+      "meals": 372789,
+      "issues": []
+    },
+    {
+      "elapsedYears": 60,
+      "population": 37,
+      "towns": 4,
+      "births": 37,
+      "deaths": 4,
+      "buildings": 56,
+      "migrations": 3,
+      "deliveries": 82836,
+      "meals": 435660,
+      "issues": []
+    }
+  ]
+}

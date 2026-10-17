@@ -1,0 +1,220 @@
+{
+  "package": "PANGAEA local-agent development handoff",
+  "created_date": "2026-10-16",
+  "baseline": "Depth 0.2; baseline source contents preserved, not newly tested or modified",
+  "source_archive": "PANGAEA_Depth_v02_Source.zip",
+  "source_archive_sha256": "d2ef642e9045892e9187b241d43a1af2bde7f8dcdb5ee20398947560159f55bc",
+  "prompt_words": 6762,
+  "files": [
+    {
+      "path": "HANDOFF_README.md",
+      "bytes": 1995,
+      "sha256": "d4c1addc018b220948a031a11e6fcb5876dc4577b82207c1a82862575cb05a2e"
+    },
+    {
+      "path": "PANGAEA_LOCAL_AGENT_MASTER_PROMPT.md",
+      "bytes": 51837,
+      "sha256": "bc1fc1fbfc4783222b39f72386daeaeb3781c6e5dc4a5bf37f74bb182239b878"
+    },
+    {
+      "path": "PANGAEA_LOCAL_AGENT_MASTER_PROMPT.txt",
+      "bytes": 51837,
+      "sha256": "bc1fc1fbfc4783222b39f72386daeaeb3781c6e5dc4a5bf37f74bb182239b878"
+    },
+    {
+      "path": "pangaea-depth/MANIFEST.json",
+      "bytes": 5025,
+      "sha256": "0e5c1e469f34e0f744b655db4250b810340682147f9c93251ce8e27757c9e47e"
+    },
+    {
+      "path": "pangaea-depth/README.md",
+      "bytes": 3975,
+      "sha256": "c8b05b0e98347358cbc8c6ff9b54add0d9de2dea9b86c4c155efe7825e80cb22"
+    },
+    {
+      "path": "pangaea-depth/build.mjs",
+      "bytes": 805,
+      "sha256": "c0af74089d3deeb31aab598b776bbbdea0da6d310f2480915e1e08617febff6b"
+    },
+    {
+      "path": "pangaea-depth/docs/ARCHITECTURE.md",
+      "bytes": 4428,
+      "sha256": "14f8d1888e19fb0754a86e1c2c94eb8d829962211eee9ad9969c312ce7501384"
+    },
+    {
+      "path": "pangaea-depth/docs/QA.md",
+      "bytes": 5263,
+      "sha256": "3eb8241ff2d791723336184738dcd285d7fc6cac71c3dbbc63854307cd82ab96"
+    },
+    {
+      "path": "pangaea-depth/docs/RESEARCH_INTEGRATION.md",
+      "bytes": 20762,
+      "sha256": "224789205dac4e6fa1635dba809d65b1061251719fd736f78d88bdbb7e5165ab"
+    },
+    {
+      "path": "pangaea-depth/index.html",
+      "bytes": 125739,
+      "sha256": "d4bbbf2b3a030f499f763079d505cb60d05a8153c096cce6cd2805a77b6d7812"
+    },
+    {
+      "path": "pangaea-depth/index.template.html",
+      "bytes": 7220,
+      "sha256": "625352088f9f1234c69549e183ece70e8031b96ee9f585687189e8cd5663b828"
+    },
+    {
+      "path": "pangaea-depth/package.json",
+      "bytes": 271,
+      "sha256": "f7024051212ac296f3133aaeef3a2bc8f967b83d73cb1643a2d4d9d2909a38fa"
+    },
+    {
+      "path": "pangaea-depth/previews/01-founding-globe.png",
+      "bytes": 1025238,
+      "sha256": "a77d85480bb7068142e28ce494ee7f231805c7fceb1ccf4a6d72919b329c814f"
+    },
+    {
+      "path": "pangaea-depth/previews/02-founding-town.png",
+      "bytes": 946031,
+      "sha256": "f559efbba2ae11d2b4baf92d8a2ef25ce3e37045f0c18730361c793599680ad3"
+    },
+    {
+      "path": "pangaea-depth/previews/03-person.png",
+      "bytes": 948458,
+      "sha256": "290720e92cc7b40b88fcee824d656a00d19618f9f889da3c88b450de0a7d8994"
+    },
+    {
+      "path": "pangaea-depth/previews/04-mature-globe.png",
+      "bytes": 1046403,
+      "sha256": "5dce657f2dc25e3ad96d288c8e5d18a92dec2aab5e90d6e26aaf769a1e73b0fa"
+    },
+    {
+      "path": "pangaea-depth/previews/05-mature-town.png",
+      "bytes": 897085,
+      "sha256": "10a28ec56ce51421f7c82bd72648643fdc2122ebebbd80e2b3400b43651c5b13"
+    },
+    {
+      "path": "pangaea-depth/previews/06-decision-inspector.png",
+      "bytes": 898661,
+      "sha256": "37c22fc9e855af819f3041e15763d294af658a7a7748c979c56375c47c6d5751"
+    },
+    {
+      "path": "pangaea-depth/previews/07-mobile-town.png",
+      "bytes": 271456,
+      "sha256": "b1d99ec3b74eaafe1680e29d085c4c62f6e889e92754e4c6604a8d1e45cda0e0"
+    },
+    {
+      "path": "pangaea-depth/previews/08-mobile-inspector.png",
+      "bytes": 171055,
+      "sha256": "8cabd5d01e67e9346b0a5a4259a49dc5b18886a0cdc767a33e222e3d2f2a86ef"
+    },
+    {
+      "path": "pangaea-depth/previews/09-mobile-globe.png",
+      "bytes": 261640,
+      "sha256": "d8c69971cb2680d4577777a6d8b54b594b19ec792fb88a7011dcb35e5875026f"
+    },
+    {
+      "path": "pangaea-depth/saves/seed-481217-after-1-years.json",
+      "bytes": 715814,
+      "sha256": "e1660a38d519ddf997c70508b04dfccc1ee04910cfbe26574b83021484d92146"
+    },
+    {
+      "path": "pangaea-depth/saves/seed-481217-after-30-years.json",
+      "bytes": 1567895,
+      "sha256": "d9ee74737435d19a54a54451be5c9ae6e67a5b2e98f2e454fda431936cd5e9a7"
+    },
+    {
+      "path": "pangaea-depth/saves/seed-481217-after-40-years.json",
+      "bytes": 2986827,
+      "sha256": "2e0c19988292ca76946ae2cfe0976c65183f4e3e4ebe8e09b737d9ad5aaa21d4"
+    },
+    {
+      "path": "pangaea-depth/src/data.mjs",
+      "bytes": 3542,
+      "sha256": "61affe74e982e446d98b40c0feb1a2b61c3cbba28ccca1ef47f5042447bfd243"
+    },
+    {
+      "path": "pangaea-depth/src/render.mjs",
+      "bytes": 20442,
+      "sha256": "80a6523af2a5dcf6ca7ea85a1edd5a8e8038b5f82dd3d918ab6f4a8606d53a9c"
+    },
+    {
+      "path": "pangaea-depth/src/sim.mjs",
+      "bytes": 43586,
+      "sha256": "74d6d1626dc59a4ac742d0852120980721e0af731e860200ed89845929d73a50"
+    },
+    {
+      "path": "pangaea-depth/src/style.css",
+      "bytes": 17409,
+      "sha256": "4e5c37b700d86d193ccabadc89f23426d1fc6f9583ca1cef35108a0903e8468f"
+    },
+    {
+      "path": "pangaea-depth/src/ui.mjs",
+      "bytes": 25836,
+      "sha256": "3d9e1b4e7753014168542155a8a0496c6f9c3f639623f24973a80da547904130"
+    },
+    {
+      "path": "pangaea-depth/src/world.mjs",
+      "bytes": 8469,
+      "sha256": "f650b225746541886228a858e212e6484f3c6537f71ba1d47c57e9e4e7410cb0"
+    },
+    {
+      "path": "pangaea-depth/tests/browser-results.json",
+      "bytes": 2189,
+      "sha256": "8bd46ef8d23423f55cda10b118ca3f8bda6eb9f19300efb17590ca4415b1117f"
+    },
+    {
+      "path": "pangaea-depth/tests/browser.py",
+      "bytes": 7591,
+      "sha256": "a7a351ff84f3fb5437e6fcbc0852d320f437bf231d90101e981fb32a5de89206"
+    },
+    {
+      "path": "pangaea-depth/tests/continuation-60-years.json",
+      "bytes": 1043,
+      "sha256": "f1e3be0d95f60b0d8fa6fd128ba245aaa2b10dc4896b0d9a881a5501c88c8b29"
+    },
+    {
+      "path": "pangaea-depth/tests/continue-run.mjs",
+      "bytes": 805,
+      "sha256": "557d1188e87c0b59f5653b895692d1e69a583fbf889c6e98f634bcc2b959a97d"
+    },
+    {
+      "path": "pangaea-depth/tests/long-run.mjs",
+      "bytes": 1027,
+      "sha256": "65a3b5c7c8e69ae3c786ad1063e86048f6782aa2a201c65079ff78aeb46f182d"
+    },
+    {
+      "path": "pangaea-depth/tests/scenario-17.json",
+      "bytes": 348,
+      "sha256": "764b69b02b8c1d269c32dbe6d2d51472c3ce22ae35f123857681dcc1a29d2a08"
+    },
+    {
+      "path": "pangaea-depth/tests/scenario-481217.json",
+      "bytes": 1116,
+      "sha256": "f7a0d5ba2ba2cb2d1a03211587ab57821bc718ab255a111007edc5e303dbe277"
+    },
+    {
+      "path": "pangaea-depth/tests/scenario-881.json",
+      "bytes": 349,
+      "sha256": "b6172b5dcd2c1ea345c59bc157f7f3e22c5fcce139adac9131f74b3375aace80"
+    },
+    {
+      "path": "pangaea-depth/tests/scenario-9901.json",
+      "bytes": 350,
+      "sha256": "4e9cd05ead6bf24049f2c018ca6122af919a48ce28026b16c08f8868349d1bde"
+    },
+    {
+      "path": "pangaea-depth/tests/simulation.test.mjs",
+      "bytes": 6760,
+      "sha256": "b9877ea9a5f54885ea393367fc0fed8201cff0aa310478ed77f712ff14970dfd"
+    },
+    {
+      "path": "pangaea-depth/tests/unit-results.tap",
+      "bytes": 3217,
+      "sha256": "bd390fdd9b6ef149e4063e4d60f2911a9f387568bb0c226c367972ebf8e943fa"
+    },
+    {
+      "path": "reference/coastal-settlement-reference.png",
+      "bytes": 7822817,
+      "sha256": "cd28c6e57feed373624c7c6e88c93a9610719783b2523ec04d99003b31d33688"
+    }
+  ]
+}

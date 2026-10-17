@@ -1,0 +1,8 @@
+{
+  "name":"pangaea-depth",
+  "version":"0.2.0",
+  "private":true,
+  "type":"module",
+  "description":"Autonomous settlement simulation: deterministic systems, memory and families.",
+  "scripts":{"build":"node build.mjs","test":"node --test tests/simulation.test.mjs"}
+}
