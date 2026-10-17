@@ -1,0 +1,93 @@
+
+> pangaea-depth@0.3.0 benchmark
+> node tests/cities-benchmark.mjs
+
+{
+  "node": "v24.19.0",
+  "platform": "linux",
+  "cpu": "AMD EPYC 9V45 96-Core Processor",
+  "availableParallelism": 4,
+  "buildSha256": "b10352d9052a9d4fc6535befbdf7a4dc556ebc7af6674aaa94bebc14bb069056",
+  "measurements": [
+    {
+      "kind": "synthetic opening",
+      "population": 4,
+      "ticks": 12,
+      "ms": [
+        5.645975999999997,
+        2.109357000000003,
+        1.8378689999999978
+      ],
+      "medianMs": 2.109357000000003
+    },
+    {
+      "kind": "synthetic opening",
+      "population": 250,
+      "ticks": 12,
+      "ms": [
+        53.344791,
+        52.39472500000001,
+        47.813987
+      ],
+      "medianMs": 52.39472500000001
+    },
+    {
+      "kind": "synthetic opening",
+      "population": 1000,
+      "ticks": 12,
+      "ms": [
+        308.86078399999997,
+        286.93734399999994,
+        262.636838
+      ],
+      "medianMs": 286.93734399999994
+    },
+    {
+      "kind": "synthetic opening",
+      "population": 2000,
+      "ticks": 12,
+      "ms": [
+        941.455518,
+        906.157645,
+        843.3567990000001
+      ],
+      "medianMs": 906.157645
+    },
+    {
+      "kind": "constructed city",
+      "population": 250,
+      "towns": 3,
+      "buildings": 100,
+      "ticks": 12,
+      "ms": 80.90032999999994,
+      "saveBytes": 2484860,
+      "loadMs": 43.501460999999836,
+      "exactReplay": true,
+      "issues": []
+    },
+    {
+      "kind": "constructed city",
+      "population": 1000,
+      "towns": 3,
+      "buildings": 198,
+      "ticks": 12,
+      "ms": 383.8852880000004,
+      "saveBytes": 3720926,
+      "loadMs": 58.15673400000014,
+      "exactReplay": true,
+      "issues": []
+    },
+    {
+      "kind": "constructed city",
+      "population": 2000,
+      "towns": 3,
+      "buildings": 299,
+      "ticks": 12,
+      "ms": 800.4810270000007,
+      "saveBytes": 5557364,
+      "loadMs": 96.38469799999984,
+      "exactReplay": true,
+      "issues": []
+    }
+  ]
+}

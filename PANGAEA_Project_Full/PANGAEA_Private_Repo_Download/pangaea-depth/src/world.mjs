@@ -1,6 +1,8 @@
+import FlatQueue from './vendor/flatqueue.mjs';
+import {BUILDINGS,DEFAULT_PLANET,YEAR} from './data.mjs';
 /** Seeded geography and walkable settlement grids. No renderer or wall clock dependency. */
 export const TAU = Math.PI * 2, RAD = Math.PI / 180;
-export const GRID_W = 96, GRID_H = 80, TILE = 20;
+export const GRID_W = 96, GRID_H = 80, TILE = 16;
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const mix = (a, b, t) => a + (b - a) * t;
 export function hash(x, y, seed = 1) {
@@ -19,14 +21,15 @@ export function fbm(x, y, seed) {
   return total / .9375;
 }
 const ell = (u, v, x, y, rx, ry) => 1 - ((u - x) / rx) ** 2 - ((v - y) / ry) ** 2;
-export function geography(u, v, seed) {
+export function geography(u, v, seed,planet=DEFAULT_PLANET) {
   const mass = Math.max(ell(u, v, .505, .50, .235, .35), ell(u, v, .60, .37, .18, .22), ell(u, v, .40, .34, .17, .23), ell(u, v, .575, .72, .145, .19), ell(u, v, .32, .55, .145, .11));
   const field = mass + (fbm(u * 13, v * 13, seed) - .49) * .5 + (fbm(u * 32, v * 29, seed + 32) - .5) * .17;
   const moisture = fbm(u * 11 + 9, v * 10 + 3, seed + 17);
   const ridge = fbm(u * 20, v * 19, seed + 12) * .54 + Math.max(0, field) * .25;
-  return { field, moisture, ridge, land: field > .018, coast: field < .20, biome: moisture > .58 ? 'Temperate forest' : moisture > .39 ? 'Grassland' : 'Dry steppe' };
+  const climate=latitudeClimate((.5-v)*Math.PI,Math.max(0,Math.pow(clamp((ridge-.4)*3.5+Math.max(0,field)*.16,0,1),2)*4.2),moisture,planet,0);
+  return {field,moisture,ridge,land:field>.018,coast:field<.20,...climate};
 }
-export function geoAt(lon, lat, seed) { return geography(((lon / TAU + .5) % 1 + 1) % 1, .5 - lat / Math.PI, seed); }
+export function geoAt(lon,lat,seed,planet=DEFAULT_PLANET) {return geography(((lon/TAU+.5)%1+1)%1,.5-lat/Math.PI,seed,planet);}
 export function findFirstSite(seed) {
   let best, score = -Infinity;
   for (let y = -12; y < 30; y += 2) for (let x = -80; x < -22; x += 2) {
@@ -37,36 +40,41 @@ export function findFirstSite(seed) {
   }
   return best || { lon: -.5, lat: .1 };
 }
-/** A small original binary heap used by A*. This is not a copied library. */
-export class MinHeap {
-  constructor() { this.items = []; }
-  push(id, score) {
-    const a = this.items, item = { id, score }; let i = a.length; a.push(item);
-    while (i > 0) { const p = (i - 1) >> 1; if (a[p].score <= score) break; a[i] = a[p]; i = p; } a[i] = item;
+/** Original grid drainage: a least-cost downslope tree rooted at a boundary outlet. */
+export function localDrainage(seed,townId) {
+  const count=GRID_W*GRID_H,heights=new Float64Array(count);heights.fill(Infinity);
+  const parent=new Int32Array(count);parent.fill(-1);const queue=new FlatQueue(),mouth=(GRID_H-1)*GRID_W+74;
+  heights[mouth]=0;queue.push(mouth,0);
+  while(queue.length){const id=queue.pop(),x=id%GRID_W,y=Math.floor(id/GRID_W);
+    for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GRID_W||ny>=GRID_H)continue;
+      const next=ny*GRID_W+nx,centre=72+(noise(ny*.055,3,seed+townId)-.5)*12;
+      const elevation=heights[id]+1+noise(nx*.13,ny*.13,seed+townId*17)*2+Math.abs(nx-centre)*.13;
+      if(elevation<heights[next]){heights[next]=elevation;parent[next]=id;queue.push(next,elevation);}
+    }
   }
-  pop() {
-    const a = this.items, root = a[0], last = a.pop(); if (!a.length) return root;
-    let i = 0; while (i * 2 + 1 < a.length) { let c = i * 2 + 1; if (c + 1 < a.length && a[c + 1].score < a[c].score) c++; if (a[c].score >= last.score) break; a[i] = a[c]; i = c; } a[i] = last; return root;
-  }
-  get length() { return this.items.length; }
+  const cells=[];for(let id=72;id!==-1;id=parent[id])cells.push(id);
+  return {cells,heights:Array.from(heights),outlet:mouth};
 }
-export function generateLocal(seed, town) {
-  const s = (seed + town.id * 1987) >>> 0, geo = geoAt(town.lon, town.lat, seed);
-  const tiles = [], nodes = [], roads = new Array(GRID_W * GRID_H).fill(0);
+export function generateLocal(seed, town,planet=DEFAULT_PLANET) {
+  const s = (seed + town.id * 1987) >>> 0, geo = geoAt(town.lon,town.lat,seed,planet);
+  const forestStress=Math.max(0,.42-geo.precipitation)*.6+(geo.meanTemperature<0?.28:geo.meanTemperature<5?.1:0)+Math.max(0,geo.meanTemperature-32)*.015;
+  const tiles=[],nodes=[],roads=new Array(GRID_W*GRID_H).fill(0),drainage=localDrainage(seed,town.id),riverCells=new Set(drainage.cells),riverX=new Array(GRID_H).fill(74);
+  for(const id of drainage.cells)riverX[Math.floor(id/GRID_W)]=id%GRID_W;
   for (let y = 0; y < GRID_H; y++) for (let x = 0; x < GRID_W; x++) {
     const coast = 14 + 7 * Math.sin(y * .063 + town.id) + 5 * (fbm(y * .07, 4, s) - .5);
-    const river = 78 + Math.sin(y * .09 + town.id) * 7;
+    const river=riverX[y];
     const water = geo.coast && x < coast;
-    const stream = Math.abs(x - river) < .9;
+    const stream=riverCells.has(y*GRID_W+x);
     const ford = stream && (Math.abs(y - 22) < 2 || Math.abs(y - 57) < 2);
     const n = fbm(x * .072, y * .072, s);
     const safe = Math.hypot(x - 47, y - 40) < 13;
     const type = water ? 'water' : stream && !safe ? (ford ? 'ford' : 'river') : geo.coast && x < coast + 2 ? 'sand' : n > .65 ? 'rock' : 'grass';
     const fertility = clamp(.45 + noise(x * .08, y * .08, s + 73) * .65 + (Math.abs(x - river) < 7 ? .15 : 0), .3, 1);
-    tiles.push({ type, fertility, forest: !safe && n > .48, walkable: type !== 'water' && type !== 'river' });
+    tiles.push({ type, fertility, forest: !safe && n > .48-(planet.forestCover-1)*.1+forestStress, walkable: type !== 'water' && type !== 'river' });
     if (safe || type === 'water' || type === 'river' || type === 'ford') continue;
     const r = hash(x, y, s + 121); let kind = null;
-    if (n > .47 && r > .83) kind = 'wood';
+    if (n > .47-(planet.forestCover-1)*.08+forestStress && r > .83-(planet.forestCover-1)*.05) kind = 'wood';
     else if (r < .011 && n < .67) kind = 'food';
     else if (n > .59 && r < .06) kind = 'stone';
     else if (r > .79 && r < .795) kind = 'herbs';
@@ -78,22 +86,38 @@ export function generateLocal(seed, town) {
     nodes.push({ id: nodes.length, x, y, kind, amount: max, max });
     tiles[y * GRID_W + x] = { type: 'grass', fertility: .85, forest: kind === 'wood', walkable: true };
   }
-  return { tiles, nodes, roads, revision: 0 };
+  // Geology is finite. These seams are authored starter guarantees, like the grove.
+  for (let [kind,x,y] of [['ore',65,52],['coal',67,54],['ore',62,57],['coal',68,58],['clay',72,52],['clay',72,56]]) {
+    if(!tiles[y*GRID_W+x].walkable){const choices=[];for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++)if(tiles[(y+dy)*GRID_W+x+dx]?.walkable)choices.push({x:x+dx,y:y+dy,d:Math.abs(dx)+Math.abs(dy)});choices.sort((a,b)=>a.d-b.d);if(!choices.length)continue;({x,y}=choices[0]);}
+    const max=kind==='ore'?18000:kind==='clay'?14000:22000;
+    nodes.push({id:nodes.length,x,y,kind,amount:max,max});
+    tiles[y*GRID_W+x]={type:'rock',fertility:.4,forest:false,walkable:true};
+  }
+  return { tiles, nodes, roads, drainage, streets:new Array(GRID_W*GRID_H).fill(0), streetEdges:new Array(GRID_W*GRID_H).fill(0), streetNetworkVersion:2, revision:0, navRevision:0 };
 }
 export function footprint(building) {
-  const w = building.type === 'farm' ? 5 : building.type === 'hall' ? 5 : 3;
-  const h = building.type === 'farm' ? 4 : building.type === 'hall' ? 4 : 3;
-  return { x0: building.x - Math.floor(w / 2), y0: building.y - Math.floor(h / 2), w, h };
+  const [w,h]=BUILDINGS[building.type]?.size||[2,2];
+  return {x0:building.x-Math.floor(w/2),y0:building.y-Math.floor(h/2),w,h};
 }
-export function walkable(town, x, y) {
-  if (x < 1 || y < 1 || x >= GRID_W - 1 || y >= GRID_H - 1 || !town.land.tiles[y * GRID_W + x]?.walkable) return false;
-  for (const b of town.buildings) {
-    if (b.type === 'fire' || b.type === 'farm' || b.type === 'well') continue;
-    const f = footprint(b); if (x >= f.x0 && x < f.x0 + f.w && y >= f.y0 && y < f.y0 + f.h) return false;
+// Derived occupancy is rebuilt only after a layout change, not per A* neighbour.
+const navigationCache=new WeakMap();
+function navigation(town) {
+  let cache=navigationCache.get(town);
+  const rev=town.land.navRevision||0;
+  if(cache && cache.count===town.buildings.length && cache.revision===rev)return cache;
+  const blocked=new Uint8Array(GRID_W*GRID_H);
+  for(let y=0;y<GRID_H;y++)for(let x=0;x<GRID_W;x++)if(x<1||y<1||x>=GRID_W-1||y>=GRID_H-1||!town.land.tiles[y*GRID_W+x]?.walkable)blocked[y*GRID_W+x]=1;
+  for(const b of town.buildings){
+    if(['fire','farm','well','market'].includes(b.type))continue;
+    const f=footprint(b);
+    for(let y=f.y0;y<f.y0+f.h;y++)for(let x=f.x0;x<f.x0+f.w;x++)if(x>=0&&y>=0&&x<GRID_W&&y<GRID_H)blocked[y*GRID_W+x]=1;
   }
-  return true;
+  cache={count:town.buildings.length,revision:rev,blocked};navigationCache.set(town,cache);return cache;
 }
-export function entrance(b) { const f = footprint(b); return { x: b.x, y: f.y0 + f.h }; }
+export function walkable(town,x,y) {
+  return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<GRID_W&&y<GRID_H&&!navigation(town).blocked[y*GRID_W+x];
+}
+export function entrance(b) {const f=footprint(b);return {x:b.x,y:f.y0+f.h};}
 /** Four-neighbour A*: no corner cutting, no water crossing; foot traffic lowers cost. */
 export function findPath(town, ax, ay, bx, by) {
   const sx = Math.round(ax), sy = Math.round(ay), tx = Math.round(bx), ty = Math.round(by);
@@ -101,16 +125,16 @@ export function findPath(town, ax, ay, bx, by) {
   const start = sy * GRID_W + sx, goal = ty * GRID_W + tx;
   if (start === goal) return [];
   const g = new Float32Array(GRID_W * GRID_H); g.fill(Infinity); g[start] = 0;
-  const parent = new Int32Array(g.length); parent.fill(-1); const closed = new Uint8Array(g.length), open = new MinHeap();
+  const parent = new Int32Array(g.length); parent.fill(-1); const closed = new Uint8Array(g.length), open = new FlatQueue();
   open.push(start, 0); let count = 0;
   while (open.length && count++ < 6000) {
-    const id = open.pop().id; if (closed[id]) continue; closed[id] = 1;
+    const id = open.pop(); if (closed[id]) continue; closed[id] = 1;
     if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return path.reverse(); }
     const x = id % GRID_W, y = Math.floor(id / GRID_W);
     for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
       if (!walkable(town, nx, ny)) continue;
       const ni = ny * GRID_W + nx, tile = town.land.tiles[ni];
-      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, town.land.roads[ni] * .003);
+      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, (town.land.streets?.[ni]||0) * .08);
       const value = g[id] + cost;
       if (value < g[ni]) { g[ni] = value; parent[ni] = id; open.push(ni, value + .75 * (Math.abs(tx - nx) + Math.abs(ty - ny))); }
     }
@@ -133,5 +157,20 @@ export function globalRoute(seed, from, to) {
   if (parent[end] === -1) return null;
   const out = []; let id = end;
   while (id !== start) { out.push({ lon: ((id % w) / w - .5) * TAU, lat: (.5 - Math.floor(id / w) / h) * Math.PI }); id = parent[id]; }
-  out.push(from); out.reverse(); return out;
+  out.push({lon:from.lon,lat:from.lat}); out.reverse(); return out;
+}
+
+/** A compact climatology model: latitude heating, lapse rate, season and moisture belts. */
+export function latitudeClimate(lat,elevation=0,moisture=.5,planet=DEFAULT_PLANET,day=0) {
+  const latitude=Math.abs(lat)/(Math.PI/2),seasonal=Math.sin(day/YEAR*TAU)*10*Math.sin(lat);
+  const meanTemperature=planet.temperature+16-50*Math.pow(latitude,1.15)-6.5*elevation;
+  const temperature=meanTemperature+seasonal;
+  // Equatorial rain, dry subtropics, temperate westerlies; elevation dries leeward proxy cells.
+  const rainBelt=.65+.65*Math.exp(-(((latitude-.06)/.13)**2))-.35*Math.exp(-(((latitude-.33)/.12)**2))+.3*Math.exp(-(((latitude-.58)/.16)**2));
+  const precipitation=clamp(moisture*planet.rainfall*rainBelt-elevation*.035,.03,1);
+  const biome=meanTemperature< -6?'Ice cap':meanTemperature<2?'Tundra':meanTemperature<10?(precipitation>.3?'Taiga':'Cold steppe'):precipitation<.22?'Desert':meanTemperature>23?(precipitation>.55?'Rainforest':precipitation>.35?'Seasonal forest':'Savanna'):precipitation>.5?'Temperate forest':'Grassland';
+  return {temperature,meanTemperature,precipitation,biome,elevation};
+}
+export function townClimate(seed,town,planet=DEFAULT_PLANET,day=0) {
+  const g=geoAt(town.lon,town.lat,seed,planet);return latitudeClimate(town.lat,g.elevation,g.moisture,planet,day);
 }

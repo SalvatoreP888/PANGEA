@@ -1,0 +1,58 @@
+
+> pangaea-depth@0.4.0 test
+> node --test tests/simulation.test.mjs tests/cities.test.mjs tests/realms.test.mjs
+
+✔ Thirty-six discoveries form an acyclic five-era tree with usable unlocks (2.908649ms)
+✔ Vendored FlatQueue orders priorities, empties, and can be reused (0.266913ms)
+✔ Housing chooses buildable material chains rather than deadlocking on future industry (69.146259ms)
+✔ Dense city fixture houses actual individuals and keeps doors connected (477.383391ms)
+✔ Local roads connect real completed buildings without changing stocks when unfunded (12.501802ms)
+✔ Research priority retains per-topic progress and cannot bypass prerequisites/population (68.038576ms)
+✔ Industrial conversions require the building, knowledge and every input (11.416409ms)
+✔ Crop improvements change real harvest yield and sanitation does not create supplies (31.87348ms)
+✔ Road and railway upgrades consume materials once and require real labour (118.474288ms)
+✔ Railway construction requires stations, knowledge and sufficient materials (95.278273ms)
+✔ Freight departs immediately, consumes steam fuel and arrives exactly once (111.289936ms)
+✔ Passengers reserve destination beds, keep identity and carry provisions (131.213373ms)
+✔ Over-capacity, invalid cargo and full destinations are rejected atomically (100.179299ms)
+✔ Market logistics carries scarce material; surplus is not duplicated (102.06208ms)
+✔ Save/resume with city caches and an in-flight train remains deterministic (398.20196ms)
+✔ Legacy mature save migrates with every person and existing stockpile preserved (146.837074ms)
+✔ Malformed links, overfull trains and duplicate passengers cannot enter a live save (456.834044ms)
+✔ Repeated foot traffic cannot create constructed streets or imaginary junctions (44.091017ms)
+✔ Street branches join one existing network without creating grid loops (85.266466ms)
+✔ Old city saves repair road geometry without moving people, buildings or stockpiles (473.998387ms)
+✔ Unreciprocated street edges are rejected before a save replaces the live world (25.248021ms)
+✔ Fisheries are sited on real banks and catch finite fish into carried inventory (10.921872ms)
+✔ Grain fields harvest grain, which is unavailable as bread until milling and baking (9.057629ms)
+✔ Brick and textile chains require their inputs and affect construction and warmth (6.366928ms)
+✔ Every production recipe fails atomically when one ingredient is unavailable (15.520591ms)
+✔ Latitude, hemisphere season, elevation, rain and temperature change climate coherently (0.230207ms)
+✔ Planet settings persist, reject malformed parameters and alter generated forest density (33.56974ms)
+✔ Zero storm/drought settings disable random events while explicit interventions remain available (275.447926ms)
+✔ Mixed fantasy founders share settlement work and children inherit both lineages (46.618401ms)
+✔ Fisheries, crops and industry remain exact across a climate-aware save/resume (286.529498ms)
+✔ Generated river cells follow a strictly descending height field into the outlet (4.779964ms)
+✔ Specialist fields stop consuming labour when their stored output exceeds local demand (5.639771ms)
+✔ Exactly four adult founders; same seed and actions produce the same complete state (268.777437ms)
+✔ Save round-trip continues the seeded simulation without divergence (231.959507ms)
+✔ Reject old, malformed, unsafe styling and invalid enum saves without mutating the original (82.091037ms)
+✔ Spending checks all inputs atomically and never creates a negative inventory (8.331173ms)
+✔ Foraging depletes a node into carried inventory; storage changes only at delivery (11.889101ms)
+✔ Construction reserves its material costs before a worker can add progress (5.041358ms)
+✔ Cooking transforms food and fuel without adding net rations (4.390896ms)
+✔ Fractional food does not trap hungry agents in impossible eating tasks (3.737951ms)
+✔ Memory retrieval weights context and reflection changes food caution (3.819003ms)
+✔ Children do not get adult labor or partnership decisions; close family is excluded (4.547262ms)
+✔ Birth records both parents and is a person, not just a population increment (3.41924ms)
+✔ Regrowth is slower in drought and resources stay finite (15.115831ms)
+✔ A* uses adjacent walkable tiles and rejects water targets (15.575515ms)
+✔ Death is recorded and partnership is released, without erasing family history (13.550429ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2421.220064

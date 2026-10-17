@@ -1,0 +1,29 @@
+{
+  "checks": [
+    "Four species begin together in one settlement",
+    "World-to-city descent animates and reaches the correct view",
+    "MAX executes real ticks, pauses responsively and matches exact reference replay",
+    "MAX can switch back to a fixed speed",
+    "Saturated foot traffic produces no extra normal-view streets or lattice",
+    "Traffic remains visible as an explicit activity heatmap",
+    "Supply view exposes all five chains, inputs, worker and resource blockers",
+    "City laboratory includes actual bank-sited fisheries and industry",
+    "Population inspector exposes mixed city composition",
+    "Climate controls apply temperature, rainfall and storms without replacing cities",
+    "Scrolling inward from space enters the selected settlement",
+    "Scrolling out of a settlement returns to the planet",
+    "Reduced motion skips the transition",
+    "Mobile exposes MAX and all climate controls without horizontal overflow"
+  ],
+  "pageErrors": [],
+  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "maxObservation": {
+    "exact": true,
+    "days": 283.75,
+    "paused": true,
+    "mode": "max",
+    "wallSeconds": 2.1874141990000453,
+    "observedDaysPerSecond": 129.7193737380481
+  },
+  "browserVersion": "154.0.8037.57"
+}

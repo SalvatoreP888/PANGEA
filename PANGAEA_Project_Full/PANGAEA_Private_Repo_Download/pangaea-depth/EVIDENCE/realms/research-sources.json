@@ -1,0 +1,74 @@
+{
+  "accessDate": "2026-10-17",
+  "blockedOfficialReferences": [
+    {
+      "url": "https://songsofsyx.com/wiki/index.php?title=Industry",
+      "result": "Proxy tunnel HTTP 403"
+    },
+    {
+      "url": "https://songsofsyx.com/wiki/index.php?title=Logistics",
+      "result": "Proxy tunnel HTTP 403"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1162750/Songs_of_Syx/",
+      "result": "Proxy tunnel HTTP 403"
+    },
+    {
+      "url": "https://www.superworldbox.com/",
+      "result": "Proxy tunnel HTTP 403"
+    }
+  ],
+  "checkedSources": [
+    {
+      "repository": "https://github.com/Azgaar/Fantasy-Map-Generator",
+      "commit": "b4a0dcb933586a57242508f558f775da16c35c64",
+      "files": [
+        "README.md",
+        "LICENSE",
+        "package.json",
+        "src/generators/temperature-generator.ts",
+        "src/generators/precipitation-generator.ts"
+      ],
+      "observed": [
+        "latitude and altitude temperature model",
+        "6.5\u00b0C/km environmental lapse-rate rule",
+        "latitude precipitation bands",
+        "wind humidity depletion and elevation barriers"
+      ],
+      "decision": "Adapt climatology ideas in original code; no source/assets bundled. Existing global state, UI and map structures are not imported.",
+      "license": "MIT, inspected"
+    },
+    {
+      "repository": "https://github.com/redblobgames/mapgen2",
+      "commit": "f16f485a62510344afe13e9c6aa01f7fa25be17e",
+      "files": [
+        "README.org",
+        "LICENSE",
+        "elevation.js"
+      ],
+      "observed": [
+        "separate mesh/map state",
+        "coast-rooted elevation traversal and downslope links",
+        "seeded terrain and biome bias"
+      ],
+      "decision": "Implement a smaller original grid drainage tree with FlatQueue; defer polygon/Delaunay engine replacement.",
+      "license": "Apache-2.0, inspected"
+    },
+    {
+      "repository": "https://github.com/jwagner/simplex-noise.js",
+      "version": "4.0.3",
+      "files": [
+        "README.md",
+        "LICENSE",
+        "npm package metadata"
+      ],
+      "decision": "Evaluate and defer; current seeded noise preserves geographic save identities and avoids a second terrain dependency. Runtime source was not incorporated.",
+      "license": "MIT, inspected"
+    },
+    {
+      "repository": "https://github.com/mourner/flatqueue",
+      "commit": "7e280d07ab202fc6494e16f07321ce3af60431ac",
+      "decision": "Previously adopted ISC queue reused by street planning and drainage. Source remains unchanged."
+    }
+  ]
+}

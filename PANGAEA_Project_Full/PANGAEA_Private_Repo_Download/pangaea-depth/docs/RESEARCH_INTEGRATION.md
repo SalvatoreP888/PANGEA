@@ -205,3 +205,24 @@ See `QA.md` and the machine-readable files in `tests/`. The principal seeded run
 Future evaluation should measure shortages, mortality, stranded agents, illegal proposals, inventory conservation, repeatability, task completion, memory influence, model cost and wall-clock performance. Compare memory enabled/disabled and policy variants under the same conditions. Do not count an attractive story as evidence that a mechanism improved the game.
 
 0.2 has bounded population planning, bounded settlements and memories, a small authored technology tree, coarse travel, simple health, limited relationships, no combat, no full market, no generated laws, no LLM calls and no seamless globe-to-interior terrain. It is a materially deeper playable prototype, not a finished AAA game.
+
+
+## Cities 0.3 — focused source review (17 October 2026)
+
+The owner explicitly prioritized city scale, small unit/building art, practical technology and road-to-rail logistics over the old milestone order. The existing Canvas/ESM engine was retained; there is no framework migration.
+
+| Source | Actually inspected | Decision and experiment | Rights / limitations |
+|---|---|---|---|
+| [FlatQueue](https://github.com/mourner/flatqueue/tree/7e280d07ab202fc6494e16f07321ce3af60431ac), v3.0.0 | Source, package metadata, license, tag resolution; pinned source/license SHA-256 checked | Adopt unchanged as A* priority queue; combine with original occupancy/building indexes. Queue order tests, original navigation regression and larger-world benchmarks pass. This measures the combined optimizations, not an isolated library speedup. | ISC. Full notice distributed beside source and inside standalone HTML. |
+| [CityFlow](https://github.com/cityflow-project/CityFlow) / [arXiv:1905.05217](https://arxiv.org/abs/1905.05217) | Repository README describes persistent road networks, vehicle simulation and Python interface; paper link confirmed there | Consult the separation of road infrastructure and journeys. Implement an original smaller model with persistent links and in-transit inventory. Defer the C++/Python traffic runtime: this browser game needs settlement freight first. | No code/assets imported. License not established from attempted LICENSE path; no license claim or import made. Direct paper read blocked. |
+| [Generative Agents](https://github.com/joonspk-research/generative_agents) / [arXiv:2304.03442](https://arxiv.org/abs/2304.03442) | Current repository README confirms its paper and memory-history workflow | Retain existing deterministic bounded memory; do not introduce paid/model-dependent per-person decisions into city-scale work. Existing memory tests remain meaningful. | No code/assets imported. Direct paper read blocked. Historical research notes above are not re-certified by this read. |
+| [OpenTTD](https://github.com/OpenTTD/OpenTTD) | COPYING.md | Defer code integration; implement original authored road/highway/rail tiers, costs, labor, passengers and cargo. Do not import an entire transport-game engine for a small browser runtime. | Inspected COPYING declares GPLv2; no OpenTTD code or assets distributed. A project license decision would precede any such integration. |
+
+The proxy rejected arxiv.org, export.arxiv.org and ar5iv requests with HTTP tunnel 403. Papers were identified through repository citations; their full text was not read in this pass. No paper performance numbers, claimed algorithm reproductions or unsupported license labels are presented as verified. See `EVIDENCE/cities/research-sources.json` and the small retained README/license captures.
+
+Measured outcomes are in `EVIDENCE/cities/benchmark.json`, `baseline-benchmark.json`, `city-browser-results.json` and natural-run reports. Research ended in runnable code and regression checks rather than adding unrelated libraries.
+
+
+## Realms 0.4 follow-up
+
+Current source reads, explicit access limits, commercial-game design directions and original climate/drainage adaptations are documented in [REALMS_RESEARCH.md](REALMS_RESEARCH.md). This includes inspected Azgaar temperature/precipitation generators, Red Blob elevation/downslope traversal, retained FlatQueue usage and deferred simplex-noise evaluation. No additional third-party engine or art was bundled.

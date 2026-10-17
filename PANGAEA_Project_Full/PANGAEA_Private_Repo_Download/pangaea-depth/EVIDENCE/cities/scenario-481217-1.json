@@ -1,0 +1,21 @@
+{
+  "seed": 481217,
+  "years": 1,
+  "constructed": false,
+  "ruleset": "cities-0.3",
+  "node": "v24.19.0",
+  "elapsedMs": 147.474207,
+  "checkpoints": [
+    {
+      "year": 1,
+      "population": 5,
+      "towns": 1,
+      "technologies": 6,
+      "beds": 12,
+      "foodDays": 85.10868881205093,
+      "births": 1,
+      "deaths": 0,
+      "issues": []
+    }
+  ]
+}

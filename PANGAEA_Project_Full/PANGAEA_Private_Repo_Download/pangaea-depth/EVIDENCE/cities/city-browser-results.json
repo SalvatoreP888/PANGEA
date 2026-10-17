@@ -1,0 +1,34 @@
+{
+  "checks": [
+    "HTTP boot preserves exactly four founders",
+    "Atlas renders all 36 technologies, branch lanes and prerequisite connections",
+    "City laboratory creates 1,000 actual people and labels its constructed origin",
+    "Transport inspector exposes live road/rail capacities and cargo",
+    "Dense city contains over 80 buildings and connected street tiles",
+    "Resident search, pagination and individual inspection work at city scale",
+    "Town selector switches actual settlement state",
+    "Advancing the city delivers real cargo without invariant violations",
+    "City localStorage save survives actual origin reload",
+    "Version 3 city JSON export/import round-trip",
+    "Mobile city and transport sheet stay within 390px",
+    "Mobile technology atlas remains usable without horizontal overflow",
+    "Landscape resize keeps the game inside the viewport",
+    "No page exceptions or external requests"
+  ],
+  "pageErrors": [],
+  "externalRequests": [],
+  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "renderMs": {
+    "median": 32.20000000001164,
+    "p95": 44.20000000001164,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "population": 1000
+  },
+  "blockedChecks": [
+    "Direct file launch: Chromium administrator policy blocks file:// navigation; HTTP and identical standalone content passed."
+  ],
+  "browserVersion": "154.0.8037.57"
+}

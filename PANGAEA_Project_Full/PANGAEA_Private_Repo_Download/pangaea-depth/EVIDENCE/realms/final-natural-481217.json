@@ -1,0 +1,43 @@
+{
+  "seed": 481217,
+  "years": 30,
+  "constructed": false,
+  "ruleset": "realms-0.4",
+  "node": "v24.19.0",
+  "elapsedMs": 11437.231625,
+  "checkpoints": [
+    {
+      "year": 10,
+      "population": 10,
+      "towns": 1,
+      "technologies": 18,
+      "beds": 20,
+      "foodDays": 224.66842733316656,
+      "births": 6,
+      "deaths": 0,
+      "issues": []
+    },
+    {
+      "year": 20,
+      "population": 17,
+      "towns": 1,
+      "technologies": 18,
+      "beds": 28,
+      "foodDays": 133.45832300740162,
+      "births": 13,
+      "deaths": 0,
+      "issues": []
+    },
+    {
+      "year": 30,
+      "population": 22,
+      "towns": 1,
+      "technologies": 25,
+      "beds": 28,
+      "foodDays": 132.59411270433586,
+      "births": 18,
+      "deaths": 0,
+      "issues": []
+    }
+  ]
+}
