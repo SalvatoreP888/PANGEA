@@ -9,6 +9,7 @@ import {fishWork,cropClimate,tickEconomy} from '../src/economy.mjs';
 const fresh=planet=>new Simulation(481217,{events:false,planet});
 function build(s,t,type){const site=citySite(s,t,type);assert.ok(site,`site for ${type}`);const b={id:s.state.nextBuilding++,type,...site,complete:true,funded:true,progress:BUILDINGS[type].work,created:s.day,crop:{sown:false,growth:0,yield:0},condition:100};t.buildings.push(b);t.land.navRevision++;connectStreet(s,t,b,true);return b;}
 const job=(p,kind,extra={})=>p.task={kind,stage:'work',work:0,...extra};
+function batch(s,t,p,kind){const r=RECIPES[kind],b=s.buildings(t,r.building)[0];p.x=47;p.y=43;job(p,'supply',{buildingId:b.id,recipeKind:kind});s.work(p,t);const shipment={...p.carry};Object.assign(p,entrance(b));job(p,'deliverInput',{buildingId:b.id});s.work(p,t);job(p,kind,{buildingId:b.id});s.work(p,t);job(p,'haulOutput',{buildingId:b.id,recipeKind:kind});s.work(p,t);p.x=47;p.y=43;job(p,'deliver');s.work(p,t);return shipment;}
 function graph(t){let nodes=0,edges=0;for(const mask of t.land.streetEdges){if(mask)nodes++;if(mask&1)edges++;if(mask&2)edges++;}return {nodes,edges};}
 
 test('Repeated foot traffic cannot create constructed streets or imaginary junctions',()=>{
@@ -34,11 +35,11 @@ test('Fisheries are sited on real banks and catch finite fish into carried inven
 });
 test('Grain fields harvest grain, which is unavailable as bread until milling and baking',()=>{
  const s=fresh(),t=s.town(1),p=s.alive[0],field=build(s,t,'wheatfield');field.crop.yield=20;field.crop.sown=true;job(p,'farm',{buildingId:field.id});s.work(p,t);assert.ok(p.carry.grain>0);assert.equal(t.res.grain,0);assert.equal(t.res.bread,0);job(p,'deliver');s.work(p,t);assert.ok(t.res.grain>0);
- t.knowledge.push('milling');build(s,t,'mill');build(s,t,'bakery');const grain=t.res.grain;t.res.flour=0;job(p,'mill');s.work(p,t);assert.equal(t.res.grain,grain-4);assert.equal(t.res.flour,3);const wood=t.res.wood;job(p,'bake');s.work(p,t);assert.equal(t.res.flour,0);assert.equal(t.res.bread,3);assert.equal(t.res.wood,wood-.5);
+ t.knowledge.push('milling');const mill=build(s,t,'mill'),bakery=build(s,t,'bakery');const grain=t.res.grain;t.res.flour=0;batch(s,t,p,'mill');assert.equal(t.res.grain+(mill.production.inputs.grain||0),grain-4);assert.equal(t.res.flour,3);const wood=t.res.wood;batch(s,t,p,'bake');assert.equal(t.res.flour,0);assert.equal(t.res.bread,3);assert.equal(t.res.wood+(bakery.production.inputs.wood||0),wood-.5);
  const bread=t.res.bread;job(p,'eat');s.work(p,t);assert.equal(t.res.bread,bread-1);
 });
 test('Brick and textile chains require their inputs and affect construction and warmth',()=>{
- const s=fresh(),t=s.town(1),p=s.alive[0];t.knowledge.push('ceramics','textiles');build(s,t,'kiln');build(s,t,'weaver');t.res.clay=3;t.res.flax=3;t.res.wood=1;job(p,'fireBricks');s.work(p,t);assert.equal(t.res.clay,0);assert.equal(t.res.wood,0);assert.equal(t.res.bricks,2);assert.ok(BUILDINGS.tenement.cost.bricks>0);job(p,'weave');s.work(p,t);assert.equal(t.res.flax,0);assert.equal(t.res.cloth,1);
+ const s=fresh(),t=s.town(1),p=s.alive[0];t.knowledge.push('ceramics','textiles');build(s,t,'kiln');build(s,t,'weaver');t.res.clay=3;t.res.flax=3;t.res.wood=1;batch(s,t,p,'fireBricks');assert.equal(t.res.clay,0);assert.equal(t.res.wood,0);assert.equal(t.res.bricks,2);assert.ok(BUILDINGS.tenement.cost.bricks>0);batch(s,t,p,'weave');assert.equal(t.res.flax,0);assert.equal(t.res.cloth,1);
  s.configurePlanet({...DEFAULT_PLANET,temperature:-15});p.needs.warmth=10;tickEconomy(s,t);assert.ok(t.res.cloth<1);assert.ok(p.needs.warmth>10);
 });
 test('Every production recipe fails atomically when one ingredient is unavailable',()=>{

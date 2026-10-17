@@ -83,6 +83,6 @@
     "This baseline runner uses set_content. HTTP boot, file launching and localStorage are checked separately by the city browser runner.",
     "Only Chromium was tested; Safari/Firefox and real touch hardware were not tested."
   ],
-  "bootSeconds": 1.592,
+  "bootSeconds": 1.558,
   "browserVersion": "154.0.8037.57"
 }

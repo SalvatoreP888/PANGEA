@@ -8,7 +8,9 @@
 | WORLD-01 | Planet parameters and latitude/elevation climate | Verified | Climate/parameter/drainage tests and browser controls |
 | FANTASY-01 | Humans, elves, dwarves and orcs share cities | Verified | Mixed founders, heritage, common housing and browser composition |
 | VIEW-01 | Space/city zoom transition and scrolling | Verified | Enter/exit animation, scroll and reduced-motion checks |
-| RESEARCH-01 | Game and OSS research | Completed within available access | REALMS_RESEARCH.md; official game sites blocked, GitHub source reads verified |
-| QA-01 | Final combined regression, browser, scale and natural checks | See REALMS_QA.md | Current build hash and evidence files |
-
-| DELIVERY-01 | Commit, push and merge Realms 0.4 to GitHub | Authorized; delivery in progress | Feature branch `codex/realms-0.4`; fresh build and regression checks before merge |
+| RESEARCH-01 | Game and OSS research | Completed | Historical REALMS_RESEARCH.md; deeper nine-game/source/paper review in DEEP_RESEARCH.md |
+| ECON-02 | Physical producer inputs, outputs and hauling | Verified | production.test.mjs; production-browser.py; natural-scenarios.json |
+| PERF-02 | Index production assignments instead of repeated resident scans | Reviewed and verified | Incremental per-tick indexes, exact replay, scale benchmark |
+| QA-01 | Combined regression, browser, scale and natural checks | See LOGISTICS_QA.md | Current build hash and evidence files |
+| DELIVERY-01 | Commit, push and merge Realms 0.4 to GitHub | Merged | [PR#1](https://github.com/SalvatoreP888/PANGEA/pull/1); main 3796447 |
+| DELIVERY-02 | Deliver physical logistics and deeper research | Owner authorized; verified follow-up | `codex/realms-0.5`; the GitHub pull request records its final merge status |

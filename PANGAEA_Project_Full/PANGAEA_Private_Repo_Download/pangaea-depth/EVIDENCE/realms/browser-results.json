@@ -16,14 +16,14 @@
     "Mobile exposes MAX and all climate controls without horizontal overflow"
   ],
   "pageErrors": [],
-  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
   "maxObservation": {
     "exact": true,
-    "days": 283.75,
+    "days": 252,
     "paused": true,
     "mode": "max",
-    "wallSeconds": 2.1874141990000453,
-    "observedDaysPerSecond": 129.7193737380481
+    "wallSeconds": 2.334208940000053,
+    "observedDaysPerSecond": 107.95948712285981
   },
   "browserVersion": "154.0.8037.57"
 }

@@ -1,53 +1,53 @@
 {
   "node": "v24.19.0",
   "platform": "linux",
-  "cpu": "AMD EPYC 9V45 96-Core Processor",
+  "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
   "availableParallelism": 4,
-  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
   "measurements": [
     {
       "kind": "synthetic opening",
       "population": 4,
       "ticks": 12,
       "ms": [
-        10.370418999999998,
-        5.761597999999999,
-        3.6538579999999996
+        28.645036000000005,
+        11.47864899999999,
+        8.947991000000002
       ],
-      "medianMs": 5.761597999999999
+      "medianMs": 11.47864899999999
     },
     {
       "kind": "synthetic opening",
       "population": 250,
       "ticks": 12,
       "ms": [
-        66.34902,
-        48.87575899999999,
-        43.452472
+        132.64074499999998,
+        123.42979099999997,
+        108.39404399999995
       ],
-      "medianMs": 48.87575899999999
+      "medianMs": 123.42979099999997
     },
     {
       "kind": "synthetic opening",
       "population": 1000,
       "ticks": 12,
       "ms": [
-        333.27179000000007,
-        296.52339100000006,
-        283.3103890000001
+        722.9017240000001,
+        676.8987040000002,
+        570.8180180000002
       ],
-      "medianMs": 296.52339100000006
+      "medianMs": 676.8987040000002
     },
     {
       "kind": "synthetic opening",
       "population": 2000,
       "ticks": 12,
       "ms": [
-        949.5478260000002,
-        915.882865,
-        846.6863330000001
+        2062.75707,
+        2009.2422889999998,
+        1873.737184999999
       ],
-      "medianMs": 915.882865
+      "medianMs": 2009.2422889999998
     },
     {
       "kind": "constructed city",
@@ -55,9 +55,9 @@
       "towns": 3,
       "buildings": 124,
       "ticks": 12,
-      "ms": 87.92379500000015,
-      "saveBytes": 2942403,
-      "loadMs": 52.68590700000004,
+      "ms": 217.74600199999986,
+      "saveBytes": 2962541,
+      "loadMs": 120.29227299999911,
       "exactReplay": true,
       "issues": []
     },
@@ -67,9 +67,9 @@
       "towns": 3,
       "buildings": 280,
       "ticks": 12,
-      "ms": 404.07520099999965,
-      "saveBytes": 4201526,
-      "loadMs": 75.85003200000028,
+      "ms": 895.3463119999997,
+      "saveBytes": 4212571,
+      "loadMs": 143.53538300000037,
       "exactReplay": true,
       "issues": []
     },
@@ -79,9 +79,9 @@
       "towns": 3,
       "buildings": 396,
       "ticks": 12,
-      "ms": 921.097616,
-      "saveBytes": 5950414,
-      "loadMs": 108.25349000000006,
+      "ms": 3015.0183239999988,
+      "saveBytes": 5962478,
+      "loadMs": 240.70895200000086,
       "exactReplay": true,
       "issues": []
     }

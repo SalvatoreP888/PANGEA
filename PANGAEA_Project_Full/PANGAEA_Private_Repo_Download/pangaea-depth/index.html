@@ -25,7 +25,7 @@
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="identity"><div class="seal" aria-hidden="true">◒</div><div class="wordmark">PANGAEA<small>MANY PEOPLES · ONE WORLD</small></div><span class="version">REALMS 0.4</span></div>
+    <div class="identity"><div class="seal" aria-hidden="true">◒</div><div class="wordmark">PANGAEA<small>MANY PEOPLES · ONE WORLD</small></div><span class="version">REALMS 0.5</span></div>
     <nav class="view-switch" aria-label="World view"><button data-view="globe" class="selected" aria-pressed="true">◎ <span>World</span></button><button data-view="town" aria-pressed="false">▦ <span>Settlement</span></button></nav>
     <div class="top-stat"><span id="globalPeople">4</span><small>LIVES</small><i></i><span id="globalTowns">1</span><small>HEARTHS</small></div>
     <button class="icon-btn menu-btn" id="menuBtn" aria-label="Save, load and world settings" title="World menu">☰</button>
@@ -279,6 +279,7 @@ function planetSettings(values={}) {
 const EDIBLE=['bread','meals','food','fish'];
 Object.assign(RESOURCE_NAMES,{fish:'Fresh fish',grain:'Grain',flour:'Flour',bread:'Bread',clay:'Clay',bricks:'Bricks',flax:'Flax',cloth:'Cloth'});
 Object.assign(ACTION_NAMES,{fish:'Fishing',clay:'Digging clay',mill:'Milling grain',bake:'Baking bread',fireBricks:'Firing bricks',weave:'Weaving cloth',preserveFish:'Preparing fish'});
+Object.assign(ACTION_NAMES,{supply:'Collecting workshop inputs',deliverInput:'Supplying a workshop',haulOutput:'Collecting finished goods'});
 Object.assign(BUILDINGS,{
  fishery:{name:'River fishery',size:[2,2],cost:{wood:28,stone:12},work:40,tech:'fishing',desc:'A staffed landing on a real riverbank or coast. Fish are carried home from a finite, renewing stock.'},
  wheatfield:{name:'Wheat field',size:[3,3],cost:{wood:18,stone:3},work:25,tech:'milling',desc:'Seasonal grain must be harvested, carried to storage, milled and baked.'},
@@ -658,7 +659,7 @@ function dispatch(sim,link,from,cargo={},people=[]) {
   if(Object.values(travelCargo).reduce((n,v)=>n+v,0)>mode.cargo)return false;
   if((!amount&&!people.length)||!sim.spend(from,cost,`${mode.short} departure`)){link.status=mode.fuel&&!sim.afford(from,fuel)?'Waiting for coal fuel':'Waiting for cargo';return false;}
   const trip={id:sim.state.nextTrip++,kind:people.length?'passenger':'freight',linkId:link.id,mode:link.tier,from:from.id,to:to.id,route:from.id===link.from?link.route:[...link.route].reverse(),start:sim.day,arrival:sim.day+duration,cargo:travelCargo,people:[...people],knowledge:people.length?[...from.knowledge]:[]};
-  sim.state.trips.push(trip);for(const id of people){const p=sim.person(id);p.tripId=trip.id;p.houseId=null;p.task=null;p.carry={};}
+  sim.state.trips.push(trip);for(const id of people){const p=sim.person(id);p.tripId=trip.id;p.houseId=null;p.task=null;p.carry={};delete p.productionDelivery;}
   link.lastDispatch=sim.day;link.status=`${mode.short} in transit`;
   sim.event('transport',`${mode.short} departs ${from.name}`,`${amount.toFixed(0)} cargo and ${people.length} passengers bound for ${to.name}. Nothing is credited there until arrival.`,from.id,people);return trip;
 }
@@ -728,6 +729,7 @@ function fishWork(sim,p,t,rate) {
   const b=t.buildings.find(b=>b.id===p.task.buildingId&&b.type==='fishery'&&b.complete);
   if(!b||!riverBank(t,b.x,b.y))return;
   const catchSize=Math.min(t.land.fishStock,4*rate*(sim.knowledge(t,'aquaculture')?1.4:1));
+  if(catchSize<=0)return;
   t.land.fishStock-=catchSize;p.carry.fish=(p.carry.fish||0)+catchSize;t.stats.foodProduced+=catchSize;
 }
 function tickEconomy(sim,t) {
@@ -739,6 +741,7 @@ function tickEconomy(sim,t) {
   for(const key of ['fish','bread']){
     const fraction=(key==='fish'?.006:.0015)*(sim.knowledge(t,'refrigeration')?.2:1);
     const lost=t.res[key]*fraction;t.res[key]-=lost;t.stats.waste+=lost;
+    for(const b of t.buildings)if(b.production)for(const bin of [b.production.inputs,b.production.outputs])if(bin[key]){const lost=bin[key]*fraction;bin[key]-=lost;t.stats.waste+=lost;}
   }
   const winter=climate.temperature<7;
   if(winter){const amount=Math.min(t.res.cloth,sim.residents(t).length/900);if(amount>0){sim.transaction(t,'cloth',-amount,'Cloth worn for winter warmth');for(const p of sim.residents(t))p.needs.warmth=clamp(p.needs.warmth+amount/Math.max(1,sim.residents(t).length)*500,0,100);}}
@@ -749,7 +752,118 @@ function cropClimate(planet) {
 }
 
 
+// ----- production.mjs -----
+
+
+// Small workshop buffers make carrying distance part of the economy. These are
+// inventories, not copies of the common store. Rendering never initializes them.
+function productionBuffer(b) {
+  return b.production??={inputs:{},outputs:{},batches:0};
+}
+function productionReady(b,r) {
+  return Object.entries(r.inputs).every(([k,v])=>(b.production?.inputs[k]||0)>=v);
+}
+function productionFull(b,r) {
+  return Object.entries(r.outputs).some(([k,v])=>(b.production?.outputs[k]||0)+v>v*4+1e-8);
+}
+function productionShipment(t,b,r) {
+  if(productionReady(b,r))return null;
+  const costs=Object.fromEntries(Object.entries(r.inputs).map(([k,v])=>[k,Math.max(0,Math.min(t.res[k],v*2-(b.production?.inputs[k]||0)))]));
+  return Object.entries(r.inputs).every(([k,v])=>(b.production?.inputs[k]||0)+costs[k]>=v)?costs:null;
+}
+/** Derived once per town/tick, then updated around each resident's turn. */
+function productionAssignments(people,omitId) {
+  const index={tasks:new Map(),inbound:new Map()};
+  for(const p of people)if(p.id!==omitId)trackProductionAssignment(index,p,1);
+  return index;
+}
+function trackProductionAssignment(index,p,delta) {
+  const adjust=(map,key)=>{const count=(map.get(key)||0)+delta;if(count)map.set(key,count);else map.delete(key);};
+  if(p.task?.buildingId!==undefined)adjust(index.tasks,`${p.task.buildingId}:${p.task.kind}`);
+  if(p.productionDelivery!==undefined)adjust(index.inbound,p.productionDelivery);
+}
+function productionDemand(sim,t,r,pop) {
+  const output=Object.keys(r.outputs)[0],project=sim.project(t);
+  const costs=project&&!project.funded?BUILDINGS[project.type].cost:{};
+  const need=(costs[output]||0)+(['flour','bread','meals'].includes(output)?Math.max(30,pop*3):output==='steel'?160:output==='iron'?100:60);
+  const queued=sim.buildings(t,r.building).reduce((n,b)=>n+(b.production?.outputs[output]||0),0);
+  return t.res[output]+queued<need;
+}
+function productionActions(sim,p,t,add,jobs) {
+  const people=sim.residents(t),pop=people.length;
+  const assignments=sim._activeTown?.id===t.id?sim._activeTown.productionAssignments:productionAssignments(people,p.id);
+  for(const [kind,r] of Object.entries(RECIPES)){
+    if(!sim.knowledge(t,r.tech))continue;
+    const producers=sim.buildings(t,r.building),wanted=productionDemand(sim,t,r,pop);
+    for(const b of producers){
+      const occupied=job=>(assignments.tasks.get(`${b.id}:${job}`)||0)>0;
+      if(Object.values(b.production?.outputs||{}).some(v=>v>0)&&!occupied('haulOutput'))add('haulOutput',74+p.skills.building,'Collect finished goods; they are not in the common store yet.',{buildingId:b.id,recipeKind:kind});
+      if(!wanted)continue;
+      if(productionReady(b,r)&&!productionFull(b,r)&&!occupied(kind)&&jobs(kind)<Math.max(1,Math.ceil(pop/35)))add(kind,60+p.skills.building*2,'Use materials delivered to this workshop. Finished goods need collection.',{buildingId:b.id});
+      const inbound=(assignments.inbound.get(b.id)||0)>0||occupied('supply');
+      if(!inbound&&jobs('supply')<Math.max(1,Math.ceil(pop/20))&&productionShipment(t,b,r))add('supply',66+p.skills.building,'Collect workshop inputs at the common store and carry them to the producer.',{buildingId:b.id,recipeKind:kind});
+    }
+  }
+}
+function productionAt(p,point) {return p.x===point.x&&p.y===point.y;}
+function productionWork(sim,p,t) {
+  const task=p.task,r=RECIPES[task.recipeKind||task.kind],b=t.buildings.find(q=>q.id===task.buildingId&&q.complete);
+  if(!r||!b||b.type!==r.building||!sim.knowledge(t,r.tech))return;
+  if(task.kind==='supply'){
+    if(!productionAt(p,{x:47,y:43})||productionReady(b,r)||Object.values(p.carry).some(v=>v>0))return;
+    // Refill toward two batches. Nothing is taken unless one whole batch can
+    // run after delivery; residual perishable ingredients are not discarded.
+    const costs=productionShipment(t,b,r);if(!costs)return;
+    // Eating a carried ration or an empty catch can leave zero-valued keys.
+    // A fresh marked shipment contains only its producer's actual ingredients.
+    p.carry={};
+    for(const [k,v]of Object.entries(costs))if(v>0){sim.transaction(t,k,-v,'Inputs collected for workshop delivery');p.carry[k]=v;}
+    p.productionDelivery=b.id;
+    return;
+  }
+  if(!productionAt(p,entrance(b)))return;
+  const buffer=productionBuffer(b);
+  if(task.kind==='haulOutput'){
+    for(const[k,v]of Object.entries(buffer.outputs))if(v>0){p.carry[k]=(p.carry[k]||0)+v;buffer.outputs[k]=0;}
+    return;
+  }
+  if(!productionReady(b,r)||productionFull(b,r))return;
+  for(const[k,v]of Object.entries(r.inputs))buffer.inputs[k]-=v;
+  for(const[k,v]of Object.entries(r.outputs))buffer.outputs[k]=(buffer.outputs[k]||0)+v;
+  buffer.batches++;
+}
+function productionDeliveryTarget(p,t) {
+  if(p.productionDelivery===undefined)return;
+  const b=t.buildings.find(b=>b.id===p.productionDelivery&&b.complete&&Object.values(RECIPES).some(r=>r.building===b.type));
+  if(!b)return;
+  const allowed=new Set(Object.values(RECIPES).filter(r=>r.building===b.type).flatMap(r=>Object.keys(r.inputs)));
+  if(Object.entries(p.carry).some(([k,v])=>!allowed.has(k)||!Number.isFinite(v)||v<0))return;
+  return b;
+}
+function deliverProduction(p,t) {
+  const b=productionDeliveryTarget(p,t);
+  if(!b||!productionAt(p,entrance(b)))return false;
+  const buffer=productionBuffer(b);
+  for(const[k,v]of Object.entries(p.carry))if(v>0)buffer.inputs[k]=(buffer.inputs[k]||0)+v;
+  p.carry={};delete p.productionDelivery;
+  return true;
+}
+/** Pure, read-only status for both inspectors. */
+function productionStatus(sim,t,kind) {
+  const r=RECIPES[kind],producers=sim.buildings(t,r.building),people=sim.residents(t);
+  const workers=people.filter(p=>p.task?.kind===kind).length;
+  const ids=new Set(producers.map(b=>b.id));
+  const haulers=people.filter(p=>ids.has(p.productionDelivery)||(['supply','haulOutput'].includes(p.task?.kind)&&ids.has(p.task.buildingId))).length;
+  const inputs={},outputs={};let batches=0;
+  for(const b of producers){for(const[k,v]of Object.entries(b.production?.inputs||{}))inputs[k]=(inputs[k]||0)+v;for(const[k,v]of Object.entries(b.production?.outputs||{}))outputs[k]=(outputs[k]||0)+v;batches+=b.production?.batches||0;}
+  const ready=producers.some(b=>productionReady(b,r)),missing=Object.keys(r.inputs).filter(k=>!producers.some(b=>(b.production?.inputs[k]||0)>=r.inputs[k])&&t.res[k]<r.inputs[k]);
+  const status=!sim.knowledge(t,r.tech)?'Discovery required':!producers.length?`Build ${BUILDINGS[r.building].name}`:producers.every(b=>productionFull(b,r))?'Output full · awaiting collection':workers?`${workers} workers assigned`:ready?'Workshop supplied · awaiting a worker':haulers?`${haulers} hauling inputs or outputs`:missing.length?`Waiting for ${missing.map(k=>RESOURCE_NAMES[k]).join(', ')}`:'Inputs in storage · awaiting delivery';
+  return {status,inputs,outputs,batches,workers,haulers};
+}
+
+
 // ----- sim.mjs -----
+
 
 /**
  * PANGAEA / Cities 0.3
@@ -764,7 +878,7 @@ function cropClimate(planet) {
 class Simulation {
   constructor(seed = 481217, options = {}) {
     if (!Number.isInteger(seed)) throw new Error('Seed must be an integer.');
-    this.state = {version:3,ruleset:'realms-0.4',planet:planetSettings(options.planet),economyVersion:1,seed:seed>>>0,rng:(seed^0x85671abc)>>>0,tick:0,nextPerson:1,nextTown:1,nextBuilding:1,nextEvent:1,nextTrip:1,nextLink:1,links:[],
+    this.state = {version:3,ruleset:'realms-0.5',planet:planetSettings(options.planet),economyVersion:2,seed:seed>>>0,rng:(seed^0x85671abc)>>>0,tick:0,nextPerson:1,nextTown:1,nextBuilding:1,nextEvent:1,nextTrip:1,nextLink:1,links:[],
       people:[],towns:[],trips:[],events:[],history:[],ledger:[],totals:{births:0,deaths:0,buildings:0,migrations:0,deliveries:0,meals:0},
       options:{memory:true,events:true,...options}};
     const site = findFirstSite(seed), t = this.addTown(site, null, {food:120,meals:8,wood:62,stone:22,tools:0,herbs:4});
@@ -959,10 +1073,7 @@ class Simulation {
       const need=(costs[kind]||0)+(kind==='coal'?100:80);
       if(t.res[kind]<need&&jobs(kind)<Math.max(1,Math.ceil(pop/35)))add(kind,56+p.skills.forestry*2,`Mine finite ${kind} for industry; ${Math.floor(t.res[kind])} in storage.`);
     }
-    for(const [kind,recipe] of Object.entries(RECIPES)){
-      const output=Object.keys(recipe.outputs)[0],need=(costs[output]||0)+(['flour','bread','meals'].includes(output)?Math.max(30,pop*3):output==='steel'?160:output==='iron'?100:60);
-      if(this.knowledge(t,recipe.tech)&&this.buildings(t,recipe.building).length&&this.afford(t,recipe.inputs)&&t.res[output]<need&&jobs(kind)<Math.max(1,Math.ceil(pop/35)))add(kind,60+p.skills.building*2,`Produce ${output}; inputs are consumed atomically.`,{buildingId:this.buildings(t,recipe.building)[0].id});
-    }
+    productionActions(this,p,t,add,jobs);
     add('social',22+(100-n.social)*.90+(p.trait==='Sociable'?10:0),'Spend time with neighbours; closeness grows through contact.');
     return choices.sort((a,b)=>b.score-a.score||a.kind.localeCompare(b.kind));
   }
@@ -970,6 +1081,9 @@ class Simulation {
     // Carried inventory is never erased when replanning.
     if(Object.values(p.carry).some(n=>n>0)){
       if((p.carry.food||0)>=1&&p.needs.food<30){p.carry.food--;p.needs.food=clamp(p.needs.food+62,0,100);p.why='Eat one of the gathered rations before carrying the rest home.';return;}
+      const destination=productionDeliveryTarget(p,t);
+      if(destination&&this.makeTask(p,t,{kind:'deliverInput',reason:'Carry reserved materials into the workshop buffer.'},entrance(destination),{buildingId:destination.id}))return;
+      delete p.productionDelivery;
       this.makeTask(p,t,{kind:'deliver',score:200,reason:'Resources only enter the communal stockpile when delivered.'},{x:47,y:43});return;
     }
     const choices=this.scoreActions(p,t);p.choices=choices.slice(0,5).map(x=>({...x,score:Math.round(x.score)}));
@@ -980,7 +1094,8 @@ class Simulation {
         target=result.node;extra={nodeId:result.node.id,path:result.path};
       } else if(choice.kind==='build'||choice.kind==='farm'||choice.kind==='fish') {const b=t.buildings.find(b=>b.id===choice.buildingId);if(!b)continue;target=entrance(b);extra.buildingId=b.id;}
       else if(['study','cook','social','play','learn'].includes(choice.kind))target={x:46+this.integer(0,4),y:43+this.integer(0,2)};
-      else if(RECIPES[choice.kind]){target=entrance(t.buildings.find(b=>b.id===choice.buildingId));extra.buildingId=choice.buildingId;}
+      else if(RECIPES[choice.kind]||choice.kind==='haulOutput'){target=entrance(t.buildings.find(b=>b.id===choice.buildingId));extra={buildingId:choice.buildingId,recipeKind:choice.recipeKind};}
+      else if(choice.kind==='supply'){target={x:47,y:43};extra={buildingId:choice.buildingId,recipeKind:choice.recipeKind};}
       else if(choice.kind==='infrastructure'){target={x:47,y:43};extra.linkId=choice.linkId;}
       else if(choice.kind==='craft'){target=entrance(this.buildings(t,'workshop')[0]);}
       else if(choice.kind==='care'){target=entrance(this.buildings(t,'clinic')[0]);extra.patientId=choice.patientId;}
@@ -1049,8 +1164,10 @@ class Simulation {
       }
       case 'deliver':{
         for(const[k,v]of Object.entries(p.carry))if(v>0)this.transaction(t,k,v,`${p.name} delivered ${k}`);
-        p.carry={};this.state.totals.deliveries++;break;
+        p.carry={};delete p.productionDelivery;this.state.totals.deliveries++;break;
       }
+      case 'deliverInput':if(deliverProduction(p,t))this.state.totals.deliveries++;break;
+      case 'supply':case 'haulOutput':productionWork(this,p,t);break;
       case 'build':{
         const b=t.buildings.find(b=>b.id===task.buildingId);if(!b||b.complete||!b.funded)break;
         b.progress+=2.2*rate*(this.knowledge(t,'mechanization')?1.5:1);
@@ -1078,8 +1195,7 @@ class Simulation {
       }
       case 'infrastructure':workLink(this,p,t,task.linkId,rate);done=task.work>=4;break;
       case 'smelt':case 'steel':case 'manufacture':case 'mill':case 'bake':case 'fireBricks':case 'weave':case 'preserveFish':{
-        const recipe=RECIPES[task.kind];
-        if(this.knowledge(t,recipe.tech)&&this.buildings(t,recipe.building).length&&this.spend(t,recipe.inputs,`${task.kind} inputs`))for(const[k,v]of Object.entries(recipe.outputs))this.transaction(t,k,v,`${task.kind} output`);
+        productionWork(this,p,t);
         break;
       }
       case 'craft':if(this.spend(t,{wood:3,stone:2},'Toolmaking inputs'))this.transaction(t,'tools',1,'Toolmaking output');break;
@@ -1104,7 +1220,7 @@ class Simulation {
   }
   die(p,cause) {
     if(!p.alive)return;p.alive=false;p.deathDay=this.day;p.task=null;p.due=null;this.state.totals.deaths++;
-    const t=this.town(p.townId);if(t)for(const[k,v]of Object.entries(p.carry))if(v>0)this.transaction(t,k,v,'Recovered belongings after a death');p.carry={};
+    const t=this.town(p.townId);if(t)for(const[k,v]of Object.entries(p.carry))if(v>0)this.transaction(t,k,v,'Recovered belongings after a death');p.carry={};delete p.productionDelivery;
     this.event('death',`${p.name} ${p.family} died`,`${Math.floor(p.ageDays/YEAR)} years old. Cause: ${cause}.`,p.townId,[p.id]);
     for(const q of this.alive)if(q.partnerId===p.id||q.parents.includes(p.id)||this.relationship(q,p)>40){
       this.remember(q,'grief',`I miss ${p.name}. Their absence changed our home.`,10,-20,[p.id]);if(q.partnerId===p.id)q.partnerId=null;
@@ -1212,7 +1328,7 @@ class Simulation {
       const trip={id:this.state.nextTrip++,kind:'migration',from:t.id,to:null,site,route,start:this.day,arrival:this.day+duration,
         cargo,people:family.map(p=>p.id),knowledge:[...t.knowledge],research:0};
       this.state.trips.push(trip);for(const member of family){member.tripId=trip.id;member.houseId=null;member.task=null;
-        for(const[k,v]of Object.entries(member.carry))cargo[k]=(cargo[k]||0)+v;member.carry={};}
+        for(const[k,v]of Object.entries(member.carry))cargo[k]=(cargo[k]||0)+v;member.carry={};delete member.productionDelivery;}
       t.lastMigration=this.day;this.state.totals.migrations++;this.event('migration',`${p.name}'s household sets out`,`They packed ${Math.round(needed)} food, 90 timber and 24 stone. The land journey will take ${duration} days.`,t.id,trip.people);return;
     }
   }
@@ -1253,10 +1369,10 @@ class Simulation {
       for(const p of this.state.people)if(p.alive)p.ageDays+=1/STEPS_PER_DAY;
       for(const t of this.state.towns){
         const people=this.residents(t),jobs={};for(const p of people)if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;
-        this._activeTown={id:t.id,people,jobs,climate:townClimate(this.state.seed,t,this.state.planet,this.day),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
+        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),climate:townClimate(this.state.seed,t,this.state.planet,this.day),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
         // Rotate the processing order deterministically so founder #1 cannot monopolize jobs.
         const offset=people.length?this.state.tick%people.length:0;
-        for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;this.stepPerson(p,t);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;}}
+        for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;trackProductionAssignment(this._activeTown.productionAssignments,p,-1);this.stepPerson(p,t);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;if(p.alive)trackProductionAssignment(this._activeTown.productionAssignments,p,1);}}
         this._activeTown=null;
       }
       if(this.state.tick%STEPS_PER_DAY===0){
@@ -1280,6 +1396,7 @@ class Simulation {
       for(const n of Object.values(p.carry))if(n<0||!Number.isFinite(n))issues.push('bad carried resource');
     }
     for(const t of this.state.towns){if(!Number.isFinite(t.land.fishStock)||t.land.fishStock<0||t.land.fishStock>t.land.fishCapacity+.001)issues.push('bad fish stock');for(const v of Object.values(t.res))if(!Number.isFinite(v)||v<-.00001)issues.push(`bad resource ${t.id}`);
+      for(const b of t.buildings)if(b.production)for(const bin of [b.production.inputs,b.production.outputs])for(const v of Object.values(bin))if(!Number.isFinite(v)||v<0)issues.push('bad workshop inventory');
       for(const n of t.land.nodes)if(!Number.isFinite(n.amount)||n.amount<-.001||n.amount>n.max+.001)issues.push('bad natural stock');}
     return [...new Set(issues)];
   }
@@ -1297,7 +1414,7 @@ function validateSave(s) {
     if(p.id<1||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=GRID_W||p.y<0||p.y>=GRID_H||!/^#[0-9a-f]{6}$/i.test(p.color)||typeof p.family!=='string'||!['F','M'].includes(p.sex)||!TRAITS.includes(p.trait)||typeof p.alive!=='boolean'||!Array.isArray(p.children)||!Array.isArray(p.choices)||!p.beliefs||!p.lastMemory||!numeric(p.health)||!numeric(p.mood))fail();
     for(const k of ['food','energy','social','warmth'])if(!numeric(p.needs[k])||p.needs[k]<0||p.needs[k]>100)fail();
     for(const k of SKILLS)if(!numeric(p.skills[k])||p.skills[k]<0)fail();
-    for(const v of Object.values(p.carry))if(!numeric(v)||v<0)fail();
+    for(const[k,v]of Object.entries(p.carry))if(!Object.hasOwn(RESOURCE_NAMES,k)||!numeric(v)||v<0)fail();
     if(!numeric(p.beliefs.foodSafety)||!numeric(p.beliefs.community)||p.memories.some(m=>!numeric(m.day)||!numeric(m.importance)||!numeric(m.mood)||typeof m.text!=='string'||typeof m.tag!=='string'))fail();
     if(p.task){if(!Object.hasOwn(ACTION_NAMES,p.task.kind)||!['walk','work'].includes(p.task.stage)||!numeric(p.task.work))fail();if(p.task.stage==='walk'&&(!Array.isArray(p.task.path)||!Number.isInteger(p.task.index)||p.task.index<0||p.task.index>p.task.path.length||p.task.path.some(q=>!Number.isInteger(q.x)||!Number.isInteger(q.y)||q.x<0||q.x>=GRID_W||q.y<0||q.y>=GRID_H)))fail();}
   }
@@ -1307,9 +1424,19 @@ function validateSave(s) {
     if(typeof t.name!=='string'||!numeric(t.lon)||!numeric(t.lat)||Math.abs(t.lat)>Math.PI/2||!numeric(t.research)||!numeric(t.reserve)||!t.stats||!t.weather||!['Clear','Drought','Storm'].includes(t.weather.kind)||!numeric(t.weather.until)||t.knowledge.some(k=>!TECH.some(q=>q.id===k)))fail();
     if(t.land.tiles.some(q=>!q||!['grass','sand','rock','river','ford','water'].includes(q.type)||!numeric(q.fertility)||q.fertility<0||q.fertility>1||typeof q.walkable!=='boolean')||t.land.roads.some(n=>!numeric(n)||n<0))fail();
     if(t.land.nodes.some(n=>!['food','wood','stone','herbs','ore','coal','clay'].includes(n.kind)||!Number.isInteger(n.x)||!Number.isInteger(n.y)||n.x<0||n.x>=GRID_W||n.y<0||n.y>=GRID_H||!numeric(n.amount)||!numeric(n.max)||n.amount<0||n.max<=0||n.amount>n.max+.001))fail();
-    for(const b of t.buildings)if(!Object.hasOwn(BUILDINGS,b.type)||!Number.isInteger(b.id)||!Number.isInteger(b.x)||!Number.isInteger(b.y)||b.x<2||b.x>=GRID_W-2||b.y<2||b.y>=GRID_H-2||!b.crop||!numeric(b.progress)||!numeric(b.crop.growth)||!numeric(b.crop.yield)||typeof b.complete!=='boolean'||typeof b.funded!=='boolean')fail();
+    for(const b of t.buildings){
+      if(!Object.hasOwn(BUILDINGS,b.type)||!Number.isInteger(b.id)||!Number.isInteger(b.x)||!Number.isInteger(b.y)||b.x<2||b.x>=GRID_W-2||b.y<2||b.y>=GRID_H-2||!b.crop||!numeric(b.progress)||!numeric(b.crop.growth)||!numeric(b.crop.yield)||typeof b.complete!=='boolean'||typeof b.funded!=='boolean')fail();
+      if(b.production){
+        const recipes=Object.values(RECIPES).filter(r=>r.building===b.type);
+        if(!recipes.length||!b.production.inputs||!b.production.outputs||!Number.isInteger(b.production.batches)||b.production.batches<0)fail();
+        for(const field of ['inputs','outputs']){const bin=b.production[field];if(typeof bin!=='object'||Array.isArray(bin))fail();for(const[k,v]of Object.entries(bin))if(!recipes.some(r=>Object.hasOwn(r[field],k))||!numeric(v)||v<0)fail();}
+      }
+    }
   }
-  for(const p of s.people)if(!tids.has(p.townId)||p.parents.some(id=>!ids.has(id))||(p.partnerId&&!ids.has(p.partnerId)))fail();
+  for(const p of s.people){
+    if(!tids.has(p.townId)||p.parents.some(id=>!ids.has(id))||(p.partnerId&&!ids.has(p.partnerId)))fail();
+    if(p.productionDelivery!==undefined&&(!Number.isInteger(p.productionDelivery)||!p.alive||p.tripId||!Object.values(p.carry).some(v=>v>0)||!productionDeliveryTarget(p,s.towns.find(t=>t.id===p.townId))))fail();
+  }
   for(const tr of s.trips){if(!['migration','aid','freight','passenger'].includes(tr.kind)||!tids.has(tr.from)||(!tids.has(tr.to)&&tr.to!==null)||!numeric(tr.start)||!numeric(tr.arrival)||!Array.isArray(tr.route)||!tr.route.length||!Array.isArray(tr.people)||tr.people.some(id=>!ids.has(id))||!tr.cargo||Object.values(tr.cargo).some(v=>!numeric(v)||v<0))fail();if(tr.kind==='migration'&&(!tr.site||!numeric(tr.site.lon)||!numeric(tr.site.lat)||!Array.isArray(tr.knowledge)))fail();}
   const tripIds=new Set(),travellers=new Set();
   for(const tr of s.trips){
@@ -1376,7 +1503,7 @@ function migrateSave(data) {
     if(!t.land.nodes.some(n=>n.kind==='clay'))for(const n of generateLocal(s.seed,t,s.planet).nodes.filter(n=>n.kind==='clay'))if(walkable(t,n.x,n.y))t.land.nodes.push({...n,id:Math.max(-1,...t.land.nodes.map(q=>q.id))+1});
     repairStreetNetwork(streetsHost,t);
   }
-  s.economyVersion=1;s.ruleset='realms-0.4';
+  s.economyVersion=2;s.ruleset='realms-0.5';
   return s;
 }
 
@@ -1760,6 +1887,7 @@ class WorldRenderer {
 
 
 
+
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>Math.floor(v).toLocaleString('en-US');
@@ -1815,8 +1943,10 @@ function personPanel(p){
 }
 function buildingPanel(b){
   const t=renderer.town,occupants=simulation.residents(t).filter(p=>p.houseId===b.id),def=BUILDINGS[b.type];
+  const producer=Object.values(RECIPES).some(r=>r.building===b.type);
   return `<button class="back-btn" id="backSettlement">← Settlement overview</button><span class="eyebrow" style="font-size:8px">${b.complete?'COMPLETED STRUCTURE':'CONSTRUCTION SITE'} #${b.id}</span><h2>${esc(def.name)}</h2><p>${esc(def.desc)}</p><div class="section"><div class="section-title"><span>Construction</span><small>${Math.floor(b.progress/def.work*100)}%</small></div>${miniBar(b.progress/def.work*100)}<div class="keyvalue"><span>Materials</span><strong>${b.funded?'Reserved and consumed':'Not yet available'}</strong></div>${Object.entries(def.cost).map(([k,n])=>`<div class="keyvalue"><span>${esc(k)}</span><strong>${n}</strong></div>`).join('')}<p class="microcopy">A building never appears just because time passed. Its inputs and labour must be supplied.</p></div>
     ${['farm','wheatfield','flaxfield'].includes(b.type)?`<div class="section"><div class="section-title">Crop lifecycle</div><div class="keyvalue"><span>Status</span><strong>${b.crop.yield>0?'Ready for harvest':b.crop.sown?'Growing':'Needs sowing'}</strong></div>${miniBar(b.crop.growth/80*100)}<div class="keyvalue"><span>Standing harvest</span><strong>${Math.floor(b.crop.yield)} food</strong></div><p class="microcopy">Standing crops are not yet usable food. Someone must harvest and deliver them.</p></div>`:''}
+    ${producer?`<div class="section"><div class="section-title">Workshop inventory</div><p class="microcopy">${b.production?.batches||0} batches completed. Inputs arrive with residents; outputs wait for collection.</p>${['inputs','outputs'].map(field=>`<p class="microcopy">${field==='inputs'?'Delivered inputs':'Uncollected outputs'}: ${Object.entries(b.production?.[field]||{}).filter(([k,v])=>v>0).map(([k,v])=>`${v.toFixed(1)} ${RESOURCE_NAMES[k]}`).join(', ')||'empty'}</p>`).join('')}</div>`:''}
     ${occupants.length?`<div class="section"><div class="section-title">This is home to</div>${occupants.map(p=>`<div class="keyvalue">${personLink(p.id)}<span>${Math.floor(p.ageDays/YEAR)} years</span></div>`).join('')}</div>`:''}`;
 }
 function townPicker(){return simulation.state.towns.length>1?`<label class="town-picker">Settlement<select data-town-picker>${simulation.state.towns.map(t=>`<option value="${t.id}" ${t.id===renderer.townId?'selected':''}>${esc(t.name)} · ${simulation.residents(t).length}</option>`).join('')}</select></label>`:'';}
@@ -1849,10 +1979,9 @@ function transportPanel(){
 function supplyPanel(){
   const t=renderer.town,people=simulation.residents(t);
   const chains=[['River fisheries','Fish → prepared meals'],['Bakeries','Wheat field → grain → mill → flour → bakery → bread'],['Building materials','Clay seam → clay yard → kiln → bricks → dense housing'],['Textiles','Flax field → fibre → weaving shed → cloth → winter clothing & machinery'],['Heavy industry','Ore + coal → foundry → iron → steelworks → rail & apartments']];
-  return `<span class="eyebrow">A WORKING ECONOMY</span><h2>From field to city.</h2>${townPicker()}<p class="microcopy">Workers reach producers and consume real inputs. Gathered and harvested goods must be delivered before another industry can use them. A building alone produces nothing.</p>${chains.map(([title,chain])=>`<div class="supply-chain"><strong>${title}</strong><p>${chain}</p></div>`).join('')}<div class="section"><div class="section-title">River stocks</div>${miniBar(t.land.fishStock/t.land.fishCapacity*100)}<p class="microcopy">${num(t.land.fishStock)} / ${num(t.land.fishCapacity)} fish in local habitat · ${simulation.buildings(t,'fishery').length} fisheries · ${people.filter(p=>p.task?.kind==='fish').length} fishing. Weather and managed fisheries affect recovery.</p></div>${Object.entries(RECIPES).map(([job,r])=>{
-    const producers=simulation.buildings(t,r.building),missing=Object.entries(r.inputs).filter(([k,v])=>t.res[k]<v),workers=people.filter(p=>p.task?.kind===job).length;
-    const status=!simulation.knowledge(t,r.tech)?'Discovery required':!producers.length?`Build ${BUILDINGS[r.building].name}`:missing.length?`Waiting for ${missing.map(([k,v])=>RESOURCE_NAMES[k]).join(', ')}`:workers?`${workers} workers assigned`:'Inputs ready · awaiting a worker';
-    return `<article class="production-card"><h3>${BUILDINGS[r.building].name}</h3><p>${Object.entries(r.inputs).map(([k,v])=>`${v} ${RESOURCE_NAMES[k]}`).join(' + ')} → ${Object.entries(r.outputs).map(([k,v])=>`${v} ${RESOURCE_NAMES[k]}`).join(' + ')}</p><span class="badge">${esc(status)}</span>${Object.entries(r.inputs).map(([k,v])=>`<div class="keyvalue"><span>${RESOURCE_NAMES[k]}</span><strong>${num(t.res[k])} in storage</strong></div>`).join('')}</article>`;
+  return `<span class="eyebrow">A WORKING ECONOMY</span><h2>From field to city.</h2>${townPicker()}<p class="microcopy">Storage → input delivery → workshop → output collection → storage. Residents carry every workshop shipment. Finished goods cannot feed people or build cities until delivered.</p>${chains.map(([title,chain])=>`<div class="supply-chain"><strong>${title}</strong><p>${chain}</p></div>`).join('')}<div class="section"><div class="section-title">River stocks</div>${miniBar(t.land.fishStock/t.land.fishCapacity*100)}<p class="microcopy">${num(t.land.fishStock)} / ${num(t.land.fishCapacity)} fish in local habitat · ${simulation.buildings(t,'fishery').length} fisheries · ${people.filter(p=>p.task?.kind==='fish').length} fishing. Weather and managed fisheries affect recovery.</p></div>${Object.entries(RECIPES).map(([job,r])=>{
+    const {status,inputs,outputs,batches,haulers}=productionStatus(simulation,t,job);
+    return `<article class="production-card" data-production="${job}"><h3>${BUILDINGS[r.building].name}</h3><p>${Object.entries(r.inputs).map(([k,v])=>`${v} ${RESOURCE_NAMES[k]}`).join(' + ')} → ${Object.entries(r.outputs).map(([k,v])=>`${v} ${RESOURCE_NAMES[k]}`).join(' + ')}</p><span class="badge">${esc(status)}</span>${Object.entries(r.inputs).map(([k,v])=>`<div class="keyvalue"><span>${RESOURCE_NAMES[k]}</span><strong>${num(t.res[k])} stored · ${(inputs[k]||0).toFixed(1)} at workshop</strong></div>`).join('')}${Object.keys(r.outputs).map(k=>`<div class="keyvalue"><span>${RESOURCE_NAMES[k]} to collect</span><strong>${(outputs[k]||0).toFixed(1)}</strong></div>`).join('')}<p class="microcopy">${batches} batches completed · ${haulers} carrying or collecting · output buffer: 4 batches per workshop</p></article>`;
   }).join('')}`;
 }
 function readPlanetControls(){return Object.fromEntries(Object.keys(PLANET_RANGES).map(key=>[key,Number(document.querySelector(`[data-planet="${key}"]`).value)]));}
@@ -1967,7 +2096,7 @@ function frame(now){
 }
 // Local development hooks for reproducible headless tests and save validation.
 window.PANGAEA={get simulation(){return simulation;},get renderer(){return renderer;},get paused(){return paused;},pause(){paused=true;updateUI();},resume(){paused=false;updateUI();},advance(days){paused=true;simulation.advanceDays(days);updateUI();renderer.draw(performance.now()/1000);return simulation.snapshot();},snapshot:()=>simulation.snapshot(),load:loadState,setView,selectPerson,setTab,setSpeed,cityLaboratory(population=1000){loadState(createCityLaboratory(481217,population).snapshot());setView('town');renderer.focus();return simulation.snapshot();},
-  inspect:()=>({version:'0.4-realms',seed:simulation.state.seed,day:simulation.day,population:simulation.alive.length,towns:simulation.state.towns.length,issues:simulation.invariants(),actualDaysPerSecond:actualRate,requestedSpeed:speed})};
+  inspect:()=>({version:'0.5-realms',seed:simulation.state.seed,day:simulation.day,population:simulation.alive.length,towns:simulation.state.towns.length,issues:simulation.invariants(),actualDaysPerSecond:actualRate,requestedSpeed:speed})};
 updateUI();renderer.draw(0);$('loading').remove();requestAnimationFrame(frame);
 
 })();</script>

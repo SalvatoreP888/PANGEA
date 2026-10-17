@@ -1,0 +1,527 @@
+{
+  "reviewedAt": "2026-10-17",
+  "method": "Primary websites, selected community documentation, official screenshots, source inspection and specified paper sections; no direct game playthrough",
+  "commercialGameAssetsBundled": false,
+  "newRuntimeDependencies": [],
+  "requests": [
+    {
+      "name": "worldbox",
+      "url": "https://www.superworldbox.com/",
+      "final": "https://www.superworldbox.com/",
+      "status": 200,
+      "bytes": 57935,
+      "review": "Official overview and links read",
+      "sha256": "a35a518440e62ed7e302e77e62c186d72624783f421b6f980a56bde11a55b3b4"
+    },
+    {
+      "name": "syx",
+      "url": "https://songsofsyx.com/",
+      "final": "https://songsofsyx.com/",
+      "status": 200,
+      "bytes": 5704,
+      "review": "Official overview and current wiki link read",
+      "sha256": "dbed884019e0c111c19fc673f063f409219304149b043af069784db5364fe949"
+    },
+    {
+      "name": "syx-industry",
+      "url": "https://songsofsyx.com/wiki/index.php/Industry",
+      "error": "HTTP Error 500: Internal Server Error",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "syx-logistics",
+      "url": "https://songsofsyx.com/wiki/index.php/Logistics",
+      "error": "HTTP Error 500: Internal Server Error",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "dwarf-stockpile",
+      "url": "https://dwarffortresswiki.org/index.php/Stockpile",
+      "final": "https://dwarffortresswiki.org/index.php/Stockpile",
+      "status": 200,
+      "bytes": 110790,
+      "review": "Using stockpiles and Give/take workshop sections read",
+      "sha256": "abafc3704afe6f124d334fad5e9490ce04e25a414f03937f1f5a7fa309df47ad"
+    },
+    {
+      "name": "dwarf-workshop",
+      "url": "https://dwarffortresswiki.org/index.php/Workshop",
+      "final": "https://dwarffortresswiki.org/index.php/Workshop",
+      "status": 200,
+      "bytes": 226951,
+      "review": "Description, Operation and Interface sections read",
+      "sha256": "1a511b92cd5a7b9009e0d92c4659e1ed96d4dac2719adab44efd48bc61620134"
+    },
+    {
+      "name": "rimworld-storage",
+      "url": "https://rimworldwiki.com/wiki/Storage",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "foundation",
+      "url": "https://www.polymorph.games/foundation/",
+      "final": "https://www.polymorph.games/en/",
+      "status": 200,
+      "bytes": 24001,
+      "review": "Official organic urbanism/resource management description read",
+      "sha256": "41ad36c0e5bd45b89869a2dc65e5caf3b13438850bb2d3f0815ad88dcdc3236f"
+    },
+    {
+      "name": "against-storm",
+      "url": "https://eremitegames.com/against-the-storm/",
+      "final": "https://eremitegames.com/against-the-storm-best-pc-game-indie-cup-s21/",
+      "status": 200,
+      "bytes": 318221,
+      "review": "Fetched/screened only; not used to support implementation claims",
+      "sha256": "b8aa79229dbe1931d72f8b2d07dcbcc73c2938e1c3b986c4deaede9e13bcb3a9"
+    },
+    {
+      "name": "workers-resources",
+      "url": "https://www.sovietrepublic.net/",
+      "final": "https://www.sovietrepublic.net/",
+      "status": 200,
+      "bytes": 848437,
+      "review": "Official resources/industry, workers and transport sections read",
+      "sha256": "aaa053dd316663dc881a659d005d30c5e2bb32bc1c84a1a699e592368f365025"
+    },
+    {
+      "name": "worldbox-steam",
+      "url": "https://store.steampowered.com/app/1206560/WorldBox__God_Simulator/",
+      "final": "https://store.steampowered.com/app/1206560/WorldBox__God_Simulator/",
+      "status": 200,
+      "bytes": 144215,
+      "review": "Developer-published game description read",
+      "sha256": "fe885e5eefebaf95daffe23bba62dff46f89dfa434bf1fcb28a9cc94ad34f1e3"
+    },
+    {
+      "name": "syx-steam",
+      "url": "https://store.steampowered.com/app/1162750/Songs_of_Syx/",
+      "final": "https://store.steampowered.com/app/1162750/Songs_of_Syx/",
+      "status": 200,
+      "bytes": 187362,
+      "review": "Developer-published game description read",
+      "sha256": "b9940f3c064fa6c98c6c36d793c38eaec99fb38c215ea2c7a8bc350ade63ae6f"
+    },
+    {
+      "name": "banished",
+      "url": "https://shiningrocksoftware.com/game/",
+      "final": "https://shiningrocksoftware.com/game/",
+      "status": 200,
+      "bytes": 86972,
+      "review": "Developer gameplay features read",
+      "sha256": "8ab5356254af29a8c63910be5cac092cc1f3b50058d88833ceca37941f1e0ab7"
+    },
+    {
+      "name": "mapgen-paper",
+      "url": "https://arxiv.org/abs/1709.09900",
+      "final": "https://arxiv.org/abs/1709.09900",
+      "status": 200,
+      "bytes": 44893,
+      "review": "Excluded: unrelated astronomy paper1709.09900",
+      "sha256": "48bcb2c1cf7af6dc608273a97dd7abcc11ef9123cbf09b620ac35e1c77e0c20b"
+    },
+    {
+      "name": "cityflow-paper",
+      "url": "https://arxiv.org/abs/1905.05217",
+      "final": "https://arxiv.org/abs/1905.05217",
+      "status": 200,
+      "bytes": 45755,
+      "review": "Abstract read only",
+      "sha256": "ca700cc58456ad888c39298d66cea1133fdc9d9b5a471f7910e60f9064ccadfc"
+    },
+    {
+      "name": "ats-steam",
+      "url": "https://store.steampowered.com/app/1336490/Against_the_Storm/",
+      "final": "https://store.steampowered.com/app/1336490/Against_the_Storm/",
+      "status": 200,
+      "bytes": 305043,
+      "file": "ats-steam.html",
+      "review": "Developer-published game description read",
+      "sha256": "1f643eaeae49551327e69df1b923a945f5403bcc25cc5284cda42f2cd5c44196"
+    },
+    {
+      "name": "foundation-steam",
+      "url": "https://store.steampowered.com/app/690830/Foundation/",
+      "final": "https://store.steampowered.com/app/690830/Foundation/",
+      "status": 200,
+      "bytes": 195789,
+      "file": "foundation-steam.html",
+      "review": "Developer-published game description read",
+      "sha256": "b8ecdf1d86a5758740840ab84aec00a3845de17f1972afa6b156a9d663242214"
+    },
+    {
+      "name": "rimworld-steam",
+      "url": "https://store.steampowered.com/app/294100/RimWorld/",
+      "final": "https://store.steampowered.com/app/294100/RimWorld/",
+      "status": 200,
+      "bytes": 182703,
+      "file": "rimworld-steam.html",
+      "review": "Developer-published game description read",
+      "sha256": "052954b6d7d6ff634fb502a9c92324fa7ccc9c14fad0f3379f64e2200ea0494d"
+    },
+    {
+      "name": "timberborn-steam",
+      "url": "https://store.steampowered.com/app/1062090/Timberborn/",
+      "final": "https://store.steampowered.com/app/1062090/Timberborn/",
+      "status": 200,
+      "bytes": 230288,
+      "file": "timberborn-steam.html",
+      "review": "Developer-published game description read",
+      "sha256": "d20134a50b2cfb0272c5e1cae9a178391d33aca715f0ee44d8a37547dd7aff5a"
+    },
+    {
+      "name": "worldbox-news",
+      "url": "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=1206560&count=15&maxlength=12000&format=json",
+      "final": "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=1206560&count=15&maxlength=12000&format=json",
+      "status": 200,
+      "bytes": 71571,
+      "file": "worldbox-news.json",
+      "review": "Developer news titles screened; design claims use official changelog instead",
+      "sha256": "3696b6e4b9d517e54a072364d99e782fd4e96f095cf2828daae49a607524fae6"
+    },
+    {
+      "name": "syx-wiki-current",
+      "url": "https://songsofsyx.com/wiki/index.php?title=Industry",
+      "error": "HTTP Error 406: Not Acceptable",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "worldbox-wiki",
+      "url": "https://worldbox.wiki/WorldBox_Wiki",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "widelands",
+      "url": "https://www.widelands.org/wiki/Economy/",
+      "final": "https://www.widelands.org/wiki/Economy/",
+      "status": 200,
+      "bytes": 7439,
+      "file": "widelands.html",
+      "review": "HTTP200 bot-check interstitial; article content not available",
+      "sha256": "e46a0ef98a1dc4de3c90a14e10037ef179d7cb0e8a097f0e9ab4f118fd883a97"
+    },
+    {
+      "name": "citybound-readme",
+      "url": "https://raw.githubusercontent.com/citybound/citybound/master/README.md",
+      "final": "https://raw.githubusercontent.com/citybound/citybound/master/README.md",
+      "status": 200,
+      "bytes": 723,
+      "file": "citybound-readme.raw",
+      "review": "README only; algorithm internals not inspected",
+      "sha256": "43fa7f9d188989ea70bb6974e200fdca22fb35ac356fc2c41f0e6221deb65318"
+    },
+    {
+      "name": "citybound-license",
+      "url": "https://raw.githubusercontent.com/citybound/citybound/master/LICENSE",
+      "error": "HTTP Error 404: Not Found",
+      "review": "AGPLv3 notice checked",
+      "sha256": "91b65277959ec273763d28ef002e83a6b3fba57c7a35436c9e5b66536333d720"
+    },
+    {
+      "name": "unknown-horizons-readme",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/README.md",
+      "final": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/README.md",
+      "status": 200,
+      "bytes": 3304,
+      "file": "unknown-horizons-readme.raw",
+      "review": "README read",
+      "sha256": "180aff94b08852474d1978b0c8511946f3cbc7a5652cd858d566cdb0999a7bc1"
+    },
+    {
+      "name": "unknown-horizons-license",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/COPYING",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "arxiv-procedural",
+      "url": "https://export.arxiv.org/api/query?search_query=all:procedural+AND+all:terrain+AND+all:hydrology&start=0&max_results=4",
+      "final": "https://export.arxiv.org/api/query?search_query=all:procedural+AND+all:terrain+AND+all:hydrology&start=0&max_results=4",
+      "status": 200,
+      "bytes": 3273,
+      "file": "arxiv-procedural.raw",
+      "review": "Excluded hydrology query results: satellite-image analysis, not terrain generation",
+      "sha256": "243ad15f4964d40c14cd4af35a8bcf458e7d08345086cda61243de2e5cf2e6e8"
+    },
+    {
+      "name": "worldbox-changelog",
+      "url": "https://www.superworldbox.com/changelog",
+      "final": "https://www.superworldbox.com/changelog",
+      "status": 200,
+      "bytes": 665223,
+      "file": "worldbox-changelog.html",
+      "review": "Current platform/version header and selected social/meta/biome changelog entries read",
+      "sha256": "c397f636a577918a1417e519f97874beab8ad30e3db8685e09adf17d84f285dd"
+    },
+    {
+      "name": "worldbox-shot01",
+      "url": "https://vids.superworldbox.com/img/screenshots2/01.png",
+      "final": "https://vids.superworldbox.com/img/screenshots2/01.png",
+      "status": 200,
+      "bytes": 285126,
+      "file": "worldbox-shot01.png",
+      "review": "Official screenshot visually inspected",
+      "sha256": "847f89a62528bd185208c0683f01d28db5ba47f164ce16e4dd9aa8a7b43a26e7"
+    },
+    {
+      "name": "worldbox-shot05",
+      "url": "https://vids.superworldbox.com/img/screenshots2/05.png",
+      "final": "https://vids.superworldbox.com/img/screenshots2/05.png",
+      "status": 200,
+      "bytes": 274429,
+      "file": "worldbox-shot05.png",
+      "review": "Official screenshot visually inspected",
+      "sha256": "1f28456a59f6b55677f1d5e1c1f5ff27e5f3b3a28404b95924b85a963a85cf1c"
+    },
+    {
+      "name": "syx-warehouse",
+      "url": "https://songsofsyx.wiki.gg/wiki/Warehouse",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "syx-logistics-new",
+      "url": "https://songsofsyx.wiki.gg/wiki/Logistics",
+      "final": "https://songsofsyx.wiki.gg/wiki/Logistics",
+      "status": 200,
+      "bytes": 39537,
+      "file": "syx-logistics-new.html",
+      "review": "Logistics article read; page cites revision1743",
+      "sha256": "dac7634f29831e6bcec562c844485f38c431969b9b02bda8309d4fe58f060907"
+    },
+    {
+      "name": "syx-industry-new",
+      "url": "https://songsofsyx.wiki.gg/wiki/Industry",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "widelands-economy",
+      "url": "https://www.widelands.org/wiki/ManagingTheEconomy/",
+      "final": "https://www.widelands.org/wiki/ManagingTheEconomy/",
+      "status": 200,
+      "bytes": 2935,
+      "file": "widelands-economy.html",
+      "review": "HTTP200 bot-check interstitial; article content not available",
+      "sha256": "aa89905ba8548e460cbb9abf649f170dbf0b2d3be846048db1b871395096ede4"
+    },
+    {
+      "name": "citybound-meta",
+      "url": "https://api.github.com/repos/citybound/citybound",
+      "final": "https://api.github.com/repos/citybound/citybound",
+      "status": 200,
+      "bytes": 6493,
+      "file": "citybound-meta.json",
+      "review": "Repository license/default-branch metadata inspected",
+      "sha256": "5f3d4311116f79d3430f68ad6a33479d7b13d34cc9dde85d7b7895c12be4b4ca"
+    },
+    {
+      "name": "unknown-horizons-meta",
+      "url": "https://api.github.com/repos/unknown-horizons/unknown-horizons",
+      "final": "https://api.github.com/repos/unknown-horizons/unknown-horizons",
+      "status": 200,
+      "bytes": 7066,
+      "file": "unknown-horizons-meta.json",
+      "review": "Fetched/screened only; not used to support implementation claims",
+      "sha256": "741ada0d5b8e3eb99adc650ea18f954579a0706bd5efcd81ea7ed782ea7008ae"
+    },
+    {
+      "name": "unknown-horizons-files",
+      "url": "https://api.github.com/repos/unknown-horizons/unknown-horizons/contents",
+      "final": "https://api.github.com/repos/unknown-horizons/unknown-horizons/contents",
+      "status": 200,
+      "bytes": 22829,
+      "file": "unknown-horizons-files.json",
+      "review": "Fetched/screened only; not used to support implementation claims",
+      "sha256": "8f0b14ae6e4898ac7e7aa5503701089b5c53df7c315bf905a792dc97a8711dc1"
+    },
+    {
+      "name": "arxiv-roads",
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%22procedural%22+AND+all%3A%22road+network%22&max_results=4",
+      "final": "https://export.arxiv.org/api/query?search_query=all%3A%22procedural%22+AND+all%3A%22road+network%22&max_results=4",
+      "status": 200,
+      "bytes": 10449,
+      "file": "arxiv-roads.raw",
+      "review": "Search abstracts screened; Elite Lanes2603.20964 selected as an abstract-only reference",
+      "sha256": "5ba7442eabcc844343fd3408a0e5ef4e174bdc986d6674d52ae53abb832d7c74"
+    },
+    {
+      "name": "arxiv-climate",
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%22ExoPlaSim%22&max_results=2",
+      "final": "https://export.arxiv.org/api/query?search_query=all%3A%22ExoPlaSim%22&max_results=2",
+      "status": 200,
+      "bytes": 6324,
+      "file": "arxiv-climate.raw",
+      "review": "Search abstracts screened; ExoPlaSim2107.07685 selected",
+      "sha256": "c1d430b7288b688394c428293c3411837c4aebee14e2178abab45dd2c897652c"
+    },
+    {
+      "name": "widelands-meta",
+      "url": "https://api.github.com/repos/widelands/widelands",
+      "final": "https://api.github.com/repos/widelands/widelands",
+      "status": 200,
+      "bytes": 6712,
+      "file": "widelands-meta.json",
+      "review": "Fetched/screened only; not used to support implementation claims",
+      "sha256": "bd2a17243addf9c09949ee9d46e073f0178feb124af806695bfddb5385489b96"
+    },
+    {
+      "name": "syx-crate",
+      "url": "https://songsofsyx.wiki.gg/wiki/Crates",
+      "error": "HTTP Error 403: Forbidden",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "syx-hauler",
+      "url": "https://songsofsyx.wiki.gg/wiki/Hauler",
+      "error": "HTTP Error 403: Forbidden",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "citybound-license",
+      "url": "https://raw.githubusercontent.com/citybound/citybound/master/LICENSE.txt",
+      "status": 200,
+      "bytes": 34519,
+      "file": "citybound-license.raw",
+      "review": "AGPLv3 notice checked",
+      "sha256": "91b65277959ec273763d28ef002e83a6b3fba57c7a35436c9e5b66536333d720"
+    },
+    {
+      "name": "unknown-horizons-gpl",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/doc/licenses/GPL",
+      "status": 200,
+      "bytes": 17987,
+      "file": "unknown-horizons-gpl.raw",
+      "review": "GPLv2 notice checked",
+      "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+    },
+    {
+      "name": "unknown-horizons-collector",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/horizons/world/units/collectors/buildingcollector.py",
+      "status": 200,
+      "bytes": 16095,
+      "file": "unknown-horizons-collector.raw",
+      "review": "Collector jobs, ordering, inventory exchange and persistence source sections inspected",
+      "sha256": "3c36d0ae984bbaa610fe5cb5028be4552920748f3ff82d1570b53b2999e7f8c4"
+    },
+    {
+      "name": "unknown-horizons-producer",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/master/horizons/component/producer.py",
+      "error": "HTTP Error 404: Not Found",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    },
+    {
+      "name": "widelands-license",
+      "url": "https://raw.githubusercontent.com/widelands/widelands/master/COPYING",
+      "status": 200,
+      "bytes": 18092,
+      "file": "widelands-license.raw",
+      "review": "GPLv2 notice checked",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "name": "widelands-economy-source",
+      "url": "https://raw.githubusercontent.com/widelands/widelands/master/src/economy/economy.cc",
+      "status": 200,
+      "bytes": 44334,
+      "file": "widelands-economy-source.raw",
+      "review": "Request/supply registration and closest-warehouse source sections inspected",
+      "sha256": "c41aa9bc723c538ff10b4ed55d61831e35c1e80cfc222dd39a0d58d8ec3fc285"
+    },
+    {
+      "name": "exoplasim-paper",
+      "url": "https://arxiv.org/pdf/2107.07685",
+      "status": 200,
+      "bytes": 24746470,
+      "file": "exoplasim-paper.pdf",
+      "review": "Complete PDF fetched after initial6MB preview; abstract, introduction/model description and section3.1 read",
+      "sha256": "4ce039c9516e3363307b6c95270c9eb402a75b5a4e9f349457cb77773e740d8b"
+    },
+    {
+      "name": "exoplasim-meta",
+      "url": "https://api.github.com/repos/alphaparrot/ExoPlaSim",
+      "error": "HTTP Error 401: Unauthorized",
+      "review": "Fetched/screened only; not used to support implementation claims"
+    }
+  ],
+  "pinnedSourceVerification": [
+    {
+      "repository": "citybound/citybound",
+      "commit": "817de551d2bc96c90d0b7c74af4872454f42b44c",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/citybound/citybound/817de551d2bc96c90d0b7c74af4872454f42b44c/README.md",
+      "status": 200,
+      "sha256": "43fa7f9d188989ea70bb6974e200fdca22fb35ac356fc2c41f0e6221deb65318",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "citybound/citybound",
+      "commit": "817de551d2bc96c90d0b7c74af4872454f42b44c",
+      "path": "LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/citybound/citybound/817de551d2bc96c90d0b7c74af4872454f42b44c/LICENSE.txt",
+      "status": 200,
+      "sha256": "91b65277959ec273763d28ef002e83a6b3fba57c7a35436c9e5b66536333d720",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "unknown-horizons/unknown-horizons",
+      "commit": "c37c06e5c8624ad20a9bf1fd5d7b14a924235841",
+      "path": "horizons/world/units/collectors/buildingcollector.py",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/c37c06e5c8624ad20a9bf1fd5d7b14a924235841/horizons/world/units/collectors/buildingcollector.py",
+      "status": 200,
+      "sha256": "3c36d0ae984bbaa610fe5cb5028be4552920748f3ff82d1570b53b2999e7f8c4",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "unknown-horizons/unknown-horizons",
+      "commit": "c37c06e5c8624ad20a9bf1fd5d7b14a924235841",
+      "path": "doc/licenses/GPL",
+      "url": "https://raw.githubusercontent.com/unknown-horizons/unknown-horizons/c37c06e5c8624ad20a9bf1fd5d7b14a924235841/doc/licenses/GPL",
+      "status": 200,
+      "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "widelands/widelands",
+      "commit": "599c33c9901c8ee71c83d6bd13c8b547e7547870",
+      "path": "src/economy/economy.cc",
+      "url": "https://raw.githubusercontent.com/widelands/widelands/599c33c9901c8ee71c83d6bd13c8b547e7547870/src/economy/economy.cc",
+      "status": 200,
+      "sha256": "c41aa9bc723c538ff10b4ed55d61831e35c1e80cfc222dd39a0d58d8ec3fc285",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "widelands/widelands",
+      "commit": "599c33c9901c8ee71c83d6bd13c8b547e7547870",
+      "path": "COPYING",
+      "url": "https://raw.githubusercontent.com/widelands/widelands/599c33c9901c8ee71c83d6bd13c8b547e7547870/COPYING",
+      "status": 200,
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "matchesInspectedFile": true
+    },
+    {
+      "repository": "alphaparrot/ExoPlaSim",
+      "commit": "5f8dff4aaa8d6cd8813e6e0cf21c49883cbfb7ff",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/alphaparrot/ExoPlaSim/5f8dff4aaa8d6cd8813e6e0cf21c49883cbfb7ff/README.md",
+      "status": 200,
+      "sha256": "b30fd7f44efdd36ae1b3305bb9ba8fdf20201e84ba6efd029f18fea6299da401",
+      "matchesInspectedFile": true
+    }
+  ],
+  "exoplasim": {
+    "url": "https://arxiv.org/pdf/2107.07685",
+    "version": "2107.07685v2",
+    "completePdfBytes": 24746470,
+    "sha256": "4ce039c9516e3363307b6c95270c9eb402a75b5a4e9f349457cb77773e740d8b",
+    "sectionsRead": [
+      "abstract",
+      "introduction and model description",
+      "3.1 Model Speed"
+    ],
+    "githubReadmeUrl": "https://raw.githubusercontent.com/alphaparrot/ExoPlaSim/5f8dff4aaa8d6cd8813e6e0cf21c49883cbfb7ff/README.md",
+    "integration": "Deferred; no installation or code import"
+  }
+}

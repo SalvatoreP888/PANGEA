@@ -1,5 +1,7 @@
 # Realms 0.4 — game references and generation research
 
+Historical access report for the 0.4 delivery. On 17 October 2026 the environment gained unrestricted web access. See [the deeper research pass](DEEP_RESEARCH.md) for verified WorldBox/Songs of Syx sources, nine game comparisons and the implemented 0.5 producer inventories and hauling.
+
 The owner requested Songs of Syx style supply chains, WorldBox style fantasy observation and a space-to-city transition. Those are design references; this is an original implementation on the existing PANGAEA engine, not a port or reproduction of either commercial game.
 
 ## Commercial references and access limits

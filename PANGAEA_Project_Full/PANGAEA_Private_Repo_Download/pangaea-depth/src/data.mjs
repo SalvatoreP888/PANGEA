@@ -96,6 +96,7 @@ export function planetSettings(values={}) {
 export const EDIBLE=['bread','meals','food','fish'];
 Object.assign(RESOURCE_NAMES,{fish:'Fresh fish',grain:'Grain',flour:'Flour',bread:'Bread',clay:'Clay',bricks:'Bricks',flax:'Flax',cloth:'Cloth'});
 Object.assign(ACTION_NAMES,{fish:'Fishing',clay:'Digging clay',mill:'Milling grain',bake:'Baking bread',fireBricks:'Firing bricks',weave:'Weaving cloth',preserveFish:'Preparing fish'});
+Object.assign(ACTION_NAMES,{supply:'Collecting workshop inputs',deliverInput:'Supplying a workshop',haulOutput:'Collecting finished goods'});
 Object.assign(BUILDINGS,{
  fishery:{name:'River fishery',size:[2,2],cost:{wood:28,stone:12},work:40,tech:'fishing',desc:'A staffed landing on a real riverbank or coast. Fish are carried home from a finite, renewing stock.'},
  wheatfield:{name:'Wheat field',size:[3,3],cost:{wood:18,stone:3},work:25,tech:'milling',desc:'Seasonal grain must be harvested, carried to storage, milled and baked.'},

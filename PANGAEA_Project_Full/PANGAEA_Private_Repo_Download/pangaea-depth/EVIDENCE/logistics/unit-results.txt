@@ -1,0 +1,73 @@
+
+> pangaea-depth@0.5.0 test
+> node --test tests/simulation.test.mjs tests/cities.test.mjs tests/realms.test.mjs tests/production.test.mjs
+
+✔ Thirty-six discoveries form an acyclic five-era tree with usable unlocks (3.198688ms)
+✔ Vendored FlatQueue orders priorities, empties, and can be reused (0.562914ms)
+✔ Housing chooses buildable material chains rather than deadlocking on future industry (122.855829ms)
+✔ Dense city fixture houses actual individuals and keeps doors connected (1098.13833ms)
+✔ Local roads connect real completed buildings without changing stocks when unfunded (24.536614ms)
+✔ Research priority retains per-topic progress and cannot bypass prerequisites/population (172.035861ms)
+✔ Industrial conversions require the building, knowledge and delivered inputs (28.204867ms)
+✔ Crop improvements change real harvest yield and sanitation does not create supplies (68.593217ms)
+✔ Road and railway upgrades consume materials once and require real labour (389.137455ms)
+✔ Railway construction requires stations, knowledge and sufficient materials (324.193977ms)
+✔ Freight departs immediately, consumes steam fuel and arrives exactly once (347.323336ms)
+✔ Passengers reserve destination beds, keep identity and carry provisions (309.763037ms)
+✔ Over-capacity, invalid cargo and full destinations are rejected atomically (311.763886ms)
+✔ Market logistics carries scarce material; surplus is not duplicated (312.155079ms)
+✔ Save/resume with city caches and an in-flight train remains deterministic (1154.026645ms)
+✔ Legacy mature save migrates with every person and existing stockpile preserved (214.870061ms)
+✔ Malformed links, overfull trains and duplicate passengers cannot enter a live save (714.660176ms)
+✔ Every recipe waits for physical input delivery and output collection (131.329345ms)
+✔ A material shipment cannot be collected or delivered from a distance (22.87481ms)
+✔ A missing workshop ingredient consumes nothing, including other buffered inputs (45.962605ms)
+✔ Full output buffers stop production until goods are collected (29.671001ms)
+✔ Interrupted input deliveries survive save/resume and match exact autonomous replay (312.592011ms)
+✔ Input reservations prevent duplicate pickup assignments and inspectors are read-only (33.799438ms)
+✔ Empty-catch and eaten-ration carry keys cannot corrupt a later workshop shipment (87.631553ms)
+✔ Workshop perishables decay, leave no oversized output and retain usable residual inputs (19.651157ms)
+✔ Malformed or foreign workshop inventories and delivery targets are rejected (126.395054ms)
+✔ Autonomous workers sustain milling and baking without injected workshop stocks (345.742082ms)
+✔ Repeated foot traffic cannot create constructed streets or imaginary junctions (124.624226ms)
+✔ Street branches join one existing network without creating grid loops (154.710452ms)
+✔ Old city saves repair road geometry without moving people, buildings or stockpiles (1041.727871ms)
+✔ Unreciprocated street edges are rejected before a save replaces the live world (137.94088ms)
+✔ Fisheries are sited on real banks and catch finite fish into carried inventory (57.719152ms)
+✔ Grain fields harvest grain, which is unavailable as bread until milling and baking (30.404879ms)
+✔ Brick and textile chains require their inputs and affect construction and warmth (38.405897ms)
+✔ Every production recipe fails atomically when one ingredient is unavailable (143.55371ms)
+✔ Latitude, hemisphere season, elevation, rain and temperature change climate coherently (0.67493ms)
+✔ Planet settings persist, reject malformed parameters and alter generated forest density (126.498152ms)
+✔ Zero storm/drought settings disable random events while explicit interventions remain available (837.575138ms)
+✔ Mixed fantasy founders share settlement work and children inherit both lineages (129.176315ms)
+✔ Fisheries, crops and industry remain exact across a climate-aware save/resume (881.202082ms)
+✔ Generated river cells follow a strictly descending height field into the outlet (19.512807ms)
+✔ Specialist fields stop consuming labour when their stored output exceeds local demand (21.988858ms)
+✔ Exactly four adult founders; same seed and actions produce the same complete state (405.488294ms)
+✔ Save round-trip continues the seeded simulation without divergence (389.648512ms)
+✔ Reject old, malformed, unsafe styling and invalid enum saves without mutating the original (128.444699ms)
+✔ Spending checks all inputs atomically and never creates a negative inventory (9.722132ms)
+✔ Foraging depletes a node into carried inventory; storage changes only at delivery (11.489827ms)
+✔ Construction reserves its material costs before a worker can add progress (6.95111ms)
+✔ Cooking transforms food and fuel without adding net rations (6.781503ms)
+✔ Fractional food does not trap hungry agents in impossible eating tasks (6.276407ms)
+✔ Memory retrieval weights context and reflection changes food caution (7.341542ms)
+✔ Children do not get adult labor or partnership decisions; close family is excluded (6.560952ms)
+✔ Birth records both parents and is a person, not just a population increment (6.850913ms)
+✔ Regrowth is slower in drought and resources stay finite (14.063726ms)
+✔ A* uses adjacent walkable tiles and rejects water targets (7.228819ms)
+✔ Death is recorded and partnership is released, without erasing family history (6.851838ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5717.106234
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
