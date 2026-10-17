@@ -18,6 +18,7 @@ export function fishWork(sim,p,t,rate) {
   const b=t.buildings.find(b=>b.id===p.task.buildingId&&b.type==='fishery'&&b.complete);
   if(!b||!riverBank(t,b.x,b.y))return;
   const catchSize=Math.min(t.land.fishStock,4*rate*(sim.knowledge(t,'aquaculture')?1.4:1));
+  if(catchSize<=0)return;
   t.land.fishStock-=catchSize;p.carry.fish=(p.carry.fish||0)+catchSize;t.stats.foodProduced+=catchSize;
 }
 export function tickEconomy(sim,t) {
@@ -29,6 +30,7 @@ export function tickEconomy(sim,t) {
   for(const key of ['fish','bread']){
     const fraction=(key==='fish'?.006:.0015)*(sim.knowledge(t,'refrigeration')?.2:1);
     const lost=t.res[key]*fraction;t.res[key]-=lost;t.stats.waste+=lost;
+    for(const b of t.buildings)if(b.production)for(const bin of [b.production.inputs,b.production.outputs])if(bin[key]){const lost=bin[key]*fraction;bin[key]-=lost;t.stats.waste+=lost;}
   }
   const winter=climate.temperature<7;
   if(winter){const amount=Math.min(t.res.cloth,sim.residents(t).length/900);if(amount>0){sim.transaction(t,'cloth',-amount,'Cloth worn for winter warmth');for(const p of sim.residents(t))p.needs.warmth=clamp(p.needs.warmth+amount/Math.max(1,sim.residents(t).length)*500,0,100);}}

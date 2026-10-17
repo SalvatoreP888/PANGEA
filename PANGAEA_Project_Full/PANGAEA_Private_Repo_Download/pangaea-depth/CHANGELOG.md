@@ -1,3 +1,11 @@
+# Realms 0.5
+
+- Industrial inputs must be carried into a producer's saved buffer. Crafted outputs remain at the producer until collected and delivered; full output buffers stop work. Eight recipe chains now pay local delivery time as well as worker travel.
+- Supply and building inspectors expose delivered inputs, uncollected outputs, hauling, completed batches and blockers. Perishables decay inside workshop inventories too.
+- Save validation rejects invalid delivery targets and incompatible marked cargo. Empty-catch/consumed-ration inventory keys are cleared before new shipments to keep large-city saves valid. Interruptions, death and passenger departure retain or recover materials under existing rules. Production reservations use incrementally maintained per-tick indexes.
+- Primary-source research covers nine games, inspected WorldBox screenshots/changelog, pinned open-source collection/economy sources and specified climate-paper sections. See DEEP_RESEARCH.md for adopted concepts and future acceptance criteria.
+- Regression, browser, constructed-scale and three natural 30-year reports are tracked separately in LOGISTICS_QA.md. Earlier fixtures remain preserved.
+
 # Cities 0.3
 
 - Compact, connected settlement frontages; people are about a quarter of their previous sprite size. Joined dirt/graded/paved streets replace square traffic marks. Zoom supports both city overview and close inspection.

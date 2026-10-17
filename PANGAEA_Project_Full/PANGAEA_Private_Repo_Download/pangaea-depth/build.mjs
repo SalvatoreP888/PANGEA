@@ -2,7 +2,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname,join} from 'node:path';
 const root=dirname(fileURLToPath(import.meta.url));
-const files=['vendor/flatqueue.mjs','data.mjs','world.mjs','city.mjs','transport.mjs','economy.mjs','sim.mjs','scenarios.mjs','render.mjs','ui.mjs'];
+const files=['vendor/flatqueue.mjs','data.mjs','world.mjs','city.mjs','transport.mjs','economy.mjs','production.mjs','sim.mjs','scenarios.mjs','render.mjs','ui.mjs'];
 const code=files.map(file=>`\n// ----- ${file} -----\n`+readFileSync(join(root,'src',file),'utf8').replace(/^import .*?;\s*$/gm,'').replace(/^export default /gm,'').replace(/^export /gm,'')).join('\n');
 const notice=readFileSync(join(root,'src/vendor/flatqueue.LICENSE'),'utf8');
 const html=readFileSync(join(root,'index.template.html'),'utf8').replace('/*__STYLE__*/',()=>readFileSync(join(root,'src/style.css'),'utf8')).replace('/*__SCRIPT__*/',()=>`/* FlatQueue 3.0.0 — ${notice} */\n(()=>{'use strict';\n${code}\n})();`);

@@ -17,10 +17,10 @@
   ],
   "pageErrors": [],
   "externalRequests": [],
-  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
   "renderMs": {
-    "median": 32.20000000001164,
-    "p95": 44.20000000001164,
+    "median": 35.199999999953434,
+    "p95": 46.5,
     "viewport": [
       1600,
       1000

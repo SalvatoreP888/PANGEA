@@ -39,7 +39,7 @@ export function dispatch(sim,link,from,cargo={},people=[]) {
   if(Object.values(travelCargo).reduce((n,v)=>n+v,0)>mode.cargo)return false;
   if((!amount&&!people.length)||!sim.spend(from,cost,`${mode.short} departure`)){link.status=mode.fuel&&!sim.afford(from,fuel)?'Waiting for coal fuel':'Waiting for cargo';return false;}
   const trip={id:sim.state.nextTrip++,kind:people.length?'passenger':'freight',linkId:link.id,mode:link.tier,from:from.id,to:to.id,route:from.id===link.from?link.route:[...link.route].reverse(),start:sim.day,arrival:sim.day+duration,cargo:travelCargo,people:[...people],knowledge:people.length?[...from.knowledge]:[]};
-  sim.state.trips.push(trip);for(const id of people){const p=sim.person(id);p.tripId=trip.id;p.houseId=null;p.task=null;p.carry={};}
+  sim.state.trips.push(trip);for(const id of people){const p=sim.person(id);p.tripId=trip.id;p.houseId=null;p.task=null;p.carry={};delete p.productionDelivery;}
   link.lastDispatch=sim.day;link.status=`${mode.short} in transit`;
   sim.event('transport',`${mode.short} departs ${from.name}`,`${amount.toFixed(0)} cargo and ${people.length} passengers bound for ${to.name}. Nothing is credited there until arrival.`,from.id,people);return trip;
 }

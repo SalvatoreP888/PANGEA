@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-17",
+  "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
+  "ruleset": "realms-0.5",
+  "unit": {
+    "passed": 56,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "passed": 55,
+    "failed": 0,
+    "componentChecks": {
+      "EVIDENCE/cities/baseline-browser/browser-results.json": 19,
+      "EVIDENCE/cities/city-browser-results.json": 14,
+      "EVIDENCE/realms/browser-results.json": 14,
+      "EVIDENCE/logistics/browser-results.json": 8
+    },
+    "pageErrors": [],
+    "externalRequests": [],
+    "focusedRerun": "Production screenshot scrolling was stabilized after an element-detachment race; all eight assertions passed on rerun. The other47 already passed against the same final build."
+  },
+  "constructedPopulations": [
+    250,
+    1000,
+    2000
+  ],
+  "exactConstructedReplay": true,
+  "naturalSeeds": [
+    481217,
+    17,
+    9901
+  ],
+  "naturalYears": 30,
+  "naturalFinalPopulation": [
+    23,
+    24,
+    21
+  ]
+}

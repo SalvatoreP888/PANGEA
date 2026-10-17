@@ -1,5 +1,7 @@
 # Realms 0.4 — verified results
 
+Historical delivery report. [Realms 0.5 verification](LOGISTICS_QA.md) covers the current build and its physical production changes.
+
 17 October 2026. Node v24.19.0; Chromium 154.0.8037.57. Built standalone HTML SHA-256 `bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8`.
 
 - `npm run build`: passed; standalone HTML has no runtime network dependencies.

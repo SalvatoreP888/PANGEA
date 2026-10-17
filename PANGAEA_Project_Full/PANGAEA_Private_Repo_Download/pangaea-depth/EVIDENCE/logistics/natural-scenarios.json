@@ -1,0 +1,124 @@
+{
+  "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
+  "ruleset": "realms-0.5",
+  "constructed": false,
+  "seeds": [
+    {
+      "seed": 481217,
+      "checkpoints": [
+        {
+          "year": 10,
+          "population": 10,
+          "towns": 1,
+          "births": 6,
+          "deaths": 0,
+          "foodDays": 187.71262682349823,
+          "technologies": 18,
+          "batches": 2654,
+          "issues": []
+        },
+        {
+          "year": 20,
+          "population": 16,
+          "towns": 1,
+          "births": 12,
+          "deaths": 0,
+          "foodDays": 151.51505522609142,
+          "technologies": 18,
+          "batches": 6549,
+          "issues": []
+        },
+        {
+          "year": 30,
+          "population": 23,
+          "towns": 1,
+          "births": 19,
+          "deaths": 0,
+          "foodDays": 226.3510246510881,
+          "technologies": 25,
+          "batches": 13959,
+          "issues": []
+        }
+      ],
+      "elapsedMs": 34204.62365
+    },
+    {
+      "seed": 17,
+      "checkpoints": [
+        {
+          "year": 10,
+          "population": 12,
+          "towns": 1,
+          "births": 8,
+          "deaths": 0,
+          "foodDays": 428.6268286806413,
+          "technologies": 18,
+          "batches": 2982,
+          "issues": []
+        },
+        {
+          "year": 20,
+          "population": 18,
+          "towns": 1,
+          "births": 14,
+          "deaths": 0,
+          "foodDays": 329.34613103737377,
+          "technologies": 23,
+          "batches": 6637,
+          "issues": []
+        },
+        {
+          "year": 30,
+          "population": 24,
+          "towns": 1,
+          "births": 20,
+          "deaths": 0,
+          "foodDays": 590.2462495260214,
+          "technologies": 25,
+          "batches": 15361,
+          "issues": []
+        }
+      ],
+      "elapsedMs": 34829.311706
+    },
+    {
+      "seed": 9901,
+      "checkpoints": [
+        {
+          "year": 10,
+          "population": 10,
+          "towns": 1,
+          "births": 6,
+          "deaths": 0,
+          "foodDays": 273.8372170403448,
+          "technologies": 18,
+          "batches": 2600,
+          "issues": []
+        },
+        {
+          "year": 20,
+          "population": 16,
+          "towns": 1,
+          "births": 12,
+          "deaths": 0,
+          "foodDays": 297.71447094698317,
+          "technologies": 18,
+          "batches": 6568,
+          "issues": []
+        },
+        {
+          "year": 30,
+          "population": 21,
+          "towns": 1,
+          "births": 17,
+          "deaths": 0,
+          "foodDays": 466.40094199609973,
+          "technologies": 25,
+          "batches": 14588,
+          "issues": []
+        }
+      ],
+      "elapsedMs": 47075.44516900001
+    }
+  ]
+}
