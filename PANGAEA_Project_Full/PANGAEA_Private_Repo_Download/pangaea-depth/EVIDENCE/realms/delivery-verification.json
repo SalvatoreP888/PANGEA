@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-17",
+  "buildSha256": "bec19eaf7607cc7506a097e6d6c15b77fd5b68ecf817b5e6869e8ff96cfce9d8",
+  "checks": {
+    "build": "passed",
+    "unitTests": 46,
+    "unitFailures": 0,
+    "browserChecks": 47,
+    "pageErrors": 0,
+    "diffCheck": "passed"
+  },
+  "maxObservation": {
+    "exact": true,
+    "days": 283.75,
+    "paused": true,
+    "mode": "max",
+    "wallSeconds": 2.1874141990000453,
+    "observedDaysPerSecond": 129.7193737380481
+  },
+  "scope": "Fresh verification before authorized GitHub delivery; existing benchmark/natural evidence is preserved separately."
+}

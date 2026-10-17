@@ -1,0 +1,107 @@
+{
+  "seed": 481217,
+  "constructed": false,
+  "checkpoints": [
+    {
+      "year": 10,
+      "pop": 11,
+      "towns": 1,
+      "farms": 4,
+      "beds": 20,
+      "foodDays": 272.4370091714547,
+      "tech": 14,
+      "ms": 1393.134227
+    },
+    {
+      "year": 20,
+      "pop": 16,
+      "towns": 1,
+      "farms": 6,
+      "beds": 20,
+      "foodDays": 146.41166637039427,
+      "tech": 14,
+      "ms": 4253.057224
+    },
+    {
+      "year": 30,
+      "pop": 19,
+      "towns": 1,
+      "farms": 6,
+      "beds": 28,
+      "foodDays": 136.76340018699068,
+      "tech": 20,
+      "ms": 8844.100937
+    },
+    {
+      "year": 40,
+      "pop": 31,
+      "towns": 1,
+      "farms": 8,
+      "beds": 76,
+      "foodDays": 79.79000947437294,
+      "tech": 20,
+      "ms": 15802.29291
+    },
+    {
+      "year": 50,
+      "pop": 45,
+      "towns": 1,
+      "farms": 12,
+      "beds": 76,
+      "foodDays": 67.31498715720755,
+      "tech": 20,
+      "ms": 26505.401379
+    },
+    {
+      "year": 60,
+      "pop": 61,
+      "towns": 2,
+      "farms": 14,
+      "beds": 76,
+      "foodDays": 58.78441689657981,
+      "tech": 20,
+      "ms": 41789.778186
+    },
+    {
+      "year": 70,
+      "pop": 91,
+      "towns": 2,
+      "farms": 16,
+      "beds": 124,
+      "foodDays": 1031.783588141699,
+      "tech": 25,
+      "ms": 66133.211322
+    },
+    {
+      "year": 80,
+      "pop": 139,
+      "towns": 2,
+      "farms": 16,
+      "beds": 172,
+      "foodDays": 67.27033417114019,
+      "tech": 25,
+      "ms": 101580.842218
+    },
+    {
+      "year": 90,
+      "pop": 201,
+      "towns": 2,
+      "farms": 20,
+      "beds": 220,
+      "foodDays": 0.004897117947141618,
+      "tech": 30,
+      "ms": 161691.012082
+    },
+    {
+      "year": 100,
+      "pop": 310,
+      "towns": 2,
+      "farms": 32,
+      "beds": 364,
+      "foodDays": 0.0029272970309025836,
+      "tech": 30,
+      "ms": 262904.25394900003
+    }
+  ],
+  "scope": "Core city ruleset. Century run completed before final presentation caching and passenger-knowledge transfer polish; those changes have focused regression/browser coverage. No second century run was claimed."
+}

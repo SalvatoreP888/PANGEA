@@ -1,0 +1,86 @@
+[
+  {
+    "seed": 17,
+    "constructed": false,
+    "ms": 54422.683064,
+    "checkpoints": [
+      {
+        "year": 20,
+        "population": 17,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 40,
+        "population": 42,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 60,
+        "population": 90,
+        "settlements": 2,
+        "deaths": 3,
+        "issues": []
+      }
+    ]
+  },
+  {
+    "seed": 9901,
+    "constructed": false,
+    "ms": 57493.443941000005,
+    "checkpoints": [
+      {
+        "year": 20,
+        "population": 17,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 40,
+        "population": 39,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 60,
+        "population": 83,
+        "settlements": 3,
+        "deaths": 2,
+        "issues": []
+      }
+    ]
+  },
+  {
+    "seed": 881,
+    "constructed": false,
+    "ms": 49092.89907799999,
+    "checkpoints": [
+      {
+        "year": 20,
+        "population": 16,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 40,
+        "population": 36,
+        "settlements": 1,
+        "deaths": 0,
+        "issues": []
+      },
+      {
+        "year": 60,
+        "population": 63,
+        "settlements": 3,
+        "deaths": 4,
+        "issues": []
+      }
+    ]
+  }
+]

@@ -1,8 +1,15 @@
 {
-  "name":"pangaea-depth",
-  "version":"0.2.0",
-  "private":true,
-  "type":"module",
-  "description":"Autonomous settlement simulation: deterministic systems, memory and families.",
-  "scripts":{"build":"node build.mjs","test":"node --test tests/simulation.test.mjs"}
+  "name": "pangaea-depth",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Autonomous settlement simulation: deterministic systems, memory and families.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/simulation.test.mjs tests/cities.test.mjs tests/realms.test.mjs",
+    "test:browser": "python3 tests/browser.py && python3 tests/cities-browser.py && python3 tests/realms-browser.py",
+    "benchmark": "node tests/cities-benchmark.mjs",
+    "scenarios": "node tests/cities-scenarios.mjs",
+    "test:realms-browser": "python3 tests/realms-browser.py"
+  }
 }

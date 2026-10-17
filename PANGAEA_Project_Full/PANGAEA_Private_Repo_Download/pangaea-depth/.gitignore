@@ -1,0 +1,9 @@
+# Portable exports are exercised by QA, not committed as duplicate world fixtures.
+EVIDENCE/**/browser-export.json
+EVIDENCE/**/city-browser-export.json
+__pycache__/
+# Scenario exports can be regenerated; curated checkpoints live under saves/.
+EVIDENCE/**/*-world.json
+
+# Full upstream research reads remain local; commit source metadata and adaptations.
+EVIDENCE/cities/cityflow-readme.rst

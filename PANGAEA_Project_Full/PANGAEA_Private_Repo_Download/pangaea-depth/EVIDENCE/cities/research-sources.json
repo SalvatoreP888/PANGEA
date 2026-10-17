@@ -1,0 +1,45 @@
+{
+  "accessDate": "2026-10-17",
+  "sources": [
+    {
+      "url": "https://github.com/mourner/flatqueue",
+      "version": "3.0.0",
+      "commit": "7e280d07ab202fc6494e16f07321ce3af60431ac",
+      "source": "src/vendor/flatqueue.mjs",
+      "sha256": "7261679e8d0efef56beca29cb86bb7478c69a9c54cbe698b5a33f3a6070483e4",
+      "license": "ISC",
+      "decision": "adopt: priority queue for local A*; unchanged source; notices embedded in standalone HTML"
+    },
+    {
+      "url": "https://github.com/cityflow-project/CityFlow",
+      "read": "README.rst",
+      "paper": "https://arxiv.org/abs/1905.05217",
+      "decision": "consult repository description for separating persistent roads from vehicle journeys; no code or assets imported; paper access blocked by proxy"
+    },
+    {
+      "url": "https://github.com/joonspk-research/generative_agents",
+      "read": "README.md",
+      "paper": "https://arxiv.org/abs/2304.03442",
+      "decision": "reference only; preserve existing deterministic memory model; no model runtime or code imported; paper access blocked by proxy"
+    },
+    {
+      "url": "https://github.com/OpenTTD/OpenTTD",
+      "read": "COPYING.md",
+      "decision": "defer code import: GPLv2 requires a project licensing decision; original transport implementation used instead"
+    }
+  ],
+  "blocked": [
+    {
+      "url": "https://arxiv.org/abs/1905.05217",
+      "result": "Tunnel connection failed: 403 Forbidden"
+    },
+    {
+      "url": "https://arxiv.org/abs/2304.03442",
+      "result": "Tunnel connection failed: 403 Forbidden"
+    },
+    {
+      "url": "https://export.arxiv.org/api/query?id_list=1905.05217,2304.03442",
+      "result": "Tunnel connection failed: 403 Forbidden"
+    }
+  ]
+}

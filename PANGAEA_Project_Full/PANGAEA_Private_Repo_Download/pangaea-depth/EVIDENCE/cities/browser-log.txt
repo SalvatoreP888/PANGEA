@@ -1,0 +1,126 @@
+
+> pangaea-depth@0.3.0 test:browser
+> python3 tests/browser.py && python3 tests/cities-browser.py
+
+{
+  "checks": [
+    {
+      "name": "Boot with four founders and no external requests",
+      "pass": true
+    },
+    {
+      "name": "Pause freezes simulation",
+      "pass": true
+    },
+    {
+      "name": "Space resumes and pauses",
+      "pass": true
+    },
+    {
+      "name": "View buttons and G/C shortcuts",
+      "pass": true
+    },
+    {
+      "name": "40-year checkpoint restores 29 people in four settlements",
+      "pass": true
+    },
+    {
+      "name": "Person selection displays needs, utility scores, memories and family",
+      "pass": true
+    },
+    {
+      "name": "Knowledge inspector",
+      "pass": true
+    },
+    {
+      "name": "Chronicle inspector",
+      "pass": true
+    },
+    {
+      "name": "Fertility/resource/activity layer toggle",
+      "pass": true
+    },
+    {
+      "name": "Pointer drag and wheel change town camera",
+      "pass": true
+    },
+    {
+      "name": "A building on the canvas opens its live inspector",
+      "pass": true
+    },
+    {
+      "name": "Portable JSON download",
+      "pass": true
+    },
+    {
+      "name": "Portable JSON import round-trip",
+      "pass": true
+    },
+    {
+      "name": "Drought intervention changes authoritative weather",
+      "pass": true
+    },
+    {
+      "name": "Local-storage action reports success or unavailable-storage fallback, never crashes",
+      "pass": true
+    },
+    {
+      "name": "Help dialog opens and closes",
+      "pass": true
+    },
+    {
+      "name": "Desktop has no horizontal page overflow",
+      "pass": true
+    },
+    {
+      "name": "390px mobile canvas remains available and does not overflow",
+      "pass": true
+    },
+    {
+      "name": "Mobile observation sheet and person selection",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "networkRequests": [],
+  "limitations": [
+    "This baseline runner uses set_content. HTTP boot, file launching and localStorage are checked separately by the city browser runner.",
+    "Only Chromium was tested; Safari/Firefox and real touch hardware were not tested."
+  ],
+  "bootSeconds": 0.392,
+  "browserVersion": "154.0.8037.57"
+}
+{
+  "checks": [
+    "HTTP boot preserves exactly four founders",
+    "Atlas renders all 30 technologies, branch lanes and prerequisite connections",
+    "City laboratory creates 1,000 actual people and labels its constructed origin",
+    "Transport inspector exposes live road/rail capacities and cargo",
+    "Dense city contains over 80 buildings and connected street tiles",
+    "Resident search, pagination and individual inspection work at city scale",
+    "Town selector switches actual settlement state",
+    "Advancing the city delivers real cargo without invariant violations",
+    "City localStorage save survives actual origin reload",
+    "Version 3 city JSON export/import round-trip",
+    "Mobile city and transport sheet stay within 390px",
+    "Mobile technology atlas remains usable without horizontal overflow",
+    "Landscape resize keeps the game inside the viewport",
+    "No page exceptions or external requests"
+  ],
+  "pageErrors": [],
+  "externalRequests": [],
+  "buildSha256": "b10352d9052a9d4fc6535befbdf7a4dc556ebc7af6674aaa94bebc14bb069056",
+  "renderMs": {
+    "median": 15.800000000046566,
+    "p95": 21.899999999906868,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "population": 1000
+  },
+  "blockedChecks": [
+    "Direct file launch: Chromium administrator policy blocks file:// navigation; HTTP and identical standalone content passed."
+  ],
+  "browserVersion": "154.0.8037.57"
+}
