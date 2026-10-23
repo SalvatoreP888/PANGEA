@@ -1,5 +1,5 @@
-"""Compare visual update against PR6: real state, entity hits, cache and frame cost.
-Requires --baseline pointing to an archived0.7.2 app. Visual pixels intentionally change.
+"""Compare city detail against0.8: real state, entity hits, cache and frame cost.
+Requires --baseline pointing to the previous app. Visual pixels intentionally change.
 """
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -12,7 +12,7 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--baseline',type=Path,required=True)
 parser.add_argument('--out',type=Path)
 args=parser.parse_args();OUT=args.out or Path(tempfile.mkdtemp(prefix='pangea-visuals-'));OUT.mkdir(parents=True,exist_ok=True)
-report={'checks':[],'views':[],'errors':[],'baseline':'741e8f4 / PR6','measurement':'24 paced frames after6 warmups, paused1000-person constructed city; softwareChromium, one run, CPU submission and RAF interval measured separately; only the timed canvas is visible to avoid occlusion bias.'}
+report={'checks':[],'views':[],'errors':[],'baseline':'feb9cdc / PR7','measurement':'24 paced frames after6 warmups, paused1000-person constructed city; softwareChromium, one run, CPU submission and RAF interval measured separately; only the timed canvas is visible to avoid occlusion bias.'}
 build="""import{build}from'esbuild';import{resolve}from'node:path';const[root,out,name]=process.argv.slice(1);await build({stdin:{contents:`export {PangeaRenderer} from ${JSON.stringify(resolve(root,'src/pangea/renderer.ts'))};export {createCityLaboratory} from ${JSON.stringify(resolve(root,'src/pangea/simulation/scenarios.mjs'))};export {Simulation} from ${JSON.stringify(resolve(root,'src/pangea/simulation/sim.mjs'))};`,resolveDir:root,loader:'ts'},bundle:true,format:'iife',globalName:name,nodePaths:[resolve(process.cwd(),'node_modules')],outfile:out,alias:{'@':resolve(root,'src')},tsconfig:resolve(root,'tsconfig.json')});"""
 for name,directory in [('Baseline',args.baseline),('Candidate',ROOT)]:subprocess.run(['node','--input-type=module','-e',build,str(directory.resolve()),str(OUT/f'{name}.js'),name],cwd=ROOT,check=True)
 (OUT/'index.html').write_text('<style>body{margin:0}canvas{position:absolute;inset:0;width:100vw;height:100vh}</style><canvas id="before"></canvas><canvas id="after"></canvas><script src="Baseline.js"></script><script src="Candidate.js"></script>')
@@ -37,6 +37,8 @@ try:
     if label=='city-detail':
      assert page.evaluate("""()=>{const r=renderers[1],t=r.sim.town(r.townId),hit=r.hits.find(h=>h.kind==='building'),b=t.buildings.find(b=>b.id===hit.id),index=t.buildings.indexOf(b),x=b.x,complete=b.complete;const pixels=()=>{r.draw(.5);r.draw(.5);return r.ctx.getImageData(0,0,r.canvas.width,r.canvas.height).data};const matches=()=>{const hot=pixels();r.terrainRasterKey='';const cold=pixels();return hot.every((v,i)=>v===cold[i]);};b.x+=3;const moved=matches();b.x=x;b.complete=false;const construction=matches();b.complete=complete;t.buildings.splice(index,1);const removed=matches();t.buildings.splice(index,0,b);pixels();return moved&&construction&&removed&&JSON.stringify(r.sim.snapshot())===original;}""")
      report['checks'].append(f'{device}: moved/unfinished/removed actual building ground agrees pixel-for-pixel with a forced cache rebuild; original state restored')
+     assert page.evaluate("""()=>{const r=renderers[1],t=r.sim.town(r.townId),streets=[...t.land.streets],rev=t.land.navRevision;const pixels=()=>{r.draw(.5);r.draw(.5);return r.ctx.getImageData(0,0,r.canvas.width,r.canvas.height).data};const initial=pixels();t.land.streets=t.land.streets.map(n=>n?1:0);t.land.navRevision++;const trail=pixels();r.terrainRasterKey='';const cold=pixels();const invalidated=trail.every((v,i)=>v===cold[i]);t.land.streets=streets;t.land.navRevision=rev;const restored=pixels();return invalidated&&initial.some((v,i)=>v!==trail[i])&&initial.every((v,i)=>v===restored[i])&&JSON.stringify(r.sim.snapshot())===original;}""")
+     report['checks'].append(f'{device}: actual paving-to-trail change invalidates road cache; restoration matches original pixels and state')
     for name in ['before','after']:
      data=page.evaluate('id=>document.getElementById(id).toDataURL()',name);(OUT/f'{device}-{label}-{name}.png').write_bytes(base64.b64decode(data.split(',')[1]))
     report['views'].append({'device':device,'view':label,**result})

@@ -104,3 +104,52 @@ export function paintGroundGrain(c:CanvasRenderingContext2D,x:number,y:number,se
   const n=hash(Math.round(x),Math.round(y),seed);
   if(n>.83){c.fillStyle='#decfa026';c.beginPath();c.ellipse(x,y,2.2,1,0,0,Math.PI*2);c.fill();}
 }
+
+/** Rounded marching-square shorelines through real water cells. The ford
+ * remains water with a visible stone crossing; navigation data is untouched.
+ * Closed contours, highlights and reflections are baked into terrain once. */
+export function paintLocalWater(c:CanvasRenderingContext2D,options:{nx:number;ny:number;seed:number;tiles:{type:string}[];project:(x:number,y:number)=>LandscapePoint}) {
+  const {nx,ny,seed,tiles,project}=options;
+  const wet=(x:number,y:number)=>x>=0&&y>=0&&x<nx&&y<ny&&['water','river','ford'].includes(tiles[y*nx+x].type);
+  const cases:number[][][]=[[],[[3,0]],[[0,1]],[[3,1]],[[1,2]],[[3,0],[1,2]],[[0,2]],[[3,2]],[[2,3]],[[0,2]],[[0,1],[2,3]],[[1,2]],[[1,3]],[[0,1]],[[3,0]],[]];
+  const graph=new Map<string,string[]>(),points=new Map<string,LandscapePoint>();
+  const connect=(a:LandscapePoint,b:LandscapePoint)=>{
+    const ka=`${a.x},${a.y}`,kb=`${b.x},${b.y}`;
+    points.set(ka,a);points.set(kb,b);graph.set(ka,[...(graph.get(ka)||[]),kb]);graph.set(kb,[...(graph.get(kb)||[]),ka]);
+  };
+  for(let y=-1;y<ny;y++)for(let x=-1;x<nx;x++){
+    const mask=(wet(x,y)?1:0)|(wet(x+1,y)?2:0)|(wet(x+1,y+1)?4:0)|(wet(x,y+1)?8:0);
+    const edges=[{x:x+.5,y},{x:x+1,y:y+.5},{x:x+.5,y:y+1},{x,y:y+.5}];
+    for(const [a,b]of cases[mask])connect(edges[a],edges[b]);
+  }
+  const water=new Path2D(),visited=new Set<string>();
+  for(const start of graph.keys()){
+    if(visited.has(start))continue;
+    const contour:LandscapePoint[]=[];let current=start,previous='';
+    while(!visited.has(current)){
+      visited.add(current);const v=points.get(current)!;contour.push(project(v.x,v.y));
+      const next=graph.get(current)!.find(k=>k!==previous)!;previous=current;current=next;
+    }
+    if(contour.length<3)continue;
+    const last=contour.at(-1)!,first=contour[0];water.moveTo((last.x+first.x)/2,(last.y+first.y)/2);
+    for(let i=0;i<contour.length;i++){const a=contour[i],b=contour[(i+1)%contour.length];water.quadraticCurveTo(a.x,a.y,(a.x+b.x)/2,(a.y+b.y)/2);}
+    water.closePath();
+  }
+  c.save();c.lineJoin='round';c.lineCap='round';
+  c.strokeStyle='#59674d77';c.lineWidth=15;c.stroke(water);
+  c.strokeStyle='#b4ac7d';c.lineWidth=8;c.stroke(water);
+  c.strokeStyle='#3a5148';c.lineWidth=3;c.stroke(water);
+  const from=project(0,0),to=project(nx,ny),gradient=c.createLinearGradient(from.x,from.y,to.x,to.y);
+  gradient.addColorStop(0,'#537f7d');gradient.addColorStop(.5,'#38636b');gradient.addColorStop(1,'#527f7e');
+  c.fillStyle=gradient;c.fill(water,'evenodd');c.clip(water,'evenodd');
+  c.strokeStyle='#a1b7a160';c.lineWidth=13;c.stroke(water);
+  c.strokeStyle='#d5dfc870';c.lineWidth=1.1;c.stroke(water);
+  for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
+    if(!wet(x,y))continue;const q=hash(x,y,seed),v=project(x,y);
+    if(q>.57){c.strokeStyle=q>.87?'#b0d0c366':'#9bbdb333';c.lineWidth=.8;c.beginPath();c.moveTo(v.x-8-q*8,v.y+q*7);c.quadraticCurveTo(v.x,v.y-2+q*7,v.x+12+q*10,v.y+q*7);c.stroke();}
+    if(tiles[y*nx+x].type==='ford')for(let i=-2;i<=2;i++){
+      const p=project(x+i*.22,y);c.fillStyle='#294a4980';c.beginPath();c.ellipse(p.x+1,p.y+2,5.5,2.5,0,0,Math.PI*2);c.fill();c.fillStyle=i%2?'#b7b69c':'#a6ad97';c.beginPath();c.ellipse(p.x,p.y,5.2,2.6,-.1,0,Math.PI*2);c.fill();
+    }
+  }
+  c.restore();
+}

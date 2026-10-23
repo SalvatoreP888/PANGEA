@@ -1,3 +1,7 @@
+# PANGEA 0.8.1 city detail verification
+
+The city detail pass starts at PR #7/main `feb9cdc`. All 121 Node regressions, strict lint, TypeScript and production/offline builds pass. General, evolution, camera and standalone browser suites pass. New pixel checks verify real crop stages, reduced-motion walking, dry islands and ford stones. Paired desktop/phone renderer checks preserve complete state, hit geometry and picks; actual road upgrades invalidate cached paths/pixels and restore exactly. See [CITY_DETAIL.md](docs/CITY_DETAIL.md), [detail pixels](docs/qa/detail.json) and [paired renderer evidence](docs/qa/detail-visuals.json).
+
 # PANGEA 0.8 visual verification
 
 This visual pass starts at GitHub PR #6/main `741e8f4fbd569024b23d68ee9f043d77bdd384e2`. The 121 Node regressions pass, together with strict PANGEA lint, TypeScript, production/offline builds and browser checks. New visual checks preserve complete simulation snapshots, city hit geometry/picks and world entity markers across desktop and DPR 2 phone views. Moved/unfinished/removed building ground matches a forced cache rebuild pixel-for-pixel.
