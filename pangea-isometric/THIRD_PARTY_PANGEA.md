@@ -17,3 +17,7 @@ The renderer-independent PANGAEA Realms simulation originated in the user's exis
 PANGEA-specific code is MIT except marked Apache-2.0 derived terrain code. This repository is not a claim that all third-party material was relicensed as MIT. Full legal notices are retained and bundled into the online/offline application's Credits and `public/pangea/licenses.txt` using `scripts/build-pangea-credits.mjs`.
 
 [Six-track research and contribution record](docs/oss/README.md) identifies inspected alternatives that are **not shipped**. No upstream contributions or endorsements have been claimed.
+
+## 0.8 visual assets
+
+`docs/art/environment-source.png` is original artwork generated for PANGEA with OpenAI ImageGen on 2026-10-23. The eight runtime environment sprites are cropped/trimmed/WebP-normalized by `scripts/prepare-pangea-environment.mjs`; their inspected crop bounds, source SHA-256 and file SHA-256 values are recorded in `public/pangea/environment/manifest.json`. This introduces no new third-party asset pack or runtime dependency. Existing IsoCity building art and all retained notices remain unchanged.

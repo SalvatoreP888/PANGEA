@@ -11,6 +11,7 @@ const assets={
   '/pangea/manrope-semibold.ttf':data('manrope-semibold.ttf','font/ttf'),
 };
 for(const file of readdirSync('public/pangea/buildings').filter(f=>f.endsWith('.webp'))){assets[`/pangea/buildings/${file}`]=data(`buildings/${file}`,'image/webp');}
+for(const file of readdirSync('public/pangea/environment').filter(f=>f.endsWith('.webp'))){assets[`/pangea/environment/${file}`]=data(`environment/${file}`,'image/webp');}
 const result=await build({
   stdin:{contents:"import React from 'react';import{createRoot}from'react-dom/client';import Pangea from './src/pangea/components/Pangea';createRoot(document.getElementById('root')).render(<Pangea/>);",resolveDir:process.cwd(),loader:'tsx'},
   external:['/pangea/*'],bundle:true,write:false,outdir:'standalone',format:'iife',minify:true,jsx:'automatic',target:['es2020'],

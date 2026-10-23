@@ -1,0 +1,119 @@
+{
+  "source": "docs/art/environment-source.png",
+  "sourceSha256": "52b683ec7367b0b7417158a3c5b664e9d939d27a2d7f8418f8f6a69aac3364b6",
+  "provenance": "Generated for PANGEA with OpenAI ImageGen, 2026-10-23. Original retained; runtime crops/trim/WebP normalization only.",
+  "sprites": [
+    {
+      "id": 0,
+      "name": "oak",
+      "file": "/pangea/environment/0.webp",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 480,
+        "height": 540
+      },
+      "width": 384,
+      "height": 370,
+      "sha256": "3b8d069a2e2efacc992b7f4392d16231cd87aa5994873169d06de68967833dbf"
+    },
+    {
+      "id": 1,
+      "name": "fir-grove",
+      "file": "/pangea/environment/1.webp",
+      "crop": {
+        "left": 480,
+        "top": 0,
+        "width": 420,
+        "height": 540
+      },
+      "width": 384,
+      "height": 494,
+      "sha256": "a01211aa9fa5ab8b0a3ca2224e80494c76488aa24f7daf5698486970af37f568"
+    },
+    {
+      "id": 2,
+      "name": "linden",
+      "file": "/pangea/environment/2.webp",
+      "crop": {
+        "left": 900,
+        "top": 0,
+        "width": 430,
+        "height": 540
+      },
+      "width": 368,
+      "height": 434,
+      "sha256": "c2182b09efd7db07afe168acd137e817e5286e52164f5a15afc138719ac6f5a9"
+    },
+    {
+      "id": 3,
+      "name": "slate-outcrop",
+      "file": "/pangea/environment/3.webp",
+      "crop": {
+        "left": 1330,
+        "top": 0,
+        "width": 444,
+        "height": 540
+      },
+      "width": 384,
+      "height": 224,
+      "sha256": "9c71eb7967f459fec0fc5bb41ec259b6490d9fd4b0178f935bcffd638cc8b475"
+    },
+    {
+      "id": 4,
+      "name": "alpine-ridge",
+      "file": "/pangea/environment/4.webp",
+      "crop": {
+        "left": 0,
+        "top": 545,
+        "width": 565,
+        "height": 342
+      },
+      "width": 384,
+      "height": 191,
+      "sha256": "bc3c0369d1fb1fbc5751d690424d51ea0931f3a8e61e1d0be985c0e5816fe977"
+    },
+    {
+      "id": 5,
+      "name": "rocky-hill",
+      "file": "/pangea/environment/5.webp",
+      "crop": {
+        "left": 565,
+        "top": 545,
+        "width": 410,
+        "height": 342
+      },
+      "width": 384,
+      "height": 233,
+      "sha256": "9ae885d6f30fcac722fbdc8ba2e538ff6beca59b23ce429a12c1237f9d2dd49a"
+    },
+    {
+      "id": 6,
+      "name": "meadow-shrubs",
+      "file": "/pangea/environment/6.webp",
+      "crop": {
+        "left": 975,
+        "top": 545,
+        "width": 375,
+        "height": 342
+      },
+      "width": 369,
+      "height": 213,
+      "sha256": "7885b9a95d3874b7dcf9f9dd0fe46a8b032ffc00750d0524d8510ad2430b58b3"
+    },
+    {
+      "id": 7,
+      "name": "wetland-reeds",
+      "file": "/pangea/environment/7.webp",
+      "crop": {
+        "left": 1350,
+        "top": 545,
+        "width": 424,
+        "height": 342
+      },
+      "width": 384,
+      "height": 251,
+      "sha256": "7e12f3a662847bc096c87e9ce1ed504709d44448a5434f8705aec04f492da1c3"
+    }
+  ]
+}
