@@ -8,7 +8,7 @@ export interface Person {
   id: number; name: string; family: string; species: string; alive: boolean; townId: number;
   x: number; y: number; ageDays: number; mood: number; health: number; color: string;
   needs: Record<string, number>; skills: Record<string, number>; carry: Record<string, number>;
-  task: { kind: string; stage: string } | null; why: string; reflection: string;
+  task: { kind: string; stage: string; buildingId?: number } | null; houseId?: number|null; tripId?: number|null; why: string; reflection: string;
   memories: { day: number; text: string; tag: string }[]; generation: number;
 }
 export interface Building {
@@ -17,7 +17,7 @@ export interface Building {
   production?: { inputs: Record<string, number>; outputs: Record<string, number>; batches: number };
 }
 export interface Town {
-  id: number; name: string; lon: number; lat: number; created: number;
+  id: number; parentId?: number|null; name: string; lon: number; lat: number; created: number;
   res: Record<string, number>; buildings: Building[]; knowledge: string[]; research: number;
   policy: string; policyReason: string; weather: { kind: string };
   land: {
@@ -27,11 +27,11 @@ export interface Town {
   };
 }
 export interface WorldState {
-  version: number; seed: number; tick: number; scenario?: string; planet: Record<string, number>;
+  version: number; generationVersion?: number; seed: number; tick: number; scenario?: string; planet: Record<string, number>;
   towns: Town[]; people: Person[];
-  events: { id: number; day: number; title: string; text: string; kind: string }[];
-  links: { id: number; a: number; b: number; tier: number; route: { lon: number; lat: number }[] }[];
-  trips: { id: number; start: number; arrival: number; route: { lon: number; lat: number }[] }[];
+  events: { id: number; day: number; title: string; detail: string; text?: string; type: string; townId?: number|null; people?: number[] }[];
+  links: { id: number; from: number; to: number; tier: number; route: { lon: number; lat: number }[] }[];
+  trips: { id: number; start: number; arrival: number; mode?: number; cargo?: Record<string, number>; people?: number[]; route: { lon: number; lat: number }[] }[];
 }
 export interface WorldSimulation {
   state: WorldState; day: number; year: number; season: number; alive: Person[];

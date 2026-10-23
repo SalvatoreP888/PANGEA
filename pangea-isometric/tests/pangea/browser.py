@@ -23,7 +23,7 @@ with sync_playwright() as p:
  assert page.locator('.simulation-label').inner_text().find('Constructed world preview')>=0;ok('Constructed preview is explicitly labelled')
  assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');report['viewports'].append('1536 × 1024')
  page.screenshot(path=str(OUT/'world.png'))
- page.get_by_role('button',name='Enter settlement',exact=True).click();page.wait_for_timeout(650)
+ page.get_by_role('button',name='Enter settlement',exact=True).click();page.wait_for_function('!PANGEA.renderer.transition.active')
  assert page.evaluate('PANGEA.renderer.view')=='settlement';ok('World-to-city action opens the selected live settlement')
  page.screenshot(path=str(OUT/'settlement.png'))
  hit=page.evaluate('PANGEA.renderer.hits.find(h=>h.kind==="building"&&h.x>150&&h.x<850&&h.y>150&&h.y<700)');assert hit
@@ -33,8 +33,8 @@ with sync_playwright() as p:
  page.screenshot(path=str(OUT/'resident.png'))
  page.get_by_role('button',name='Knowledge',exact=True).click();assert page.locator('.tech-row').count()==36;ok('All 36 real discoveries are inspectable')
  page.get_by_role('button',name='Resources',exact=True).click();assert page.locator('.resource-list>div').count()==page.evaluate('Object.keys(PANGEA.simulation.town(PANGEA.renderer.townId).res).length');ok('Supply inspector shows real inventories and transport counts')
- page.get_by_role('button',name='Chronicle',exact=True).click();assert page.locator('.chronicle-row').count()>0;ok('Chronicle shows persisted simulation events')
- page.keyboard.press('g');page.wait_for_function('PANGEA.renderer.hits.some(h=>h.kind==="town"&&h.rect)');hit=page.evaluate('PANGEA.renderer.hits.find(h=>h.kind==="town"&&h.id===3&&h.rect)');rect=page.locator('canvas').bounding_box();page.mouse.click(rect['x']+hit['x'],rect['y']+hit['y']);assert page.evaluate('PANGEA.renderer.townId')==3;ok('World map settlement labels select the matching live city');page.locator('.p-rail [aria-label="Settlement"]').click();page.get_by_role('combobox',name='Select settlement').select_option('2');assert page.evaluate('PANGEA.renderer.townId')==2
+ page.get_by_role('button',name='Chronicle',exact=True).click();expected=page.evaluate('PANGEA.snapshot().events.filter(e=>e.townId===PANGEA.renderer.townId).slice(0,50).length');assert page.locator('.chronicle-row').count()==expected;assert expected or page.get_by_text('No events for this settlement remain in the current log.',exact=False).is_visible();ok('Chronicle shows only actual settlement events or an honest empty state')
+ page.keyboard.press('g');page.wait_for_function('!PANGEA.renderer.transition.active');page.wait_for_function('PANGEA.renderer.hits.some(h=>h.kind==="town"&&h.rect)');hit=page.evaluate('PANGEA.renderer.hits.find(h=>h.kind==="town"&&h.id===3&&h.rect)');rect=page.locator('canvas').bounding_box();page.mouse.click(rect['x']+hit['x'],rect['y']+hit['y']);assert page.evaluate('PANGEA.renderer.townId')==3;ok('World map settlement labels select the matching live city');page.locator('.p-rail [aria-label="Settlement"]').click();page.get_by_role('combobox',name='Select settlement').select_option('2');assert page.evaluate('PANGEA.renderer.townId')==2
  page.get_by_role('button',name='Enter settlement',exact=True).click();assert page.evaluate('PANGEA.renderer.townId')==2;ok('Each settlement opens its own seeded terrain, population and buildings')
  page.keyboard.press('f');before=page.evaluate('({...PANGEA.renderer.camera})');page.mouse.move(500,500);page.mouse.down();page.mouse.move(555,535,steps=5);page.mouse.up();assert page.evaluate('PANGEA.renderer.camera.x')!=before['x']
  page.mouse.wheel(0,-160);page.wait_for_timeout(80);assert page.evaluate('PANGEA.renderer.camera.zoom')>before['zoom'];ok('Pointer pan, wheel zoom and recenter change the camera')
@@ -50,7 +50,7 @@ with sync_playwright() as p:
  file=OUT/'roundtrip.json';dl.value.save_as(str(file));assert json.loads(file.read_text())['tick']==saved['tick'];ok('Portable JSON export contains the authoritative state')
  for _ in range(18):page.keyboard.press('Tab');assert page.evaluate('document.querySelector(".world-dialog").contains(document.activeElement)')
  page.keyboard.press('Escape');assert page.get_by_role('dialog').count()==0;ok('Settings trap keyboard focus, close with Escape and restore focus')
- page.evaluate('PANGEA.advance(1)');page.locator('.p-rail [aria-label="World settings"]').click();page.get_by_role('button',name='Load saved world',exact=True).click();assert page.evaluate('PANGEA.snapshot().tick')==saved['tick'];ok('Browser save restores exact simulation time')
+ page.evaluate('PANGEA.advance(1)');page.locator('.p-rail [aria-label="World settings"]').click();page.get_by_role('button',name='Load saved world',exact=True).click();page.wait_for_function('tick=>PANGEA.snapshot().tick===tick',arg=saved['tick']);assert page.evaluate('PANGEA.snapshot().tick')==saved['tick'];ok('Browser save restores exact simulation time')
  page.locator('.p-rail [aria-label="World settings"]').click();page.locator('input[type="file"]').set_input_files(str(file));page.wait_for_timeout(100);assert page.evaluate('PANGEA.snapshot().tick')==saved['tick'];ok('Portable import restores the exported world');assert page.evaluate('PANGEA.simulation.state.seed')==saved['seed'];ok('Save import retains the original world seed')
  bad=OUT/'invalid.json';bad.write_text('{"version":3,"towns":[]}');tick=page.evaluate('PANGEA.snapshot().tick');page.locator('input[type="file"]').set_input_files(str(bad));page.wait_for_timeout(100);assert page.evaluate('PANGEA.snapshot().tick')==tick;ok('Malformed import is rejected without replacing the current world')
  page.locator('.p-rail [aria-label="World settings"]').click();page.get_by_role('button',name='New world · Four founders',exact=True).click();page.get_by_role('button',name='Create new world',exact=True).click();assert page.evaluate('PANGEA.simulation.alive.length')==4;assert len(page.evaluate('PANGEA.snapshot().towns'))==1;ok('Natural new worlds start with four individual founders and one settlement')
@@ -61,7 +61,7 @@ with sync_playwright() as p:
   else:assert fixed==world
  ok('An explicit seed reproduces the same initial world exactly')
  page.evaluate('PANGEA.setView("world")');page.wait_for_timeout(550);page.screenshot(path=str(OUT/'four-founders.png'))
- page.evaluate('PANGEA.showcase()');page.evaluate('PANGEA.setView("settlement")');page.wait_for_timeout(600)
+ page.evaluate('PANGEA.showcase()');page.evaluate('PANGEA.setView("settlement")');page.wait_for_function('!PANGEA.renderer.transition.active')
  timings=[]
  for _ in range(8):page.wait_for_timeout(50);timings.append(page.evaluate('PANGEA.renderer.frameMs'))
  report['renderMilliseconds']={'median':round(statistics.median(timings),2),'maxSample':round(max(timings),2),'context':'240-person constructed world; one selected settlement; headless software Chromium'}

@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "checks": [
+    "Frontend creates a protected server world and remembers its private connection locally",
+    "Authoritative simulation advances after the browser page is closed",
+    "Fresh launch remains random and explicit Rejoin restores server progression",
+    "Frontend pause command is persisted and freezes the server clock",
+    "Same-seed server import resets removed town selection and the settlement renderer",
+    "Delayed command response cannot overwrite the disconnected local copy",
+    "Delayed polling response cannot overwrite a new local world after disconnect",
+    "Explicit disconnect forks a paused local copy and clears saved connection credentials"
+  ],
+  "pageErrors": []
+}

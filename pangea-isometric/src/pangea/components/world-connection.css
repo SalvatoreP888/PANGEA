@@ -1,0 +1,13 @@
+.world-connection { margin-top: 18px; padding-top: 15px; border-top: 1px solid rgba(196,175,124,.24); font-family: var(--font-body, sans-serif); }
+.world-connection summary { cursor: pointer; color: #eadbb9; font-size: 13px; font-weight: 600; }
+.world-connection summary span { float: right; color: #a6c5ad; font-size: 11px; font-weight: 400; }
+.world-connection p { color: #b5b4ad; font-size: 12px; line-height: 1.65; }
+.world-connection label { display: block; margin: 10px 0; color: #d5cdb8; font-size: 11px; }
+.world-connection input { display: block; box-sizing: border-box; width: 100%; margin-top: 5px; padding: 9px 11px; border: 1px solid rgba(196,175,124,.32); border-radius: 5px; background: #102025; color: #f0e8d7; font: 12px var(--font-body, sans-serif); }
+.world-connection input:focus-visible { outline: 2px solid #d8b46e; outline-offset: 2px; }
+.world-connection input:disabled { opacity: .65; }
+.world-connection .world-connection-note { font-size: 11px; color: #adad9d; }
+.world-connection-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 12px 0; }
+.world-connection .world-connection-actions button { width: auto; padding: 8px 11px; border: 1px solid rgba(196,175,124,.4); border-radius: 5px; background: #1c3033; color: #eee1c3; font-size: 11px; cursor: pointer; }
+.world-connection .world-connection-actions button:disabled { opacity: .5; cursor: wait; }
+.world-connection-status { padding: 9px 11px; border-left: 2px solid #b69c68; background: rgba(18,30,33,.7); overflow-wrap: anywhere; }

@@ -41,3 +41,12 @@ next-env.d.ts
 /.next-production/
 
 /dist/
+
+# Persistent worlds contain private simulation state; keep durable data out of Git.
+/var/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+__pycache__/
+*.pyc

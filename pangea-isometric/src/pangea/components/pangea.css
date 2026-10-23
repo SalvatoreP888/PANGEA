@@ -25,3 +25,21 @@
 @media(max-width:650px){.map-utilities button{width:34px;height:34px}.zoom-controls button{width:37px;height:37px}}
 
 .world-dialog .seed-help{font-size:10px;line-height:1.7;margin:-5px 0 18px;color:#9aab98}.seed-input input::placeholder{font-size:10px;color:#83947f}
+/* Persistence and presentation controls share the world's quiet brass palette. */
+.save-note{font-size:12px!important;line-height:1.7;color:#aeb5a9!important;margin:16px 0!important}
+.checkpoint-list{margin:20px 0;display:grid;gap:7px}
+.checkpoint-list h3{margin-bottom:4px}
+.checkpoint-list button{display:flex;flex-direction:column;align-items:flex-start;gap:5px;border:1px solid #a28b5938;background:#ffffff04;color:#e3d7bc;padding:12px 14px;text-align:left;border-radius:2px;cursor:pointer}
+.checkpoint-list button:hover{border-color:#bea36c;background:#ffffff08}
+.checkpoint-list small{font-size:11px;color:#aeb5a9}
+.light-options{display:flex;gap:8px;margin:18px 0}
+.light-options button{flex:1;padding:11px;border:1px solid #a28b5940;background:#ffffff04;color:#b9bcae;text-transform:capitalize;cursor:pointer}
+.light-options button.active{border-color:#bda477;color:#ead2a3;background:#bda47715}
+.p-credits{margin:22px 0 0;padding:16px 0;border-top:1px solid #a28b5938;font-size:12px;line-height:1.7;color:#adb6aa}
+.p-credits summary{color:#d3be94;cursor:pointer;font-size:13px}
+.p-credits h4{font-size:13px;color:#e4d8ba;margin:20px 0 5px}
+.p-credits a{color:#d5bf8c;text-decoration:underline;text-underline-offset:3px}
+.p-credits p{font-size:12px!important;line-height:1.7!important}
+.p-credits pre{white-space:pre-wrap;font:10px/1.6 monospace;max-height:240px;overflow:auto;padding:12px;background:#111b1b;color:#adb6aa}
+.pangea summary:focus-visible{outline:2px solid #ebce94;outline-offset:4px}
+@media(max-width:650px){.p-wordmark{font-size:21px;letter-spacing:6px}}

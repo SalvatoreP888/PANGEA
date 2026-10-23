@@ -22,7 +22,7 @@ export function fishWork(sim,p,t,rate) {
   t.land.fishStock-=catchSize;p.carry.fish=(p.carry.fish||0)+catchSize;t.stats.foodProduced+=catchSize;
 }
 export function tickEconomy(sim,t) {
-  const climate={...sim.state.planet,temperature:townClimate(sim.state.seed,t,sim.state.planet,sim.day).temperature};
+  const climate={...sim.state.planet,temperature:townClimate(sim.state.seed,t,sim.state.planet,sim.day,sim.state.generationVersion).temperature};
   const thermal=clamp(1-Math.abs(climate.temperature-14)/40,.12,1);
   const weather=t.weather.kind==='Storm'?.45:t.weather.kind==='Drought'?.25:1;
   const regen=thermal*climate.rainfall*weather*(sim.knowledge(t,'aquaculture')?2:1);
