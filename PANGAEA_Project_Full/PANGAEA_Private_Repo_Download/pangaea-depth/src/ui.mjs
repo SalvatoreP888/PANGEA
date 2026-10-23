@@ -11,6 +11,7 @@ const initials=p=>esc(p.name.slice(0,1));
 const eventIcons={founding:'✦',build:'⌂',plan:'⌁',family:'♡',birth:'✳',knowledge:'✧',council:'◈',weather:'☂',migration:'➤',death:'✝',aid:'⇄'};
 let simulation=new Simulation(481217),renderer=new WorldRenderer($('world'),simulation);
 let peopleQuery='',peoplePage=0;
+let lastPanelMarkup=null;
 let tab='settlement',paused=false,speed=16,accumulator=0,last=0,lastUI=0,toastTimer=0;
 let frameCount=0,perfAt=0,perfDay=0,actualRate=0,autoStopped=false;
 if(innerWidth<=760)document.body.classList.add('panel-hidden');
@@ -107,18 +108,18 @@ function chroniclePanel(){
   return `<span class="eyebrow" style="font-size:8px;color:#9bb18e">THE WORLD REMEMBERS</span><h2>A history of small things.</h2><p class="microcopy" style="margin-bottom:25px">Each entry records an actual state change. No language model invents outcomes.</p>${events.map(e=>`<article class="chronicle-item"><div class="event-marker">${eventIcons[e.type]||'·'}</div><div><strong>${esc(e.title)}</strong><p>${esc(e.detail)}</p><small>${esc(fmtDay(e.day))}${e.townId?' · '+esc(simulation.town(e.townId)?.name||''):''}</small>${e.people?.length?`<div style="margin-top:7px">${e.people.slice(0,4).map(personLink).join(' ')}</div>`:''}</div></article>`).join('')}`;
 }
 function updateUI(){
-  const t=renderer.town,residents=simulation.residents(t),season=simulation.season;
-  $('globalPeople').textContent=num(simulation.alive.length);$('globalTowns').textContent=simulation.state.towns.length;
+  const t=renderer.town,residents=simulation.residents(t),season=simulation.season,living=simulation.alive;
+  $('globalPeople').textContent=num(living.length);$('globalTowns').textContent=simulation.state.towns.length;
   $('date').textContent=`Year ${simulation.year} · ${SEASONS[season]}`;
   $('day').textContent=`Day ${Math.floor(simulation.day%90)+1} · ${['Dawn','Midday','Evening','Night'][simulation.state.tick%4]}`;
   $('seasonIcon').textContent=['✺','☀','❧','❄'][season];
-  $('runtimeLabel').textContent=simulation.alive.length===0?'○ DORMANT':paused?'Ⅱ PAUSED':'● LIVE';
+  $('runtimeLabel').textContent=living.length===0?'○ DORMANT':paused?'Ⅱ PAUSED':'● LIVE';
   $('pauseBtn').textContent=paused?'▶':'Ⅱ';$('pauseBtn').setAttribute('aria-label',paused?'Resume simulation':'Pause simulation');
   $('sceneLabel').classList.toggle('town-label',renderer.mode==='town');
   if(renderer.mode==='globe'){
     $('sceneEyebrow').textContent=simulation.state.scenario?'SANDBOX · CONSTRUCTED CITY LAB':simulation.state.towns.length>1?'A CIVILIZATION TAKES ROOT':'THE FIRST CHAPTER';
-    $('sceneTitle').innerHTML=simulation.state.scenario?'A connected<br>city laboratory.':simulation.state.towns.length>1?'A world woven<br>from small lives.':simulation.alive.length>4?'One hearth.<br>Growing roots.':'Four lives.<br>A world ahead.';
-    $('sceneDescription').textContent=`${simulation.alive.length} people · ${simulation.state.towns.length} ${simulation.state.towns.length===1?'settlement':'settlements'} · Generation ${Math.max(0,...simulation.alive.map(p=>p.generation))+1}`;
+    $('sceneTitle').innerHTML=simulation.state.scenario?'A connected<br>city laboratory.':simulation.state.towns.length>1?'A world woven<br>from small lives.':living.length>4?'One hearth.<br>Growing roots.':'Four lives.<br>A world ahead.';
+    $('sceneDescription').textContent=`${living.length} people · ${simulation.state.towns.length} ${simulation.state.towns.length===1?'settlement':'settlements'} · Generation ${Math.max(0,...living.map(p=>p.generation))+1}`;
   }else{
     $('sceneEyebrow').textContent=`${simulation.state.scenario?'SANDBOX · ':''}${simulation.level(t).toUpperCase()} · ${t.weather.kind.toUpperCase()}`;$('sceneTitle').textContent=t.name;
     $('sceneDescription').textContent=`${residents.length} lives · ${t.buildings.filter(b=>b.complete).length} structures · ${Math.floor(simulation.foodDays(t))} food days`;
@@ -126,11 +127,11 @@ function updateUI(){
   $('worldCoordinates').textContent=`${Math.abs(t.lat/RAD).toFixed(1)}° ${t.lat>=0?'N':'S'} · ${Math.abs(t.lon/RAD).toFixed(1)}° ${t.lon>=0?'E':'W'}`;
   $('mapHelp').textContent=renderer.mode==='globe'?'DRAG TO ROTATE · CLICK A HEARTH TO VISIT':'DRAG TO PAN · SCROLL TO ZOOM · CLICK TO INSPECT';
   if($('panel').contains(document.activeElement)&&document.activeElement.matches('input,select'))return;
-  const scroll=$('panel').scrollTop;
-  if(renderer.selected?.kind==='person'){const p=simulation.person(renderer.selected.id);$('panel').innerHTML=p?personPanel(p):peoplePanel();}
-  else if(renderer.selected?.kind==='building'){const b=t.buildings.find(b=>b.id===renderer.selected.id);$('panel').innerHTML=b?buildingPanel(b):settlementPanel();}
-  else $('panel').innerHTML=tab==='people'?peoplePanel():tab==='knowledge'?knowledgePanel():tab==='chronicle'?chroniclePanel():tab==='transport'?transportPanel():tab==='supply'?supplyPanel():settlementPanel();
-  $('panel').scrollTop=scroll;
+  let markup;
+  if(renderer.selected?.kind==='person'){const p=simulation.person(renderer.selected.id);markup=p?personPanel(p):peoplePanel();}
+  else if(renderer.selected?.kind==='building'){const b=t.buildings.find(b=>b.id===renderer.selected.id);markup=b?buildingPanel(b):settlementPanel();}
+  else markup=tab==='people'?peoplePanel():tab==='knowledge'?knowledgePanel():tab==='chronicle'?chroniclePanel():tab==='transport'?transportPanel():tab==='supply'?supplyPanel():settlementPanel();
+  if(markup!==lastPanelMarkup){const scroll=$('panel').scrollTop;$('panel').innerHTML=markup;$('panel').scrollTop=scroll;lastPanelMarkup=markup;}
   document.querySelectorAll('[data-tab]').forEach(b=>{const selected=b.dataset.tab===tab;b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected));});
 }
 function setView(view){renderer.transitionTo(view);renderer.selected=null;document.querySelectorAll('[data-view]').forEach(b=>{const selected=b.dataset.view===view;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});renderer.dirty=true;updateUI();}
@@ -202,7 +203,7 @@ function frame(now){
       while(accumulator>=1&&steps<280&&performance.now()-begin<10){simulation.step();accumulator--;steps++;}
     }
   }
-  if(!simulation.alive.length&&!autoStopped){paused=true;autoStopped=true;toast('The last hearth has fallen silent. Its story remains.');}
+  if(!simulation.state.people.some(p=>p.alive)&&!autoStopped){paused=true;autoStopped=true;toast('The last hearth has fallen silent. Its story remains.');}
   renderer.draw(now/1000);
   if(now-lastUI>500){updateUI();lastUI=now;}
   frameCount++;

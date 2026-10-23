@@ -11,6 +11,8 @@
 | RESEARCH-01 | Game and OSS research | Completed | Historical REALMS_RESEARCH.md; deeper nine-game/source/paper review in DEEP_RESEARCH.md |
 | ECON-02 | Physical producer inputs, outputs and hauling | Verified | production.test.mjs; production-browser.py; natural-scenarios.json |
 | PERF-02 | Index production assignments instead of repeated resident scans | Reviewed and verified | Incremental per-tick indexes, exact replay, scale benchmark |
+| PERF-03 | Optimize paths, ordered local social queries, fields/research, drawing and idle inspectors | Reviewed and verified | 61 regressions; baseline snapshots/pixels/click order; `docs/OPTIMIZATION.md` |
 | QA-01 | Combined regression, browser, scale and natural checks | See LOGISTICS_QA.md | Current build hash and evidence files |
 | DELIVERY-01 | Commit, push and merge Realms 0.4 to GitHub | Merged | [PR#1](https://github.com/SalvatoreP888/PANGEA/pull/1); main 3796447 |
-| DELIVERY-02 | Deliver physical logistics and deeper research | Owner authorized; verified follow-up | `codex/realms-0.5`; the GitHub pull request records its final merge status |
+| DELIVERY-02 | Deliver physical logistics and deeper research | Merged | [PR#2](https://github.com/SalvatoreP888/PANGEA/pull/2); main bd967b4 |
+| DELIVERY-03 | Deliver measured optimization patch | Owner authorized; verified follow-up | `codex/optimize-realms`; the GitHub pull request records its final merge status |

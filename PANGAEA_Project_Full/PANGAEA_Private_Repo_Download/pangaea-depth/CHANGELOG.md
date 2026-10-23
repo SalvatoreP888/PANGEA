@@ -1,3 +1,10 @@
+# Realms 0.5.1
+
+- Faster exact simulation: reusable A* scratch arrays and a bounded route cache; ordered spatial social lookups; incremental resource/field/patient reservations; tick-local research and crop availability caches. Cache invalidation covers roads, buildings, harvesting, illness, healing and discoveries within a tick.
+- City drawing reuses its resident list and builds person hit targets without repeated array prepends. Identical paused inspectors retain their DOM, focus and scroll. MAX benefits from the faster ticks and keeps its existing deterministic scheduler.
+- Measured 1.6–2× faster constructed-city simulation and 2–3× faster close-up canvas submission against 0.5 on this cloud machine. Overview drawing remains roughly unchanged. No balance, save-format, terrain or art change; complete snapshots and rendered pixels match the baseline in tested scenarios.
+- Added five regression tests plus reproducible timing, baseline-continuation, pixel/click-order and inspector checks. See `docs/OPTIMIZATION.md` for results and reproduction.
+
 # Realms 0.5
 
 - Industrial inputs must be carried into a producer's saved buffer. Crafted outputs remain at the producer until collected and delivered; full output buffers stop work. Eight recipe chains now pay local delivery time as well as worker travel.

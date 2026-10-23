@@ -436,28 +436,42 @@ function walkable(town,x,y) {
   return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<GRID_W&&y<GRID_H&&!navigation(town).blocked[y*GRID_W+x];
 }
 function entrance(b) {const f=footprint(b);return {x:b.x,y:f.y0+f.h};}
+// Scratch state belongs to the local map, never a save or a returned route.
+// Searches are synchronous; each result owns its point objects.
+const pathScratch=new WeakMap(),PATH_DX=[1,-1,0,0],PATH_DY=[0,0,1,-1],PATH_CACHE_LIMIT=512;
 /** Four-neighbour A*: no corner cutting, no water crossing; foot traffic lowers cost. */
 function findPath(town, ax, ay, bx, by) {
   const sx = Math.round(ax), sy = Math.round(ay), tx = Math.round(bx), ty = Math.round(by);
   if (!walkable(town, tx, ty)) return null;
   const start = sy * GRID_W + sx, goal = ty * GRID_W + tx;
   if (start === goal) return [];
-  const g = new Float32Array(GRID_W * GRID_H); g.fill(Infinity); g[start] = 0;
-  const parent = new Int32Array(g.length); parent.fill(-1); const closed = new Uint8Array(g.length), open = new FlatQueue();
+  let scratch=pathScratch.get(town);
+  if(!scratch){const size=GRID_W*GRID_H;scratch={g:new Float32Array(size),parent:new Int32Array(size),closed:new Uint8Array(size),open:new FlatQueue(),routes:new Map()};pathScratch.set(town,scratch);}
+  const {g,parent,closed,open,routes}=scratch,blocked=navigation(town).blocked,tiles=town.land.tiles,streets=town.land.streets;
+  if(scratch.blocked!==blocked||scratch.tiles!==tiles||scratch.streets!==streets){routes.clear();scratch.blocked=blocked;scratch.tiles=tiles;scratch.streets=streets;}
+  const routeKey=start*(GRID_W*GRID_H)+goal;
+  if(routes.has(routeKey)){
+    const route=routes.get(routeKey);routes.delete(routeKey);routes.set(routeKey,route);
+    return route===null?null:Array.from(route,id=>({x:id%GRID_W,y:Math.floor(id/GRID_W)}));
+  }
+  const rememberRoute=path=>{routes.set(routeKey,path===null?null:Uint16Array.from(path,p=>p.y*GRID_W+p.x));if(routes.size>PATH_CACHE_LIMIT)routes.delete(routes.keys().next().value);return path;};
+  g.fill(Infinity);g[start]=0;parent.fill(-1);closed.fill(0);open.clear();
   open.push(start, 0); let count = 0;
   while (open.length && count++ < 6000) {
     const id = open.pop(); if (closed[id]) continue; closed[id] = 1;
-    if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return path.reverse(); }
+    if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return rememberRoute(path.reverse()); }
     const x = id % GRID_W, y = Math.floor(id / GRID_W);
-    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
-      if (!walkable(town, nx, ny)) continue;
-      const ni = ny * GRID_W + nx, tile = town.land.tiles[ni];
-      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, (town.land.streets?.[ni]||0) * .08);
+    for (let direction=0;direction<4;direction++) {
+      const nx=x+PATH_DX[direction],ny=y+PATH_DY[direction];
+      if(nx<0||ny<0||nx>=GRID_W||ny>=GRID_H)continue;
+      const ni=ny*GRID_W+nx;if(blocked[ni])continue;
+      const tile=tiles[ni];
+      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, (streets?.[ni]||0) * .08);
       const value = g[id] + cost;
       if (value < g[ni]) { g[ni] = value; parent[ni] = id; open.push(ni, value + .75 * (Math.abs(tx - nx) + Math.abs(ty - ny))); }
     }
   }
-  return null;
+  return rememberRoute(null);
 }
 /** Migration routes stay on a coarse land grid; detailed local maps are separate views. */
 function globalRoute(seed, from, to) {
@@ -761,11 +775,14 @@ function productionBuffer(b) {
   return b.production??={inputs:{},outputs:{},batches:0};
 }
 function productionReady(b,r) {
-  return Object.entries(r.inputs).every(([k,v])=>(b.production?.inputs[k]||0)>=v);
+  for(const k in r.inputs)if(Object.hasOwn(r.inputs,k)&&!((b.production?.inputs[k]||0)>=r.inputs[k]))return false;
+  return true;
 }
 function productionFull(b,r) {
-  return Object.entries(r.outputs).some(([k,v])=>(b.production?.outputs[k]||0)+v>v*4+1e-8);
+  for(const k in r.outputs)if(Object.hasOwn(r.outputs,k)&&(b.production?.outputs[k]||0)+r.outputs[k]>r.outputs[k]*4+1e-8)return true;
+  return false;
 }
+function productionHasOutput(b){if(b.production)for(const k in b.production.outputs)if(Object.hasOwn(b.production.outputs,k)&&b.production.outputs[k]>0)return true;return false;}
 function productionShipment(t,b,r) {
   if(productionReady(b,r))return null;
   const costs=Object.fromEntries(Object.entries(r.inputs).map(([k,v])=>[k,Math.max(0,Math.min(t.res[k],v*2-(b.production?.inputs[k]||0)))]));
@@ -773,13 +790,15 @@ function productionShipment(t,b,r) {
 }
 /** Derived once per town/tick, then updated around each resident's turn. */
 function productionAssignments(people,omitId) {
-  const index={tasks:new Map(),inbound:new Map()};
+  const index={tasks:new Map(),inbound:new Map(),nodes:new Map(),adultBuildings:new Map()};
   for(const p of people)if(p.id!==omitId)trackProductionAssignment(index,p,1);
   return index;
 }
 function trackProductionAssignment(index,p,delta) {
   const adjust=(map,key)=>{const count=(map.get(key)||0)+delta;if(count)map.set(key,count);else map.delete(key);};
   if(p.task?.buildingId!==undefined)adjust(index.tasks,`${p.task.buildingId}:${p.task.kind}`);
+  if(p.task?.buildingId!==undefined&&p.ageDays>=18*YEAR)adjust(index.adultBuildings,p.task.buildingId);
+  if(p.task?.nodeId!==undefined)adjust(index.nodes,p.task.nodeId);
   if(p.productionDelivery!==undefined)adjust(index.inbound,p.productionDelivery);
 }
 function productionDemand(sim,t,r,pop) {
@@ -797,7 +816,7 @@ function productionActions(sim,p,t,add,jobs) {
     const producers=sim.buildings(t,r.building),wanted=productionDemand(sim,t,r,pop);
     for(const b of producers){
       const occupied=job=>(assignments.tasks.get(`${b.id}:${job}`)||0)>0;
-      if(Object.values(b.production?.outputs||{}).some(v=>v>0)&&!occupied('haulOutput'))add('haulOutput',74+p.skills.building,'Collect finished goods; they are not in the common store yet.',{buildingId:b.id,recipeKind:kind});
+      if(productionHasOutput(b)&&!occupied('haulOutput'))add('haulOutput',74+p.skills.building,'Collect finished goods; they are not in the common store yet.',{buildingId:b.id,recipeKind:kind});
       if(!wanted)continue;
       if(productionReady(b,r)&&!productionFull(b,r)&&!occupied(kind)&&jobs(kind)<Math.max(1,Math.ceil(pop/35)))add(kind,60+p.skills.building*2,'Use materials delivered to this workshop. Finished goods need collection.',{buildingId:b.id});
       const inbound=(assignments.inbound.get(b.id)||0)>0||occupied('supply');
@@ -862,7 +881,62 @@ function productionStatus(sim,t,kind) {
 }
 
 
+// ----- resident-index.mjs -----
+
+
+const RESIDENT_CELL=8,RESIDENT_COLS=Math.ceil(GRID_W/RESIDENT_CELL),RESIDENT_ROWS=Math.ceil(GRID_H/RESIDENT_CELL);
+/** Tick-local spatial lookup. Results retain the original resident-array order,
+ * including membership for this tick, so random social choices stay identical. */
+class ResidentIndex {
+  constructor(people){
+    this.people=people;this.ranks=new Map();this.cells=new Int16Array(people.length);
+    // Tiny villages are cheaper to scan; larger towns allocate only used cells.
+    this.buckets=people.length>=64?new Array(RESIDENT_COLS*RESIDENT_ROWS):null;
+    this.matches=new Uint32Array(Math.ceil(people.length/32));
+    this.ageMatches=new Uint32Array(this.matches.length);this.patients=new Uint8Array(people.length);this.firstPatient=people.length;
+    for(let i=0;i<people.length;i++){const p=people[i],cell=this.cell(p);this.ranks.set(p.id,i);this.cells[i]=cell;if(this.buckets)(this.buckets[cell]??=new Set()).add(i);this.updatePatient(p);}
+  }
+  cell(p){return Math.floor(p.y/RESIDENT_CELL)*RESIDENT_COLS+Math.floor(p.x/RESIDENT_CELL);}
+  move(p){
+    if(!this.buckets)return;
+    const rank=this.ranks.get(p.id);if(rank===undefined)return;
+    const next=this.cell(p),prior=this.cells[rank];if(next===prior)return;
+    this.buckets[prior].delete(rank);(this.buckets[next]??=new Set()).add(rank);this.cells[rank]=next;
+  }
+  updatePatient(p){
+    const rank=this.ranks.get(p.id);if(rank===undefined)return;
+    const needsCare=p.health<75||p.sick>0;this.patients[rank]=needsCare?1:0;
+    if(needsCare&&rank<this.firstPatient)this.firstPatient=rank;
+    else if(!needsCare&&rank===this.firstPatient)while(this.firstPatient<this.people.length&&!this.patients[this.firstPatient])this.firstPatient++;
+  }
+  patient(){return this.people[this.firstPatient];}
+  nearby(p,radius=20,preferAgeGroup=false){
+    if(!this.buckets){const all=this.people.filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<radius);if(!preferAgeGroup)return all;const same=all.filter(q=>(q.ageDays>=18*YEAR)===(p.ageDays>=18*YEAR));return same.length?same:all;}
+    let bits=this.matches;bits.fill(0);this.ageMatches.fill(0);let compatible=false;
+    const adult=p.ageDays>=18*YEAR,radiusSquared=radius*radius;
+    const x0=Math.max(0,Math.floor((p.x-radius)/RESIDENT_CELL)),x1=Math.min(RESIDENT_COLS-1,Math.floor((p.x+radius)/RESIDENT_CELL));
+    const y0=Math.max(0,Math.floor((p.y-radius)/RESIDENT_CELL)),y1=Math.min(RESIDENT_ROWS-1,Math.floor((p.y+radius)/RESIDENT_CELL));
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+      const bucket=this.buckets[y*RESIDENT_COLS+x];if(!bucket)continue;
+      for(const rank of bucket){
+        const q=this.people[rank],dx=q.x-p.x,dy=q.y-p.y;
+        if(q.id!==p.id&&dx*dx+dy*dy<radiusSquared){
+          bits[rank>>>5]|=1<<(rank&31);
+          if(preferAgeGroup&&(q.ageDays>=18*YEAR)===adult){this.ageMatches[rank>>>5]|=1<<(rank&31);compatible=true;}
+        }
+      }
+    }
+    if(compatible)bits=this.ageMatches;
+    const result=[];
+    // Ordered bit iteration avoids sorting moved buckets or scanning every person.
+    for(let i=0;i<bits.length;i++){let word=bits[i];while(word){const bit=31-Math.clz32(word&-word);result.push(this.people[i*32+bit]);word=(word&(word-1))>>>0;}}
+    return result;
+  }
+}
+
+
 // ----- sim.mjs -----
+
 
 
 /**
@@ -875,6 +949,8 @@ function productionStatus(sim,t,kind) {
 
 
 
+const WORK_SKILLS={forage:'foraging',wood:'forestry',stone:'forestry',build:'building',farm:'farming',study:'insight',cook:'care',care:'care',craft:'building',herbs:'care',ore:'forestry',coal:'forestry',smelt:'building',steel:'building',manufacture:'building',infrastructure:'building',fish:'foraging',clay:'forestry',mill:'building',bake:'care',fireBricks:'building',weave:'building',preserveFish:'care'};
+const GATHER_AMOUNTS={food:5.5,wood:5,stone:4,herbs:3,ore:5,coal:5,clay:5},CROP_TYPES=['farm','wheatfield','flaxfield'];
 class Simulation {
   constructor(seed = 481217, options = {}) {
     if (!Number.isInteger(seed)) throw new Error('Seed must be an integer.');
@@ -911,7 +987,22 @@ class Simulation {
   foodDays(t) { return (EDIBLE.reduce((n,k)=>n+(t.res[k]||0),0))/Math.max(.1,(this._activeTown?.id===t.id?this._activeTown.foodDemand:this.residents(t).reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0))); }
   level(t) { const n=this.residents(t).length; return n>=1000?'Metropolis':n>=300?'City':n>=80?'Town':n>=16?'Village':n>=7?'Hamlet':'Camp'; }
   knowledge(t,id) { return t.knowledge.includes(id); }
-  currentTech(t) { const available=TECH.filter(k=>!t.knowledge.includes(k.id)&&k.parents.every(id=>t.knowledge.includes(id))&&this.residents(t).length>=k.minPopulation);return available.find(k=>k.id===t.researchTarget)||available[0]; }
+  currentTech(t) {
+    const active=this._activeTown?.id===t.id?this._activeTown:null;
+    if(active?.research&&active.research.knowledge===t.knowledge&&active.research.count===t.knowledge.length&&active.research.target===t.researchTarget)return active.research.value;
+    const population=this.residents(t).length;let value;
+    for(const k of TECH)if(!t.knowledge.includes(k.id)&&k.parents.every(id=>t.knowledge.includes(id))&&population>=k.minPopulation){value??=k;if(k.id===t.researchTarget){value=k;break;}}
+    if(active)active.research={knowledge:t.knowledge,count:t.knowledge.length,target:t.researchTarget,value};
+    return value;
+  }
+  availableFarms(t){
+    const active=this._activeTown?.id===t.id?this._activeTown:null,cache=active?.farms;
+    if(cache&&cache.grain===t.res.grain&&cache.flax===t.res.flax&&cache.layout===t.land.navRevision&&cache.count===t.buildings.length&&cache.revision===active.farmRevision)return cache.value;
+    const pop=this.residents(t).length,climate=active?.climate||townClimate(this.state.seed,t,this.state.planet,this.day);
+    const value=CROP_TYPES.flatMap(type=>this.buildings(t,type)).filter(b=>(b.type==='farm'||t.res[b.type==='wheatfield'?'grain':'flax']<Math.max(40,pop*(b.type==='wheatfield'?8:4)))&&(b.crop.yield>0||(!b.crop.sown&&(this.season!==3||climate.temperature>12))));
+    if(active)active.farms={grain:t.res.grain,flax:t.res.flax,layout:t.land.navRevision,count:t.buildings.length,revision:active.farmRevision,value};
+    return value;
+  }
   event(type,title,detail,townId=null,people=[]) {
     const e={id:this.state.nextEvent++,day:this.day,type,title,detail,townId,people};
     this.state.events.unshift(e); if(this.state.events.length>350)this.state.events.length=350; return e;
@@ -1030,7 +1121,7 @@ class Simulation {
     const nodes=t.land.nodes.filter(n=>n.kind===kind&&n.amount>=1&&walkable(t,n.x,n.y));
     nodes.sort((a,b)=>(Math.abs(a.x-p.x)+Math.abs(a.y-p.y))-(Math.abs(b.x-p.x)+Math.abs(b.y-p.y)));
     for(const n of nodes.slice(0,16)){
-      const reserved=this.residents(t).filter(q=>q.id!==p.id&&q.task?.nodeId===n.id).length;if(reserved>=2)continue;
+      const reserved=this._activeTown?.id===t.id?(this._activeTown.productionAssignments.nodes.get(n.id)||0):this.residents(t).filter(q=>q.id!==p.id&&q.task?.nodeId===n.id).length;if(reserved>=2)continue;
       const path=findPath(t,p.x,p.y,n.x,n.y);if(path)return {node:n,path};
     }
     return null;
@@ -1054,17 +1145,16 @@ class Simulation {
     const stoneNeed=(costs.stone||0)+18;
     if(t.res.stone<stoneNeed&&jobs('stone')<Math.max(1,Math.ceil(pop/14)))add('stone',35+clamp((stoneNeed-t.res.stone)/stoneNeed,0,1)*40+p.skills.forestry,`${Math.floor(t.res.stone)} stone available; ${Math.ceil(stoneNeed)} wanted.`);
     if(project?.funded&&!project.complete&&jobs('build')<Math.max(1,Math.ceil(adults.length/6)))add('build',65+(this.capacity(t)<pop?24:0)+p.skills.building*2,`${BUILDINGS[project.type].name} has materials and needs labour.`,{buildingId:project.id});
-    const growingClimate=this._activeTown?.id===t.id?this._activeTown.climate:townClimate(this.state.seed,t,this.state.planet,this.day);
-    const farms=['farm','wheatfield','flaxfield'].flatMap(type=>this.buildings(t,type)).filter(b=>(b.type==='farm'||t.res[b.type==='wheatfield'?'grain':'flax']<Math.max(40,pop*(b.type==='wheatfield'?8:4)))&&(b.crop.yield>0||(!b.crop.sown&&(this.season!==3||growingClimate.temperature>12))));
+    const farms=this.availableFarms(t);
     if(farms.length&&jobs('farm')<farms.length){
-      const farm=farms.find(b=>!adults.some(q=>q.id!==p.id&&q.task?.buildingId===b.id));
+      const farm=farms.find(b=>this._activeTown?.id===t.id?!this._activeTown.productionAssignments.adultBuildings.get(b.id):!adults.some(q=>q.id!==p.id&&q.task?.buildingId===b.id));
       if(farm)add('farm',(farm.crop.yield>0?85:57)+p.skills.farming*2+(fd<10?24:0),farm.crop.yield>0?'Mature crops need harvesting before they spoil.':'Sow a new crop for a future harvest.',{buildingId:farm.id});
     }
     if(this.buildings(t,'fire').length&&t.res.food>=4&&t.res.meals<pop*2&&t.res.wood>=2&&!jobs('cook'))add('cook',35+p.skills.care*2+(t.res.meals<pop?12:0),'Convert raw food and fuel into comforting cooked meals.');
     if(this.currentTech(t)&&fd>5&&jobs('study')<Math.max(1,Math.ceil(adults.length/8)))add('study',28+p.skills.insight*2+(p.trait==='Curious'?16:0)+(fd>t.reserve?12:0),`Investigate ${this.currentTech(t).name.toLowerCase()}; the pantry can support some study.`);
     if(this.buildings(t,'workshop').length&&t.res.tools<Math.max(5,adults.length)&&this.afford(t,{wood:3,stone:2})&&!jobs('craft'))add('craft',45+p.skills.building,'Tools improve gathering and construction, but wear with use.');
     if(this.buildings(t,'clinic').length&&t.res.herbs<10&&!jobs('herbs'))add('herbs',35+p.skills.care,'Stock herbs for the sick.');
-    const patient=people.find(q=>q.health<75||q.sick>0);
+    const patient=this._activeTown?.id===t.id?this._activeTown.residentIndex.patient():people.find(q=>q.health<75||q.sick>0);
     if(patient&&this.buildings(t,'clinic').length&&t.res.herbs>=1&&!jobs('care'))add('care',65+p.skills.care*2,'A neighbour is unwell and treatment is available.',{patientId:patient.id});
     economyActions(this,p,t,add,jobs);
     const infrastructure=this.state.links.find(l=>l.project&&[l.from,l.to].includes(t.id));
@@ -1118,6 +1208,7 @@ class Simulation {
     if(n.food>40&&!p.sick)p.health=clamp(p.health+.14,0,100);
     if(n.warmth<20)p.health-=.20;
     if(p.sick>0){p.sick--;p.health-=.16;}
+    if(this._activeTown?.id===t.id)this._activeTown.residentIndex.updatePatient(p);
     if(p.health<=0){this.die(p,'hardship');return;}
     let memoryMood=0;const felt=new Set();for(const m of p.memories){if(felt.has(m.tag))continue;felt.add(m.tag);memoryMood+=m.mood*Math.exp(-(this.day-m.day)/60)*.4;}memoryMood=clamp(memoryMood,-28,22);
     p.mood=clamp(28+n.food*.20+n.social*.17+n.warmth*.10+(p.houseId?8:0)+memoryMood-(p.sick?12:0),0,100);
@@ -1138,7 +1229,7 @@ class Simulation {
   }
   work(p,t) {
     const task=p.task;if(!task)return;task.work++;
-    const skillName={forage:'foraging',wood:'forestry',stone:'forestry',build:'building',farm:'farming',study:'insight',cook:'care',care:'care',craft:'building',herbs:'care',ore:'forestry',coal:'forestry',smelt:'building',steel:'building',manufacture:'building',infrastructure:'building',fish:'foraging',clay:'forestry',mill:'building',bake:'care',fireBricks:'building',weave:'building',preserveFish:'care'}[task.kind];
+    const skillName=WORK_SKILLS[task.kind];
     const skill=skillName?p.skills[skillName]:0;
     let rate=1+skill*.035;
     if(t.res.tools>.015&&['wood','stone','build','farm'].includes(task.kind)){rate*=1.25;t.res.tools=Math.max(0,t.res.tools-.012);}
@@ -1154,7 +1245,7 @@ class Simulation {
       case 'rest':p.needs.energy=clamp(p.needs.energy+(p.houseId?80:61),0,100);if(p.houseId)p.needs.warmth=clamp(p.needs.warmth+24,0,100);break;
       case 'forage':case 'wood':case 'stone':case 'herbs':case 'ore':case 'coal':case 'clay':{
         const node=t.land.nodes.find(n=>n.id===task.nodeId);if(!node||node.amount<=0)break;
-        const amount=Math.min(node.amount,({food:5.5,wood:5,stone:4,herbs:3,ore:5,coal:5,clay:5}[node.kind])*rate*(node.kind==='wood'&&this.buildings(t,'sawmill').length?1.5:1)*(['ore','coal'].includes(node.kind)&&this.knowledge(t,'steam')?1.5:1));
+        const amount=Math.min(node.amount,GATHER_AMOUNTS[node.kind]*rate*(node.kind==='wood'&&this.buildings(t,'sawmill').length?1.5:1)*(['ore','coal'].includes(node.kind)&&this.knowledge(t,'steam')?1.5:1));
         node.amount-=amount;p.carry[node.kind]=(p.carry[node.kind]||0)+amount;
         if(node.kind==='food')t.stats.foodProduced+=amount;
         t.land.revision++;
@@ -1181,6 +1272,7 @@ class Simulation {
       }
       case 'farm':{
         const b=t.buildings.find(b=>b.id===task.buildingId);if(!b||!b.complete)break;
+        if(this._activeTown?.id===t.id)this._activeTown.farmRevision++;
         if(b.crop.yield>0){const amount=Math.min(b.crop.yield,12*rate*(this.knowledge(t,'agronomy')?2:1));b.crop.yield-=amount;const harvest=b.type==='wheatfield'?'grain':b.type==='flaxfield'?'flax':'food';p.carry[harvest]=(p.carry[harvest]||0)+amount;if(harvest==='food')t.stats.foodProduced+=amount;if(b.crop.yield<.001){b.crop.sown=false;b.crop.growth=0;}done=true;}
         else if(!b.crop.sown&&(this.season!==3||townClimate(this.state.seed,t,this.state.planet,this.day).temperature>12)){b.crop.sown=true;b.crop.growth=0;done=true;}
         break;
@@ -1200,16 +1292,17 @@ class Simulation {
       }
       case 'craft':if(this.spend(t,{wood:3,stone:2},'Toolmaking inputs'))this.transaction(t,'tools',1,'Toolmaking output');break;
       case 'care':{
-        const patient=this.person(task.patientId);if(patient?.alive&&this.spend(t,{herbs:1},'Treatment')){patient.health=clamp(patient.health+7*rate*(this.knowledge(t,'publicHealth')?2:1),0,100);patient.sick=Math.max(0,patient.sick-12);this.bond(p,patient,4);this.remember(patient,'friendship',`${p.name} cared for me while I was unwell.`,8,8,[p.id]);}break;
+        const patient=this.person(task.patientId);if(patient?.alive&&this.spend(t,{herbs:1},'Treatment')){patient.health=clamp(patient.health+7*rate*(this.knowledge(t,'publicHealth')?2:1),0,100);patient.sick=Math.max(0,patient.sick-12);if(this._activeTown?.id===t.id)this._activeTown.residentIndex.updatePatient(patient);this.bond(p,patient,4);this.remember(patient,'friendship',`${p.name} cared for me while I was unwell.`,8,8,[p.id]);}break;
       }
       case 'learn':{
         const mentor=this.adults(t).sort((a,b)=>b.skills.insight-a.skills.insight)[0];
         if(mentor){const top=SKILLS.reduce((a,b)=>mentor.skills[a]>mentor.skills[b]?a:b);p.skills[top]=Math.min(mentor.skills[top],p.skills[top]+.035);this.bond(p,mentor,.5);}p.needs.social=clamp(p.needs.social+17,0,100);break;
       }
       case 'social':case 'play':{
-        const others=this.residents(t).filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<20);
-        const compatible=others.filter(q=>(q.ageDays>=18*YEAR) === (p.ageDays>=18*YEAR));
-        const pool=compatible.length?compatible:others, q=pool.length?pool[this.integer(0,pool.length-1)]:null;
+        let pool;
+        if(this._activeTown?.id===t.id)pool=this._activeTown.residentIndex.nearby(p,20,true);
+        else {const others=this.residents(t).filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<20),compatible=others.filter(q=>(q.ageDays>=18*YEAR)===(p.ageDays>=18*YEAR));pool=compatible.length?compatible:others;}
+        const q=pool.length?pool[this.integer(0,pool.length-1)]:null;
         p.needs.social=clamp(p.needs.social+48,0,100);
         if(q){q.needs.social=clamp(q.needs.social+18,0,100);this.bond(p,q,p.trait==='Kind'?5:3.5);if(this.relationship(p,q)>30)this.remember(p,'friendship',`Sharing time with ${q.name} makes this place feel like home.`,5,5,[q.id]);}
         break;
@@ -1369,10 +1462,10 @@ class Simulation {
       for(const p of this.state.people)if(p.alive)p.ageDays+=1/STEPS_PER_DAY;
       for(const t of this.state.towns){
         const people=this.residents(t),jobs={};for(const p of people)if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;
-        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),climate:townClimate(this.state.seed,t,this.state.planet,this.day),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
+        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),residentIndex:new ResidentIndex(people),farmRevision:0,climate:townClimate(this.state.seed,t,this.state.planet,this.day),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
         // Rotate the processing order deterministically so founder #1 cannot monopolize jobs.
         const offset=people.length?this.state.tick%people.length:0;
-        for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;trackProductionAssignment(this._activeTown.productionAssignments,p,-1);this.stepPerson(p,t);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;if(p.alive)trackProductionAssignment(this._activeTown.productionAssignments,p,1);}}
+        for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;trackProductionAssignment(this._activeTown.productionAssignments,p,-1);this.stepPerson(p,t);this._activeTown.residentIndex.move(p);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;if(p.alive)trackProductionAssignment(this._activeTown.productionAssignments,p,1);}}
         this._activeTown=null;
       }
       if(this.state.tick%STEPS_PER_DAY===0){
@@ -1621,8 +1714,11 @@ class WorldRenderer {
     this.transition={snapshot,from:this.mode,to:mode,start:performance.now(),duration:1000,anchor:townPoint};this.mode=mode;
   }
   draw(time){
-    const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);this.hits=[];
+    const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);this.hits=[];this.personHits=[];
     if(this.mode==='globe')this.drawGlobe(time);else this.drawTown(time);
+    // People retain reverse draw priority without repeated O(n) array prepends.
+    if(this.personHits.length)this.hits=this.personHits.reverse().concat(this.hits);
+    this.personHits=null;this.frameTown=null;this.frameResidents=null;
     if(this.transition){
       const t=this.transition,p=clamp((performance.now()-t.start)/t.duration,0,1),ease=p*p*(3-2*p);
       if(p>=1){this.transition=null;return;}
@@ -1745,6 +1841,7 @@ class WorldRenderer {
   }
   drawTown(time){
     const c=this.ctx,t=this.town,W=this.width,H=this.height,z=this.camera.zoom;c.fillStyle='#122d37';c.fillRect(0,0,W,H);
+    const residents=this.sim.residents(t);this.frameTown=t;this.frameResidents=residents;
     c.save();c.translate(W/2,H/2);c.scale(z,z);c.translate(-this.camera.x,-this.camera.y);c.imageSmoothingEnabled=false;c.drawImage(this.baseTerrain(t),0,0);
     const bounds={x0:Math.floor((this.camera.x-W/2/z)/TILE)-4,x1:Math.ceil((this.camera.x+W/2/z)/TILE)+4,y0:Math.floor((this.camera.y-H/2/z)/TILE)-4,y1:Math.ceil((this.camera.y+H/2/z)/TILE)+4};
     this.drawStreets(t,bounds);
@@ -1752,7 +1849,7 @@ class WorldRenderer {
     const objects=[];
     for(const n of t.land.nodes)if(n.x>=bounds.x0&&n.x<=bounds.x1&&n.y>=bounds.y0&&n.y<=bounds.y1)objects.push({y:n.y,kind:'node',item:n});
     for(const b of t.buildings)if(b.x>=bounds.x0-4&&b.x<=bounds.x1+4&&b.y>=bounds.y0-4&&b.y<=bounds.y1+4)objects.push({y:b.y+1,kind:'building',item:b});
-    for(const p of this.sim.residents(t))if(p.x>=bounds.x0&&p.x<=bounds.x1&&p.y>=bounds.y0&&p.y<=bounds.y1)objects.push({y:p.y+.5,kind:'person',item:p});
+    for(const p of residents)if(p.x>=bounds.x0&&p.x<=bounds.x1&&p.y>=bounds.y0&&p.y<=bounds.y1)objects.push({y:p.y+.5,kind:'person',item:p});
     objects.sort((a,b)=>a.y-b.y);
     for(const o of objects){if(o.kind==='node')this.drawNode(o.item,time);else if(o.kind==='building')this.drawBuilding(o.item,time);else this.drawPerson(o.item,time);}
     if(this.selected?.kind==='person'){
@@ -1846,7 +1943,7 @@ class WorldRenderer {
     c.strokeStyle='#554d443a';c.lineWidth=.6;for(let yy=roof+2;yy<roof+10;yy+=3){c.beginPath();c.moveTo(px+1,yy);c.lineTo(px+w-1,yy);c.stroke();}
     if(industry){c.fillStyle='#746e61';c.fillRect(px+w-8,roof-9,4,14);this.smoke(px+w-6,roof-10,time,b.id);c.fillStyle='#8b8062';c.fillRect(px-3,py+h-3,6,4);}
     if(b.type==='mill'){
-      c.save();c.translate(px+w/2,roof+6);c.strokeStyle='#d6ccac';c.lineWidth=2;const turning=this.sim.residents(this.town).some(p=>p.task?.kind==='mill');c.rotate(turning?this.sim.state.tick*.07:.4);for(let j=0;j<4;j++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(0,-12);c.stroke();c.fillStyle='#b8b79a';c.fillRect(-3,-12,3,8);}c.restore();
+      c.save();c.translate(px+w/2,roof+6);c.strokeStyle='#d6ccac';c.lineWidth=2;const turning=(this.frameTown===this.town?this.frameResidents:this.sim.residents(this.town)).some(p=>p.task?.kind==='mill');c.rotate(turning?this.sim.state.tick*.07:.4);for(let j=0;j<4;j++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(0,-12);c.stroke();c.fillStyle='#b8b79a';c.fillRect(-3,-12,3,8);}c.restore();
     }
     if(b.type==='fishery'){c.fillStyle='#8e7957';c.fillRect(px-2,py+h,w+4,5);c.strokeStyle='#bbac80';c.lineWidth=.6;for(let j=2;j<w;j+=4){c.beginPath();c.moveTo(px+j,py+h);c.lineTo(px+j,py+h+5);c.stroke();}c.fillStyle='#476e70';c.beginPath();c.ellipse(px+w-3,py+h+8,8,3,-.15,0,TAU);c.fill();}
     if(b.type==='station'){
@@ -1871,8 +1968,8 @@ class WorldRenderer {
     if(p.sick){c.fillStyle='#cad2a0';c.fillRect(6,-25,3,3);}
     c.restore();
     if(selected){c.strokeStyle='#ffe2a0';c.lineWidth=1; c.beginPath();c.ellipse(x,y+1,6,3,0,0,TAU);c.stroke();}
-    if(this.labels&&(selected||this.camera.zoom>1.45&&this.sim.residents(this.town).length<80)){c.font=`${selected?'600 ':''}10px system-ui`;c.textAlign='center';const w=c.measureText(p.name).width;c.fillStyle='#19382ec9';c.fillRect(x-w/2-4,y-20,w+8,14);c.fillStyle=selected?'#fff1c8':'#e4e5d1';c.fillText(p.name,x,y-10);c.textAlign='left';}
-    const pt=this.screen(p.x,p.y);this.hits.unshift({x:pt.x,y:pt.y-3*this.camera.zoom,r:Math.max(3,4*this.camera.zoom),kind:'person',id:p.id});
+    if(this.labels&&(selected||this.camera.zoom>1.45&&(this.frameTown===this.town?this.frameResidents:this.sim.residents(this.town)).length<80)){c.font=`${selected?'600 ':''}10px system-ui`;c.textAlign='center';const w=c.measureText(p.name).width;c.fillStyle='#19382ec9';c.fillRect(x-w/2-4,y-20,w+8,14);c.fillStyle=selected?'#fff1c8':'#e4e5d1';c.fillText(p.name,x,y-10);c.textAlign='left';}
+    const pt=this.screen(p.x,p.y),hit={x:pt.x,y:pt.y-3*this.camera.zoom,r:Math.max(3,4*this.camera.zoom),kind:'person',id:p.id};if(this.personHits)this.personHits.push(hit);else this.hits.unshift(hit);
   }
   hit(x,y){return this.hits.find(h=>Math.hypot(h.x-x,h.y-y)<=h.r)||null;}
   pan(dx,dy){if(this.mode==='globe'){this.orbit.lon-=dx/this.width*4;this.orbit.lat=clamp(this.orbit.lat+dy/this.height*2.5,-1.3,1.3);this.dirty=true;}else{this.camera.x=clamp(this.camera.x-dx/this.camera.zoom,0,GRID_W*TILE);this.camera.y=clamp(this.camera.y-dy/this.camera.zoom,0,GRID_H*TILE);}}
@@ -1895,6 +1992,7 @@ const initials=p=>esc(p.name.slice(0,1));
 const eventIcons={founding:'✦',build:'⌂',plan:'⌁',family:'♡',birth:'✳',knowledge:'✧',council:'◈',weather:'☂',migration:'➤',death:'✝',aid:'⇄'};
 let simulation=new Simulation(481217),renderer=new WorldRenderer($('world'),simulation);
 let peopleQuery='',peoplePage=0;
+let lastPanelMarkup=null;
 let tab='settlement',paused=false,speed=16,accumulator=0,last=0,lastUI=0,toastTimer=0;
 let frameCount=0,perfAt=0,perfDay=0,actualRate=0,autoStopped=false;
 if(innerWidth<=760)document.body.classList.add('panel-hidden');
@@ -1991,18 +2089,18 @@ function chroniclePanel(){
   return `<span class="eyebrow" style="font-size:8px;color:#9bb18e">THE WORLD REMEMBERS</span><h2>A history of small things.</h2><p class="microcopy" style="margin-bottom:25px">Each entry records an actual state change. No language model invents outcomes.</p>${events.map(e=>`<article class="chronicle-item"><div class="event-marker">${eventIcons[e.type]||'·'}</div><div><strong>${esc(e.title)}</strong><p>${esc(e.detail)}</p><small>${esc(fmtDay(e.day))}${e.townId?' · '+esc(simulation.town(e.townId)?.name||''):''}</small>${e.people?.length?`<div style="margin-top:7px">${e.people.slice(0,4).map(personLink).join(' ')}</div>`:''}</div></article>`).join('')}`;
 }
 function updateUI(){
-  const t=renderer.town,residents=simulation.residents(t),season=simulation.season;
-  $('globalPeople').textContent=num(simulation.alive.length);$('globalTowns').textContent=simulation.state.towns.length;
+  const t=renderer.town,residents=simulation.residents(t),season=simulation.season,living=simulation.alive;
+  $('globalPeople').textContent=num(living.length);$('globalTowns').textContent=simulation.state.towns.length;
   $('date').textContent=`Year ${simulation.year} · ${SEASONS[season]}`;
   $('day').textContent=`Day ${Math.floor(simulation.day%90)+1} · ${['Dawn','Midday','Evening','Night'][simulation.state.tick%4]}`;
   $('seasonIcon').textContent=['✺','☀','❧','❄'][season];
-  $('runtimeLabel').textContent=simulation.alive.length===0?'○ DORMANT':paused?'Ⅱ PAUSED':'● LIVE';
+  $('runtimeLabel').textContent=living.length===0?'○ DORMANT':paused?'Ⅱ PAUSED':'● LIVE';
   $('pauseBtn').textContent=paused?'▶':'Ⅱ';$('pauseBtn').setAttribute('aria-label',paused?'Resume simulation':'Pause simulation');
   $('sceneLabel').classList.toggle('town-label',renderer.mode==='town');
   if(renderer.mode==='globe'){
     $('sceneEyebrow').textContent=simulation.state.scenario?'SANDBOX · CONSTRUCTED CITY LAB':simulation.state.towns.length>1?'A CIVILIZATION TAKES ROOT':'THE FIRST CHAPTER';
-    $('sceneTitle').innerHTML=simulation.state.scenario?'A connected<br>city laboratory.':simulation.state.towns.length>1?'A world woven<br>from small lives.':simulation.alive.length>4?'One hearth.<br>Growing roots.':'Four lives.<br>A world ahead.';
-    $('sceneDescription').textContent=`${simulation.alive.length} people · ${simulation.state.towns.length} ${simulation.state.towns.length===1?'settlement':'settlements'} · Generation ${Math.max(0,...simulation.alive.map(p=>p.generation))+1}`;
+    $('sceneTitle').innerHTML=simulation.state.scenario?'A connected<br>city laboratory.':simulation.state.towns.length>1?'A world woven<br>from small lives.':living.length>4?'One hearth.<br>Growing roots.':'Four lives.<br>A world ahead.';
+    $('sceneDescription').textContent=`${living.length} people · ${simulation.state.towns.length} ${simulation.state.towns.length===1?'settlement':'settlements'} · Generation ${Math.max(0,...living.map(p=>p.generation))+1}`;
   }else{
     $('sceneEyebrow').textContent=`${simulation.state.scenario?'SANDBOX · ':''}${simulation.level(t).toUpperCase()} · ${t.weather.kind.toUpperCase()}`;$('sceneTitle').textContent=t.name;
     $('sceneDescription').textContent=`${residents.length} lives · ${t.buildings.filter(b=>b.complete).length} structures · ${Math.floor(simulation.foodDays(t))} food days`;
@@ -2010,11 +2108,11 @@ function updateUI(){
   $('worldCoordinates').textContent=`${Math.abs(t.lat/RAD).toFixed(1)}° ${t.lat>=0?'N':'S'} · ${Math.abs(t.lon/RAD).toFixed(1)}° ${t.lon>=0?'E':'W'}`;
   $('mapHelp').textContent=renderer.mode==='globe'?'DRAG TO ROTATE · CLICK A HEARTH TO VISIT':'DRAG TO PAN · SCROLL TO ZOOM · CLICK TO INSPECT';
   if($('panel').contains(document.activeElement)&&document.activeElement.matches('input,select'))return;
-  const scroll=$('panel').scrollTop;
-  if(renderer.selected?.kind==='person'){const p=simulation.person(renderer.selected.id);$('panel').innerHTML=p?personPanel(p):peoplePanel();}
-  else if(renderer.selected?.kind==='building'){const b=t.buildings.find(b=>b.id===renderer.selected.id);$('panel').innerHTML=b?buildingPanel(b):settlementPanel();}
-  else $('panel').innerHTML=tab==='people'?peoplePanel():tab==='knowledge'?knowledgePanel():tab==='chronicle'?chroniclePanel():tab==='transport'?transportPanel():tab==='supply'?supplyPanel():settlementPanel();
-  $('panel').scrollTop=scroll;
+  let markup;
+  if(renderer.selected?.kind==='person'){const p=simulation.person(renderer.selected.id);markup=p?personPanel(p):peoplePanel();}
+  else if(renderer.selected?.kind==='building'){const b=t.buildings.find(b=>b.id===renderer.selected.id);markup=b?buildingPanel(b):settlementPanel();}
+  else markup=tab==='people'?peoplePanel():tab==='knowledge'?knowledgePanel():tab==='chronicle'?chroniclePanel():tab==='transport'?transportPanel():tab==='supply'?supplyPanel():settlementPanel();
+  if(markup!==lastPanelMarkup){const scroll=$('panel').scrollTop;$('panel').innerHTML=markup;$('panel').scrollTop=scroll;lastPanelMarkup=markup;}
   document.querySelectorAll('[data-tab]').forEach(b=>{const selected=b.dataset.tab===tab;b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected));});
 }
 function setView(view){renderer.transitionTo(view);renderer.selected=null;document.querySelectorAll('[data-view]').forEach(b=>{const selected=b.dataset.view===view;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});renderer.dirty=true;updateUI();}
@@ -2086,7 +2184,7 @@ function frame(now){
       while(accumulator>=1&&steps<280&&performance.now()-begin<10){simulation.step();accumulator--;steps++;}
     }
   }
-  if(!simulation.alive.length&&!autoStopped){paused=true;autoStopped=true;toast('The last hearth has fallen silent. Its story remains.');}
+  if(!simulation.state.people.some(p=>p.alive)&&!autoStopped){paused=true;autoStopped=true;toast('The last hearth has fallen silent. Its story remains.');}
   renderer.draw(now/1000);
   if(now-lastUI>500){updateUI();lastUI=now;}
   frameCount++;

@@ -1,0 +1,131 @@
+{
+  "checks": [
+    "baseline: rendering preserves complete simulation snapshots",
+    "candidate: rendering preserves complete simulation snapshots",
+    "Idle inspector retains DOM nodes, keyboard focus and scroll without replacement",
+    "Inspector refreshes after simulation advances and a different save loads",
+    "Mobile supply inspector opens without horizontal overflow",
+    "All four city views match baseline pixels and complete click-target priority order"
+  ],
+  "pageErrors": [],
+  "implementations": {
+    "baseline": {
+      "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
+      "measurements": [
+        {
+          "medianMs": 36,
+          "p95Ms": 48.5,
+          "pixelSha256": "30b02dcf0b8399e95f0776a7ab09ff1e85009d5fa6d32fb33c017eba5475b20a",
+          "hitOrderSha256": "1bae5657e002f695d97159a3d05b61dbdae4c21ebf807c68c49279949f56e52b",
+          "population": 1000,
+          "zoom": 0.72
+        },
+        {
+          "medianMs": 16.5,
+          "p95Ms": 68.5,
+          "pixelSha256": "6e8f5d787fbf421b5c5bad5588967344ba2f4451646efe7ae44d7908aa46c13e",
+          "hitOrderSha256": "13bbf4f77c14879beadfa5110d4c2647dca7964901bf565c86d4826695815a47",
+          "population": 1000,
+          "zoom": 1.7
+        },
+        {
+          "medianMs": 38.700000047683716,
+          "p95Ms": 55.19999998807907,
+          "pixelSha256": "9d142ad8b78a7db71e2b9709342e6fae039bfe03627a9769e6bf22342ecbf338",
+          "hitOrderSha256": "502746bc808a3699c8a07a920964e8a34f1c4f19253c8820d81246f930c94644",
+          "population": 2000,
+          "zoom": 0.72
+        },
+        {
+          "medianMs": 27,
+          "p95Ms": 75,
+          "pixelSha256": "150d3b5f3784c166658e590919623f04b8ff5a49bffbe7f0008c121adbfadea1",
+          "hitOrderSha256": "3a4774a50b62eabfe999b941aabc2eb576d2ea3a26f1d4c7d4ba7430c3d67708",
+          "population": 2000,
+          "zoom": 1.7
+        }
+      ],
+      "idleInspector": {
+        "replacements": 3,
+        "sameNode": false,
+        "sameFocus": false,
+        "sameScroll": true
+      }
+    },
+    "candidate": {
+      "buildSha256": "231db236f65ef0a3790fce5f83af2de4661a3923ce9eaf2d8be9bb2bf4b14009",
+      "measurements": [
+        {
+          "medianMs": 35.80000001192093,
+          "p95Ms": 49.799999952316284,
+          "pixelSha256": "30b02dcf0b8399e95f0776a7ab09ff1e85009d5fa6d32fb33c017eba5475b20a",
+          "hitOrderSha256": "1bae5657e002f695d97159a3d05b61dbdae4c21ebf807c68c49279949f56e52b",
+          "population": 1000,
+          "zoom": 0.72
+        },
+        {
+          "medianMs": 8.300000011920929,
+          "p95Ms": 63.30000001192093,
+          "pixelSha256": "6e8f5d787fbf421b5c5bad5588967344ba2f4451646efe7ae44d7908aa46c13e",
+          "hitOrderSha256": "13bbf4f77c14879beadfa5110d4c2647dca7964901bf565c86d4826695815a47",
+          "population": 1000,
+          "zoom": 1.7
+        },
+        {
+          "medianMs": 40,
+          "p95Ms": 58.5,
+          "pixelSha256": "9d142ad8b78a7db71e2b9709342e6fae039bfe03627a9769e6bf22342ecbf338",
+          "hitOrderSha256": "502746bc808a3699c8a07a920964e8a34f1c4f19253c8820d81246f930c94644",
+          "population": 2000,
+          "zoom": 0.72
+        },
+        {
+          "medianMs": 8.900000035762787,
+          "p95Ms": 57.60000002384186,
+          "pixelSha256": "150d3b5f3784c166658e590919623f04b8ff5a49bffbe7f0008c121adbfadea1",
+          "hitOrderSha256": "3a4774a50b62eabfe999b941aabc2eb576d2ea3a26f1d4c7d4ba7430c3d67708",
+          "population": 2000,
+          "zoom": 1.7
+        }
+      ],
+      "idleInspector": {
+        "replacements": 0,
+        "sameNode": true,
+        "sameFocus": true,
+        "sameScroll": true
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "population": 1000,
+      "zoom": 0.72,
+      "identicalPixels": true,
+      "identicalHitOrder": true,
+      "speedup": 1.0055865918439237
+    },
+    {
+      "population": 1000,
+      "zoom": 1.7,
+      "identicalPixels": true,
+      "identicalHitOrder": true,
+      "speedup": 1.987951804373707
+    },
+    {
+      "population": 2000,
+      "zoom": 0.72,
+      "identicalPixels": true,
+      "identicalHitOrder": true,
+      "speedup": 0.9675000011920929
+    },
+    {
+      "population": 2000,
+      "zoom": 1.7,
+      "identicalPixels": true,
+      "identicalHitOrder": true,
+      "speedup": 3.0337078529782193
+    }
+  ],
+  "method": "1600x1000 Chromium canvas; paused constructed city, fixed draw time 0.5; five warm-up draws, 45 measured submissions per view. These are CPU submission times, not sustained frame rates.",
+  "browserVersion": "154.0.8037.57"
+}
