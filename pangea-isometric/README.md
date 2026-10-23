@@ -2,7 +2,7 @@
 
 An isometric world of autonomous settlements, built on [IsoCity](https://github.com/amilich/isometric-city) and the existing PANGAEA civilization simulation.
 
-**0.7.1** improves measured constructed-city simulation throughput by about 1.7–2.1× with identical world states, saves, pixels and click targets in tested cases. Paused worlds skip periodic React inspector work; roads reuse their projected geometry. [Optimization results and reproduction](docs/OPTIMIZATION.md) document the measured workloads and limits.
+**0.7.2** adds another measured 1.4–1.9× simulation speedup in large constructed cities, with exact world states, saves and click targets in tested cases. Committed server snapshots avoid repeated serialization, unchanged paused polls retain the loaded world, and settled city views reuse a bounded terrain raster. [Optimization results and reproduction](docs/OPTIMIZATION.md) document timings, pixel rounding bounds and limits.
 
 ## Run
 

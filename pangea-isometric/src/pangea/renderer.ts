@@ -16,6 +16,7 @@ const NX = 104, NY = 96, PAD = 240;
 const GW = 96, GH = 80;
 const W = TILE_WIDTH, H = TILE_HEIGHT;
 type Point = { x: number; y: number };
+type StreetPath = {geometry:Path2D;minX:number;maxX:number;minY:number;maxY:number};
 export type Hit = Point & { kind: 'town' | 'building' | 'person'; id: number; r: number; rect?:{w:number;h:number} };
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 type Geography = {land: boolean; field: number; moisture: number; ridge: number; biome: string};
@@ -47,7 +48,11 @@ export class PangeaRenderer {
   onReady?: () => void;
   private reduceMotion = false;
   private streetKey="";
-  private streetPaths:{points:Point[];tier:number}[]=[];
+  private streetPaths:StreetPath[]=[];
+  private terrainRaster:HTMLCanvasElement|null=null;
+  private terrainRasterKey='';
+  private lastTerrainFrameKey='';
+  private rasterTerrain:HTMLCanvasElement|null=null;
   private artImages:BuildingArtImages = new Map();
   private activityTracker=new CityActivityTracker();
   private activity:ReturnType<CityActivityTracker['sample']>|null=null;
@@ -76,7 +81,7 @@ export class PangeaRenderer {
     this.canvas.width = Math.round(this.width * this.dpr);
     this.canvas.height = Math.round(this.height * this.dpr);
   }
-  reset(sim: WorldSimulation) { this.activityTracker.reset();this.activity=null;this.transition.clear();this.transitionSnapshot=null;this.sim = sim; this.townId = sim.state.towns[0].id; this.selected=null; this.streetKey=''; this.terrainKey=''; this.rebuild(); this.focus(); }
+  reset(sim: WorldSimulation) { this.activityTracker.reset();this.activity=null;this.transition.clear();this.transitionSnapshot=null;this.sim = sim; this.townId = sim.state.towns[0].id; this.selected=null; this.streetKey=''; this.terrainKey='';this.lastTerrainFrameKey='';this.terrainRasterKey='';this.rasterTerrain=null;if(this.view==='world')this.terrainRaster=null; this.rebuild(); this.focus(); }
   private sceneKey() {return this.view==='world'?'world':`settlement:${this.townId}`;}
   private sceneAnchor() {const town=this.sim.town(this.townId)!;if(this.view==='world')return this.worldPoint(town);const hall=town.buildings.find(b=>b.type==='hall'&&b.complete)||town.buildings[0];const p=this.iso(hall?.x??48,hall?.y??40);return {x:p.x+W/2,y:p.y+H/2};}
   cancelTransition() {if(this.transition.active){const frame=this.transition.cancel(performance.now());if(frame)this.camera=frame.camera;this.hits=[];this.hovered=null;}this.transitionSnapshot=null;}
@@ -84,7 +89,7 @@ export class PangeaRenderer {
     this.cancelTransition();const fromKey=this.sceneKey(),sourceCamera={...this.camera},sourceAnchor=this.sceneAnchor();
     const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!reduced){const snapshot=document.createElement('canvas');snapshot.width=this.width;snapshot.height=this.height;snapshot.getContext('2d')?.drawImage(this.canvas,0,0,this.width,this.height);this.transitionSnapshot=snapshot;}
-    this.view=view;this.townId=townId;this.selected=null;this.hovered=null;this.hits=[];this.streetKey='';this.terrainKey='';this.rebuild();this.focus(false);
+    this.view=view;this.townId=townId;this.selected=null;this.hovered=null;this.hits=[];this.streetKey='';this.terrainKey='';this.lastTerrainFrameKey='';this.terrainRasterKey='';this.rasterTerrain=null;if(view==='world')this.terrainRaster=null;this.rebuild();this.focus(false);
     const frame=this.transition.begin({fromKey,toKey:this.sceneKey(),sourceCamera,targetCamera:this.camera,sourceAnchor,targetAnchor:this.sceneAnchor(),viewport:this,entryZoom:this.camera.zoom*(view==='settlement'?.24:2.2),now:performance.now(),reducedMotion:reduced});
     this.camera=frame.camera;if(!frame.active)this.transitionSnapshot=null;
   }
@@ -203,9 +208,43 @@ export class PangeaRenderer {
     this.zoomBy(delta>0?.88:1.14,x,y);
   }
   zoomBy(factor:number,x=this.width/2,y=this.height/2) {this.cancelTransition();const lower=Math.min(this.camera.zoom,this.view==='world'?.08:.16),upper=Math.max(this.camera.zoom,this.view==='world'?1.7:2.7);const next=clamp(this.camera.zoom*factor,lower,upper);this.camera=zoomAt(this.camera,next,{x,y},this);}
-  hit(x: number,y: number) { return [...this.hits].reverse().find(h=>h.rect?Math.abs(h.x-x)<=h.rect.w/2&&Math.abs(h.y-y)<=h.rect.h/2:Math.hypot(h.x-x,h.y-y)<h.r)||null; }
+  hit(x: number,y: number) { for(let i=this.hits.length-1;i>=0;i--){const h=this.hits[i];if(h.rect?Math.abs(h.x-x)<=h.rect.w/2&&Math.abs(h.y-y)<=h.rect.h/2:Math.hypot(h.x-x,h.y-y)<h.r)return h;}return null; }
   private line(points: Point[],color: string,width: number,dash: number[]=[]) {
     const c=this.ctx;c.beginPath();points.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.strokeStyle=color;c.lineWidth=width;c.setLineDash(dash);c.stroke();c.setLineDash([]);
+  }
+  private strokeStreets(c:CanvasRenderingContext2D,x0:number,x1:number,y0:number,y1:number) {
+    c.setLineDash([]);
+    for(const path of this.streetPaths){
+      if(path.maxX<x0||path.minX>x1||path.maxY<y0||path.minY>y1)continue;
+      c.strokeStyle='#56573c';c.lineWidth=13;c.stroke(path.geometry);
+      c.strokeStyle='#aaa080';c.lineWidth=9;c.stroke(path.geometry);
+      c.strokeStyle='#c4b99666';c.lineWidth=3;c.stroke(path.geometry);
+    }
+  }
+  private drawTerrain() {
+    const terrain=this.terrain;if(!terrain)return;
+    const c=this.ctx,{x,y,zoom}=this.camera;
+    const key=`${this.canvas.width}:${this.canvas.height}:${this.width}:${this.height}:${this.dpr}:${x}:${y}:${zoom}`;
+    const stable=key===this.lastTerrainFrameKey&&this.rasterTerrain===terrain;
+    if(!stable){this.terrainRasterKey='';this.lastTerrainFrameKey=key;this.rasterTerrain=terrain;}
+    const fits=this.canvas.width>0&&this.canvas.height>0&&this.canvas.width*this.canvas.height<=8_000_000;
+    if(!fits||this.view==='world')this.terrainRaster=null;
+    // Moving cameras draw directly: no duplicate raster work during gestures or
+    // transitions. A settled city keeps one transparent viewport layer (≤32MB).
+    if(!stable||this.transition.active||!fits||this.view!=='settlement'){c.drawImage(terrain,0,0);return;}
+    if(this.terrainRasterKey!==key){
+      this.terrainRaster??=document.createElement('canvas');
+      if(this.terrainRaster.width!==this.canvas.width)this.terrainRaster.width=this.canvas.width;
+      if(this.terrainRaster.height!==this.canvas.height)this.terrainRaster.height=this.canvas.height;
+      const layer=this.terrainRaster.getContext('2d');
+      if(!layer){c.drawImage(terrain,0,0);return;}
+      layer.setTransform(1,0,0,1,0,0);layer.clearRect(0,0,this.canvas.width,this.canvas.height);
+      layer.setTransform(c.getTransform());layer.drawImage(terrain,0,0);this.terrainRasterKey=key;
+    }
+    // Copy device pixels 1:1. Ocean motion, roads, people, crops, weather and
+    // lighting stay outside this cache and continue to reflect current state.
+    const raster=this.terrainRaster;if(!raster){c.drawImage(terrain,0,0);return;}
+    c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(raster,0,0);c.restore();
   }
   draw(time: number) {
     if(!this.ready)return;
@@ -220,7 +259,7 @@ export class PangeaRenderer {
     c.strokeStyle='#abc6bd0d';c.lineWidth=.7;
     for(let i=0;i<64;i++){const x=random(i,2,712)*this.width,y=random(i,8,812)*this.height;const d=Math.sin(clock*.3+i)*4;c.beginPath();c.moveTo(x+d,y);c.quadraticCurveTo(x+15+d,y+2,x+25+d,y);c.stroke();}
     c.save();c.translate(this.width/2,this.height/2);c.scale(this.camera.zoom,this.camera.zoom);c.translate(-this.camera.x,-this.camera.y);
-    if(this.terrain)c.drawImage(this.terrain,0,0);
+    this.drawTerrain();
     if(this.view==='world')this.drawWorld(clock);else this.drawSettlement(clock,time);
     c.restore();
     if(this.view==='settlement')drawCityLighting(c,this.cityLights,this.width,this.height,this.lighting);
@@ -249,10 +288,17 @@ export class PangeaRenderer {
     c.lineCap='round';c.lineJoin='round';
     const streetKey=`${t.id}:${t.land.navRevision}`;
     if(streetKey!==this.streetKey){
-      this.streetPaths=(streetPolylines(t) as {points:Point[];tier:number}[]).map(path=>({...path,points:path.points.map(p=>{const v=this.iso(p.x,p.y);return {x:v.x+W/2,y:v.y+H/2};})}));
+      this.streetPaths=(streetPolylines(t) as {points:Point[];tier:number}[]).map(path=>{
+        let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+        const geometry=new Path2D();
+        path.points.forEach((p,i)=>{const v=this.iso(p.x,p.y),x=v.x+W/2,y=v.y+H/2;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);if(i)geometry.lineTo(x,y);else geometry.moveTo(x,y);});
+        return {geometry,minX,maxX,minY,maxY};
+      });
       this.streetKey=streetKey;
     }
-    for(const path of this.streetPaths){this.line(path.points,'#56573c',13);this.line(path.points,'#aaa080',9);this.line(path.points,'#c4b99666',3);}
+    // Keep the widest round stroke plus two CSS pixels when culling paths.
+    const margin=6.5+2/this.camera.zoom,x0=this.camera.x-this.width/2/this.camera.zoom-margin,x1=this.camera.x+this.width/2/this.camera.zoom+margin,y0=this.camera.y-this.height/2/this.camera.zoom-margin,y1=this.camera.y+this.height/2/this.camera.zoom+margin;
+    this.strokeStreets(c,x0,x1,y0,y1);
     if(this.layer==='resources')for(const n of t.land.nodes){if(n.amount<1)continue;const p=this.iso(n.x,n.y);c.fillStyle=n.kind==='wood'?'#b9d499':n.kind==='food'?'#e3c780':n.kind==='stone'?'#e0e0ca':'#b9a5c3';c.strokeStyle='#34483a';c.lineWidth=1;c.beginPath();c.arc(p.x+W/2,p.y+H/2,5,0,Math.PI*2);c.fill();c.stroke();}
 
     const objects: {depth:number; kind:'tree'|'building'|'person';item:Town['land']['nodes'][0]|Building|ReturnType<WorldSimulation['residents']>[0]}[]=[];

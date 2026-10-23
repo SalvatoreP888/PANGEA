@@ -41,8 +41,14 @@ export function createWorldServer({ dbPath, allowedOrigins = [], createKey = '',
   if (createKey && !/^[A-Za-z0-9_-]{16,256}$/.test(createKey)) throw new Error('The creation key must contain 16–256 letters, numbers, underscores or hyphens.');
   const store = openWorldStore(dbPath);
   let timer, lastError = null, stopping = false;
-  const envelope = entry => ({ worldId: entry.row.id, revision: entry.row.revision, savedAt: entry.row.saved_at,
-    paused: !!entry.row.paused, speed: entry.row.speed, snapshot: entry.sim.snapshot(), serverTime: now(), backlogTicks: Math.floor(entry.row.pending) });
+  const envelope = (entry,token) => {
+    const row=entry.row;
+    const head=JSON.stringify({worldId:row.id,revision:row.revision,savedAt:row.saved_at,paused:!!row.paused,speed:row.speed}).slice(0,-1);
+    const tail=JSON.stringify({serverTime:now(),backlogTicks:Math.floor(row.pending),...(token?{token}:{})}).slice(1);
+    // Only splice JSON produced by the committed store. Metadata still uses the
+    // normal encoder; no mutable simulation object or uncommitted work escapes.
+    return `${head},"snapshot":${entry.snapshotJson},${tail}`;
+  };
   const runTick = () => {
     if (stopping) return;
     for (const entry of store.entries.values()) {
@@ -89,11 +95,11 @@ export function createWorldServer({ dbPath, allowedOrigins = [], createKey = '',
         if (body.paused !== undefined && typeof body.paused !== 'boolean') fail(400, 'invalid', 'Paused must be true or false.');
         const sim = body.snapshot === undefined ? new Simulation(body.seed ?? randomBytes(4).readUInt32LE() % 2147483647) : validatedSimulation(body.snapshot);
         const time = now(), token = randomBytes(32).toString('base64url');
-        const row = { id: randomBytes(16).toString('hex'), token_hash: hash(token), snapshot: JSON.stringify(sim.snapshot()), revision: 1,
+        const row = { id: randomBytes(16).toString('hex'), token_hash: hash(token), snapshot: JSON.stringify(sim.state), revision: 1,
           paused: body.paused === false ? 0 : 1, speed: speedValue(body.speed ?? 16), wallclock: time, pending: 0, saved_at: time };
         // Another request may have finished reading its body in the meantime.
         if (store.entries.size >= maxWorlds) fail(409, 'capacity', 'The server has reached its world capacity.');
-        const entry = store.create(row, sim); status = 201; result = { ...envelope(entry), token };
+        const entry = store.create(row, sim); status = 201; result = envelope(entry,token);
       } else {
         const match = path.match(/^\/api\/worlds\/([a-f0-9]{32})(\/commands)?$/);
         if (!match) fail(404, 'not_found', 'World endpoint not found.');
@@ -122,7 +128,7 @@ export function createWorldServer({ dbPath, allowedOrigins = [], createKey = '',
           store.commit(entry, updates);entry.controlRevision=entry.row.revision;result = envelope(entry);
         } else fail(405, 'method', 'Method not allowed.');
       }
-      response.writeHead(status, { 'Content-Type': 'application/json' }); response.end(JSON.stringify(result));
+      response.writeHead(status, { 'Content-Type': 'application/json' }); response.end(typeof result==='string'?result:JSON.stringify(result));
     } catch (error) {
       const status = error instanceof HttpError ? error.status : 500;
       if (status === 500) lastError = error;

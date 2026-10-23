@@ -11,9 +11,10 @@ import os from 'node:os';
 
 const root=fileURLToPath(new URL('../..',import.meta.url));
 const args=process.argv.slice(2),options={};
-for(let i=0;i<args.length;i+=2){
-  if(!['--baseline','--out'].includes(args[i])||!args[i+1])throw new Error('Usage: node tests/optimization-benchmark.mjs [--baseline archived-app-directory] [--out report.json]');
-  options[args[i].slice(2)]=resolve(args[i+1]);
+for(let i=0;i<args.length;i++){
+  if(args[i]==='--seasonal'){options.seasonal=true;continue;}
+  if(!['--baseline','--out'].includes(args[i])||!args[i+1])throw new Error('Usage: node tests/pangea/optimization-benchmark.mjs [--baseline archived-app-directory] [--out report.json] [--seasonal]');
+  options[args[i].slice(2)]=resolve(args[++i]);
 }
 const sha=value=>createHash('sha256').update(value).digest('hex');
 const snapshotHash=sim=>sha(JSON.stringify(sim.snapshot()));
@@ -39,14 +40,16 @@ const report={
   measurements:[],parity:[]
 };
 for(const impl of [baseline,candidate].filter(Boolean))impl.createCityLaboratory(481217,250).advanceDays(5);
-for(const population of [4,250,1000,2000]){
-  const days=population===4?30:3;
-  const row={kind:population===4?'natural four-founder opening':'constructed city',population,days,ticks:days*4,baselineMs:[],candidateMs:[]};
+const workloads=[4,250,1000,2000].map(population=>({population,days:population===4?30:3,winter:false}));
+if(options.seasonal)workloads.push({population:2000,days:15,winter:false},{population:2000,days:15,winter:true});
+for(const {population,days,winter} of workloads){
+  const row={kind:population===4?'natural four-founder opening':'constructed city',population,days,winter,ticks:days*4,baselineMs:[],candidateMs:[]};
   const order=baseline?['baseline','candidate','candidate','baseline','baseline','candidate']:['candidate','candidate','candidate'];
   let expected;
   for(const name of order){
     const impl=name==='baseline'?baseline:candidate;
     const sim=population===4?new impl.Simulation(481217,{events:false}):impl.createCityLaboratory(481217,population);
+    if(winter){sim.state.tick=4*270;sim.configurePlanet({...sim.state.planet,temperature:-15});}
     const start=performance.now();sim.advanceDays(days);const ms=performance.now()-start;
     row[`${name}Ms`].push(ms);const checksum=snapshotHash(sim);expected??=checksum;
     assert.equal(checksum,expected,`Complete-world mismatch: ${population} people, ${name}`);

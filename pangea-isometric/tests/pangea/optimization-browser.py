@@ -7,17 +7,22 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from functools import partial
 from threading import Thread
 import argparse, base64, hashlib, json, os, subprocess, tempfile
+from PIL import Image, ImageChops
 
 ROOT = Path(__file__).resolve().parents[2]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--baseline', type=Path, required=True)
 parser.add_argument('--out', type=Path)
 parser.add_argument('--url')
+parser.add_argument('--max-channel-delta', type=int, default=0)
+parser.add_argument('--max-changed-pixel-ratio', type=float, default=0)
 args = parser.parse_args()
+assert 0 <= args.max_channel_delta <= 255
+assert 0 <= args.max_changed_pixel_ratio <= 1
 OUT = args.out or Path(tempfile.mkdtemp(prefix='pangea-isometric-optimization-'))
 OUT.mkdir(parents=True, exist_ok=True)
 report = {'checks': [], 'pageErrors': [], 'implementations': {}, 'comparisons': [],
-          'method': '1536x1024 Chromium, paused constructed generation-2 city, fixed time 0.5. Five warm-up draws, 45 measured CPU canvas submissions; not sustained FPS.'}
+          'method': '1536x1024 Chromium, paused constructed generation-2 city, fixed time 0.5. Ten RAF warmups, 48 paced frames including final presentation boundary; then 45 tight CPU submissions plus readback. Not end-to-end simulation FPS.'}
 build = '''
 import {build} from 'esbuild';import {resolve} from 'node:path';
 const [root,out,name]=process.argv.slice(1);
@@ -54,10 +59,19 @@ try:
                   window.renderer=new Harness.PangeaRenderer(document.querySelector('canvas'),sim);
                   await renderer.init();renderer.setView('settlement');}''', population)
                 for zoom in [.35, .9]:
-                    row = page.evaluate('''zoom=>{const before=JSON.stringify(sim.snapshot());renderer.camera.zoom=zoom;
-                      for(let i=0;i<5;i++)renderer.draw(.5);const samples=[];
+                    row = page.evaluate('''async zoom=>{const before=JSON.stringify(sim.snapshot());renderer.camera.zoom=zoom;
+                      const raf=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+                      for(let i=0;i<10;i++){await raf();renderer.draw(.5);}
+                      const cpu=[],intervals=[];let first=null,last=null;
+                      for(let i=0;i<48;i++){const t=await raf();if(first===null)first=t;if(last!==null)intervals.push(t-last);last=t;
+                        const start=performance.now();renderer.draw(.5);cpu.push(performance.now()-start);}
+                      const finish=await raf();intervals.push(finish-last);
+                      const stats=a=>{const sorted=[...a].sort((a,b)=>a-b);return {meanMs:a.reduce((x,y)=>x+y,0)/a.length,medianMs:sorted[Math.floor(a.length/2)],p95Ms:sorted[Math.floor(a.length*.95)],maxMs:sorted.at(-1)};};
+                      const samples=[],startBatch=performance.now();
                       for(let i=0;i<45;i++){const start=performance.now();renderer.draw(.5);samples.push(performance.now()-start);}
-                      samples.sort((a,b)=>a-b);return {medianMs:samples[22],p95Ms:samples[42],pixels:renderer.canvas.toDataURL(),
+                      renderer.ctx.getImageData(0,0,1,1);const flushed=performance.now()-startBatch;
+                      return {rafCpu:stats(cpu),rafIntervals:stats(intervals),rafAggregatePerFrameMs:(finish-first)/48,
+                        tightCpu:stats(samples),tightFlushedPerFrameMs:flushed/45,pixels:renderer.canvas.toDataURL(),
                         hits:JSON.stringify(renderer.hits),stateUnchanged:before===JSON.stringify(sim.snapshot())};}''', zoom)
                     assert row.pop('stateUnchanged')
                     pixels = base64.b64decode(row.pop('pixels').split(',')[1])
@@ -67,10 +81,18 @@ try:
             report['checks'].append(f'{name}: rendering preserves complete simulation state')
             page.close()
         for before, after in zip(report['implementations']['baseline'], report['implementations']['candidate']):
-            assert before['pixelSha256'] == after['pixelSha256']
+            exact = before['pixelSha256'] == after['pixelSha256']
+            filename = f"{after['population']}-{after['zoom']}.png"
+            with Image.open(OUT / f'baseline-{filename}') as a, Image.open(OUT / f'candidate-{filename}') as b:
+                assert a.size == b.size
+                diff = ImageChops.difference(a.convert('RGBA'), b.convert('RGBA'))
+                max_delta = max(channel[1] for channel in diff.getextrema())
+                changed = sum(any(pixel) for pixel in diff.getdata())
+                ratio = changed / (a.width * a.height)
+            assert max_delta <= args.max_channel_delta and ratio <= args.max_changed_pixel_ratio, (filename, max_delta, ratio)
             assert before['hitSha256'] == after['hitSha256']
-            report['comparisons'].append({'population': after['population'], 'zoom': after['zoom'], 'identicalPixels': True, 'identicalHits': True, 'speedup': before['medianMs'] / after['medianMs']})
-        report['checks'].append('Four isometric views match baseline pixels and complete hit geometry/order')
+            report['comparisons'].append({'population': after['population'], 'zoom': after['zoom'], 'identicalPixels': exact, 'maxChannelDelta': max_delta, 'changedPixelRatio': ratio, 'identicalHits': True, 'rafAggregateSpeedup': before['rafAggregatePerFrameMs'] / after['rafAggregatePerFrameMs'], 'tightFlushedMeanSpeedup': before['tightFlushedPerFrameMs'] / after['tightFlushedPerFrameMs']})
+        report['checks'].append('Four isometric views meet explicit pixel bounds and match complete hit geometry/order')
         if args.url:
             page = browser.new_page(viewport={'width': 1536, 'height': 1024}, reduced_motion='reduce')
             page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))

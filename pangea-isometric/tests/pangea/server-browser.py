@@ -99,6 +99,20 @@ with tempfile.TemporaryDirectory(prefix='pangea-server-ui-') as folder:
             with urlopen(request) as response: later = json.load(response)
             assert paused['paused'] and paused['snapshot']['tick'] == later['snapshot']['tick']
             checks.append('Frontend pause command is persisted and freezes the server clock')
+            page.evaluate('window.confirmedPausedSimulation=PANGEA.simulation;window.confirmedPausedTick=PANGEA.simulation.state.tick')
+            polled = []
+            def paused_poll(response):
+                if response.url == endpoint + '/api/worlds/' + connection['worldId'] and response.request.method == 'GET':
+                    polled.append(response.status)
+            page.on('response', paused_poll)
+            for _ in range(60):
+                if polled: break
+                page.wait_for_timeout(100)
+            assert polled and all(status == 200 for status in polled)
+            page.wait_for_timeout(100)
+            assert page.evaluate('PANGEA.simulation===confirmedPausedSimulation&&PANGEA.simulation.state.tick===confirmedPausedTick')
+            page.remove_listener('response', paused_poll)
+            checks.append('An unchanged paused server poll retains the loaded simulation and renderer cache ownership')
             # Same seed, different world structure: the selected third town is
             # removed by the import, so renderer and React selection must reset.
             page.get_by_role('combobox', name='Select settlement', exact=True).select_option('3')
