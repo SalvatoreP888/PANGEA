@@ -1,0 +1,1162 @@
+{
+  "version": 1,
+  "preparation": "scripts/prepare-pangea-era-art.mjs",
+  "attribution": {
+    "author": "amilich",
+    "project": "IsoCity",
+    "url": "https://github.com/amilich/isometric-city",
+    "revision": "b774dd7913103e9dd9ec51b2151893c22683886e",
+    "license": "MIT",
+    "changes": "Selected source cells with overlapping extraction windows; red matte and detached neighboring fragments removed; transparent bounds trimmed; floor-contact anchors normalized; compressed to WebP."
+  },
+  "procedural": [
+    "fire",
+    "farm",
+    "wheatfield",
+    "flaxfield"
+  ],
+  "variants": {
+    "hall": [
+      {
+        "tech": "steam",
+        "id": "hall-steam"
+      }
+    ],
+    "clinic": [
+      {
+        "tech": "publicHealth",
+        "id": "clinic-health"
+      }
+    ],
+    "school": [
+      {
+        "tech": "electricity",
+        "id": "school-electric"
+      }
+    ],
+    "university": [
+      {
+        "tech": "networks",
+        "id": "university-networks"
+      }
+    ],
+    "store": [
+      {
+        "tech": "refrigeration",
+        "id": "store-cold"
+      }
+    ]
+  },
+  "sprites": {
+    "hut": {
+      "id": "hut",
+      "src": "/pangea/buildings/hut.webp",
+      "width": 84,
+      "era": 0,
+      "size": {
+        "width": 335,
+        "height": 275
+      },
+      "anchor": {
+        "x": 0.498507,
+        "y": 0.985455
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 3,
+        "column": 3,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 1205,
+          "top": 964,
+          "width": 457,
+          "height": 466
+        },
+        "trim": {
+          "left": 62,
+          "top": 148,
+          "width": 329,
+          "height": 269
+        }
+      },
+      "sha256": "ae9b0ba2ee8468dfc0ee4acecef8f27206432749f3d570e23c7471ed8b6ff605"
+    },
+    "well": {
+      "id": "well",
+      "src": "/pangea/buildings/well.webp",
+      "width": 76,
+      "era": 0,
+      "size": {
+        "width": 400,
+        "height": 295
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.986441
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/classics.webp",
+        "row": 1,
+        "column": 0,
+        "sha256": "b6fc3dd692bdb83021cdf748fc97284ff9e21636d7fea5935674558443e6ca17",
+        "crop": {
+          "left": 0,
+          "top": 281,
+          "width": 434,
+          "height": 467
+        },
+        "trim": {
+          "left": 8,
+          "top": 125,
+          "width": 394,
+          "height": 289
+        }
+      },
+      "sha256": "765a980cd29d3b42608f9492fa073d76297f15e1ac13a1e6db4d9cf344d9124c"
+    },
+    "store": {
+      "id": "store",
+      "src": "/pangea/buildings/store.webp",
+      "width": 109,
+      "era": 0,
+      "size": {
+        "width": 399,
+        "height": 297
+      },
+      "anchor": {
+        "x": 0.496241,
+        "y": 0.986532
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 4,
+        "column": 1,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 386,
+          "top": 1305,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 32,
+          "top": 105,
+          "width": 393,
+          "height": 291
+        }
+      },
+      "sha256": "de2a48be5b93de07596e1b11ddc10ea6ba676c2499add5bfc1ee3e3d73c62cdd"
+    },
+    "workshop": {
+      "id": "workshop",
+      "src": "/pangea/buildings/workshop.webp",
+      "width": 110,
+      "era": 0,
+      "size": {
+        "width": 397,
+        "height": 300
+      },
+      "anchor": {
+        "x": 0.496222,
+        "y": 0.986667
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 4,
+        "column": 3,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 1205,
+          "top": 1305,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 31,
+          "top": 101,
+          "width": 391,
+          "height": 294
+        }
+      },
+      "sha256": "f93f6410459f46056883bab3917b089f84d92b6750fe2a4feade4bf4a9967e9c"
+    },
+    "hall": {
+      "id": "hall",
+      "src": "/pangea/buildings/hall.webp",
+      "width": 130,
+      "era": 0,
+      "size": {
+        "width": 397,
+        "height": 308
+      },
+      "anchor": {
+        "x": 0.498741,
+        "y": 0.987013
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 1,
+        "column": 3,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 1205,
+          "top": 281,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 32,
+          "top": 115,
+          "width": 391,
+          "height": 302
+        }
+      },
+      "sha256": "462cabcde488cbec9e74e2c4ed0cff3ffae595de1750cf7da31a53ab1eca1d2f"
+    },
+    "clinic": {
+      "id": "clinic",
+      "src": "/pangea/buildings/clinic.webp",
+      "width": 93,
+      "era": 0,
+      "size": {
+        "width": 333,
+        "height": 277
+      },
+      "anchor": {
+        "x": 0.495495,
+        "y": 0.98556
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/enlightenment.webp",
+        "row": 3,
+        "column": 3,
+        "sha256": "fb996d282ad8d4b7363c5c4576ea0dffa100314731cbabc1db80c066931e8b96",
+        "crop": {
+          "left": 1205,
+          "top": 964,
+          "width": 457,
+          "height": 466
+        },
+        "trim": {
+          "left": 64,
+          "top": 146,
+          "width": 327,
+          "height": 271
+        }
+      },
+      "sha256": "8efb373a5168b937ea723ec945713ff63e8835aa95584720b8439a0d1f167585"
+    },
+    "cottage": {
+      "id": "cottage",
+      "src": "/pangea/buildings/cottage.webp",
+      "width": 107,
+      "era": 1,
+      "size": {
+        "width": 401,
+        "height": 304
+      },
+      "anchor": {
+        "x": 0.501247,
+        "y": 0.986842
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 3,
+        "column": 1,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 386,
+          "top": 964,
+          "width": 457,
+          "height": 466
+        },
+        "trim": {
+          "left": 30,
+          "top": 119,
+          "width": 395,
+          "height": 298
+        }
+      },
+      "sha256": "f1aa4d44b2f103c8ac1f99d0821eb7abba43f871ead67ec8c64441c1eadc0fd5"
+    },
+    "rowhouse": {
+      "id": "rowhouse",
+      "src": "/pangea/buildings/rowhouse.webp",
+      "width": 112,
+      "era": 2,
+      "size": {
+        "width": 336,
+        "height": 343
+      },
+      "anchor": {
+        "x": 0.696429,
+        "y": 0.988338
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 0,
+        "column": 0,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 0,
+          "top": 0,
+          "width": 434,
+          "height": 406
+        },
+        "trim": {
+          "left": 33,
+          "top": 49,
+          "width": 330,
+          "height": 337
+        }
+      },
+      "sha256": "4848c7f3cabe9f2ad5bdfa8baff448900d167c5620999f4aab3f853dd2b47c4d"
+    },
+    "tenement": {
+      "id": "tenement",
+      "src": "/pangea/buildings/tenement.webp",
+      "width": 122,
+      "era": 2,
+      "size": {
+        "width": 325,
+        "height": 339
+      },
+      "anchor": {
+        "x": 0.661538,
+        "y": 0.988201
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 0,
+        "column": 1,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 386,
+          "top": 0,
+          "width": 457,
+          "height": 406
+        },
+        "trim": {
+          "left": 55,
+          "top": 49,
+          "width": 319,
+          "height": 333
+        }
+      },
+      "sha256": "61a60d4503ab5ae497847550ab8392ca8a7b6c3132b4f264fdd718638db7ed58"
+    },
+    "apartment": {
+      "id": "apartment",
+      "src": "/pangea/buildings/apartment.webp",
+      "width": 100,
+      "era": 4,
+      "size": {
+        "width": 258,
+        "height": 375
+      },
+      "anchor": {
+        "x": 0.503876,
+        "y": 0.989333
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/modern.webp",
+        "row": 0,
+        "column": 0,
+        "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842",
+        "crop": {
+          "left": 0,
+          "top": 0,
+          "width": 434,
+          "height": 406
+        },
+        "trim": {
+          "left": 79,
+          "top": 6,
+          "width": 252,
+          "height": 369
+        }
+      },
+      "sha256": "bfee450ae95740f0503e180524b4af2ab9dd16904204391ecb6a01b31a138891"
+    },
+    "sawmill": {
+      "id": "sawmill",
+      "src": "/pangea/buildings/sawmill.webp",
+      "width": 119,
+      "era": 1,
+      "size": {
+        "width": 398,
+        "height": 337
+      },
+      "anchor": {
+        "x": 0.502513,
+        "y": 0.988131
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/enlightenment.webp",
+        "row": 2,
+        "column": 2,
+        "sha256": "fb996d282ad8d4b7363c5c4576ea0dffa100314731cbabc1db80c066931e8b96",
+        "crop": {
+          "left": 795,
+          "top": 623,
+          "width": 458,
+          "height": 466
+        },
+        "trim": {
+          "left": 33,
+          "top": 107,
+          "width": 392,
+          "height": 331
+        }
+      },
+      "sha256": "402a5ee6ea449993656b33e299e7db8ea0a43733651aba94490cd15474b06686"
+    },
+    "mine": {
+      "id": "mine",
+      "src": "/pangea/buildings/mine.webp",
+      "width": 112,
+      "era": 1,
+      "size": {
+        "width": 279,
+        "height": 214
+      },
+      "anchor": {
+        "x": 0.501792,
+        "y": 0.981308
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 4,
+        "column": 2,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 795,
+          "top": 1305,
+          "width": 458,
+          "height": 467
+        },
+        "trim": {
+          "left": 94,
+          "top": 166,
+          "width": 273,
+          "height": 208
+        }
+      },
+      "sha256": "938ba077a7686e4a801b6294be08de1a529be6d2c5584c24ce32808102b8505f"
+    },
+    "furnace": {
+      "id": "furnace",
+      "src": "/pangea/buildings/furnace.webp",
+      "width": 117,
+      "era": 2,
+      "size": {
+        "width": 303,
+        "height": 263
+      },
+      "anchor": {
+        "x": 0.554455,
+        "y": 0.984791
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 4,
+        "column": 1,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 386,
+          "top": 1305,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 86,
+          "top": 133,
+          "width": 297,
+          "height": 257
+        }
+      },
+      "sha256": "d1a3c7b538a64bd4e06ffa606f2584180debcb8bd04c61666b605ee1306214f3"
+    },
+    "steelworks": {
+      "id": "steelworks",
+      "src": "/pangea/buildings/steelworks.webp",
+      "width": 136,
+      "era": 3,
+      "size": {
+        "width": 328,
+        "height": 322
+      },
+      "anchor": {
+        "x": 0.612805,
+        "y": 0.987578
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 4,
+        "column": 3,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 1205,
+          "top": 1305,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 57,
+          "top": 90,
+          "width": 322,
+          "height": 316
+        }
+      },
+      "sha256": "7dc8d3b786046fb3f8a6a3b9964a0628124f91dbc6c6b7cc1444fb263bc1767a"
+    },
+    "factory": {
+      "id": "factory",
+      "src": "/pangea/buildings/factory.webp",
+      "width": 137,
+      "era": 3,
+      "size": {
+        "width": 400,
+        "height": 339
+      },
+      "anchor": {
+        "x": 0.555,
+        "y": 0.988201
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 0,
+        "column": 2,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 795,
+          "top": 0,
+          "width": 458,
+          "height": 406
+        },
+        "trim": {
+          "left": 33,
+          "top": 52,
+          "width": 394,
+          "height": 333
+        }
+      },
+      "sha256": "84b0f92d9967ff3ce267574245c8b6b7786562a1669f79c59321f6de2595d392"
+    },
+    "school": {
+      "id": "school",
+      "src": "/pangea/buildings/school.webp",
+      "width": 123,
+      "era": 1,
+      "size": {
+        "width": 400,
+        "height": 302
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.986755
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/enlightenment.webp",
+        "row": 1,
+        "column": 4,
+        "sha256": "fb996d282ad8d4b7363c5c4576ea0dffa100314731cbabc1db80c066931e8b96",
+        "crop": {
+          "left": 1614,
+          "top": 281,
+          "width": 434,
+          "height": 467
+        },
+        "trim": {
+          "left": 30,
+          "top": 121,
+          "width": 394,
+          "height": 296
+        }
+      },
+      "sha256": "af3ca341b9fcbe98698f8a2d79ee02fd2cdae6afeb6ecc9c7da90c209f90e06a"
+    },
+    "university": {
+      "id": "university",
+      "src": "/pangea/buildings/university.webp",
+      "width": 132,
+      "era": 2,
+      "size": {
+        "width": 400,
+        "height": 318
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.987421
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/enlightenment.webp",
+        "row": 2,
+        "column": 0,
+        "sha256": "fb996d282ad8d4b7363c5c4576ea0dffa100314731cbabc1db80c066931e8b96",
+        "crop": {
+          "left": 0,
+          "top": 623,
+          "width": 434,
+          "height": 466
+        },
+        "trim": {
+          "left": 9,
+          "top": 118,
+          "width": 394,
+          "height": 312
+        }
+      },
+      "sha256": "68eb3aea4f08f2625f1f7e03f70a29972c4aa77e49acb73b2fca02b604d4ce93"
+    },
+    "market": {
+      "id": "market",
+      "src": "/pangea/buildings/market.webp",
+      "width": 127,
+      "era": 1,
+      "size": {
+        "width": 399,
+        "height": 319
+      },
+      "anchor": {
+        "x": 0.501253,
+        "y": 0.987461
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 2,
+        "column": 0,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 0,
+          "top": 623,
+          "width": 434,
+          "height": 466
+        },
+        "trim": {
+          "left": 9,
+          "top": 112,
+          "width": 393,
+          "height": 313
+        }
+      },
+      "sha256": "0544d7abf021e331c22307da87525f471faca241d8f475bde6ac63af9df3c283"
+    },
+    "station": {
+      "id": "station",
+      "src": "/pangea/buildings/station.webp",
+      "width": 139,
+      "era": 3,
+      "size": {
+        "width": 386,
+        "height": 273
+      },
+      "anchor": {
+        "x": 0.303109,
+        "y": 0.985348
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 5,
+        "column": 0,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 0,
+          "top": 1647,
+          "width": 434,
+          "height": 401
+        },
+        "trim": {
+          "left": 15,
+          "top": 87,
+          "width": 380,
+          "height": 267
+        }
+      },
+      "sha256": "0d918559ec820447598a886de05c72392c1d8932ee6a6f05efc41ec8811498af"
+    },
+    "fishery": {
+      "id": "fishery",
+      "src": "/pangea/buildings/fishery.webp",
+      "width": 134,
+      "era": 0,
+      "size": {
+        "width": 406,
+        "height": 304
+      },
+      "anchor": {
+        "x": 0.502463,
+        "y": 0.986842
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 5,
+        "column": 0,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 0,
+          "top": 1647,
+          "width": 434,
+          "height": 401
+        },
+        "trim": {
+          "left": 4,
+          "top": 100,
+          "width": 400,
+          "height": 298
+        }
+      },
+      "sha256": "e5dabf2dd66d1fbd0b318d5e25769f911a8b116ecaf9231ac3bf12381fce968f"
+    },
+    "mill": {
+      "id": "mill",
+      "src": "/pangea/buildings/mill.webp",
+      "width": 128,
+      "era": 0,
+      "size": {
+        "width": 396,
+        "height": 315
+      },
+      "anchor": {
+        "x": 0.497475,
+        "y": 0.987302
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 0,
+        "column": 2,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 795,
+          "top": 0,
+          "width": 458,
+          "height": 406
+        },
+        "trim": {
+          "left": 34,
+          "top": 41,
+          "width": 390,
+          "height": 309
+        }
+      },
+      "sha256": "c7bd016d4e516fe8eb8e1c310873cbdd9d8461c11b2f6b4c39f8588f112c70ed"
+    },
+    "bakery": {
+      "id": "bakery",
+      "src": "/pangea/buildings/bakery.webp",
+      "width": 96,
+      "era": 0,
+      "size": {
+        "width": 295,
+        "height": 299
+      },
+      "anchor": {
+        "x": 0.498305,
+        "y": 0.986622
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 4,
+        "column": 0,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 0,
+          "top": 1305,
+          "width": 434,
+          "height": 467
+        },
+        "trim": {
+          "left": 61,
+          "top": 100,
+          "width": 289,
+          "height": 293
+        }
+      },
+      "sha256": "23ef9f3a857b3127a9094b6b92724edf92e728b1e1902fe5a82dd87d2058871c"
+    },
+    "claypit": {
+      "id": "claypit",
+      "src": "/pangea/buildings/claypit.webp",
+      "width": 108,
+      "era": 0,
+      "size": {
+        "width": 398,
+        "height": 303
+      },
+      "anchor": {
+        "x": 0.497487,
+        "y": 0.986799
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/classics.webp",
+        "row": 4,
+        "column": 2,
+        "sha256": "b6fc3dd692bdb83021cdf748fc97284ff9e21636d7fea5935674558443e6ca17",
+        "crop": {
+          "left": 795,
+          "top": 1305,
+          "width": 458,
+          "height": 467
+        },
+        "trim": {
+          "left": 32,
+          "top": 102,
+          "width": 392,
+          "height": 297
+        }
+      },
+      "sha256": "dfa317e4326367d81a7fa6b8daf98d16ec32853a94f8f0b90eb690f334196d48"
+    },
+    "kiln": {
+      "id": "kiln",
+      "src": "/pangea/buildings/kiln.webp",
+      "width": 112,
+      "era": 0,
+      "size": {
+        "width": 315,
+        "height": 283
+      },
+      "anchor": {
+        "x": 0.501587,
+        "y": 0.985866
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 4,
+        "column": 2,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 795,
+          "top": 1305,
+          "width": 458,
+          "height": 467
+        },
+        "trim": {
+          "left": 73,
+          "top": 115,
+          "width": 309,
+          "height": 277
+        }
+      },
+      "sha256": "697800eb29fd1a2a68f77c06044d306b9616d3ae676bf784f899533fcaec7f77"
+    },
+    "weaver": {
+      "id": "weaver",
+      "src": "/pangea/buildings/weaver.webp",
+      "width": 101,
+      "era": 1,
+      "size": {
+        "width": 326,
+        "height": 295
+      },
+      "anchor": {
+        "x": 0.493865,
+        "y": 0.986441
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/medeival.webp",
+        "row": 3,
+        "column": 4,
+        "sha256": "2b65ed44043e264a4889de561b62744011e6e898439186968f9e128db9293e73",
+        "crop": {
+          "left": 1614,
+          "top": 964,
+          "width": 434,
+          "height": 466
+        },
+        "trim": {
+          "left": 68,
+          "top": 127,
+          "width": 320,
+          "height": 289
+        }
+      },
+      "sha256": "efb05ba4c66124d4be342914e5fa33436882f81490f11d3b52ec4afff804e442"
+    },
+    "hall-steam": {
+      "id": "hall-steam",
+      "src": "/pangea/buildings/hall-steam.webp",
+      "width": 130,
+      "era": 3,
+      "size": {
+        "width": 361,
+        "height": 343
+      },
+      "anchor": {
+        "x": 0.567867,
+        "y": 0.988338
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/industrial.webp",
+        "row": 5,
+        "column": 2,
+        "sha256": "96836526043ed447716aa893f8b2a0fcf5846a7bef1a38d82ea90b24aadece83",
+        "crop": {
+          "left": 795,
+          "top": 1647,
+          "width": 458,
+          "height": 401
+        },
+        "trim": {
+          "left": 43,
+          "top": 44,
+          "width": 355,
+          "height": 337
+        }
+      },
+      "sha256": "dfd773fe6351240489a22b2015081f28db27c59155dd9e60855b242c3ff2abb6"
+    },
+    "clinic-health": {
+      "id": "clinic-health",
+      "src": "/pangea/buildings/clinic-health.webp",
+      "width": 112,
+      "era": 4,
+      "size": {
+        "width": 399,
+        "height": 306
+      },
+      "anchor": {
+        "x": 0.498747,
+        "y": 0.986928
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/modern.webp",
+        "row": 0,
+        "column": 4,
+        "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842",
+        "crop": {
+          "left": 1614,
+          "top": 0,
+          "width": 434,
+          "height": 406
+        },
+        "trim": {
+          "left": 31,
+          "top": 49,
+          "width": 393,
+          "height": 300
+        }
+      },
+      "sha256": "483b46bcbf0c779a1df47b91573049d6af5e3381f157a9ee833a1a20210346e7"
+    },
+    "school-electric": {
+      "id": "school-electric",
+      "src": "/pangea/buildings/school-electric.webp",
+      "width": 123,
+      "era": 4,
+      "size": {
+        "width": 399,
+        "height": 288
+      },
+      "anchor": {
+        "x": 0.498747,
+        "y": 0.986111
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/modern.webp",
+        "row": 1,
+        "column": 4,
+        "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842",
+        "crop": {
+          "left": 1614,
+          "top": 281,
+          "width": 434,
+          "height": 467
+        },
+        "trim": {
+          "left": 31,
+          "top": 134,
+          "width": 393,
+          "height": 282
+        }
+      },
+      "sha256": "9213e4a712e8c2ea0229bef92c5ad7b9f8e6c8299d0a5252d3abbbd795afa159"
+    },
+    "university-networks": {
+      "id": "university-networks",
+      "src": "/pangea/buildings/university-networks.webp",
+      "width": 136,
+      "era": 4,
+      "size": {
+        "width": 399,
+        "height": 293
+      },
+      "anchor": {
+        "x": 0.498747,
+        "y": 0.986348
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/modern.webp",
+        "row": 2,
+        "column": 0,
+        "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842",
+        "crop": {
+          "left": 0,
+          "top": 623,
+          "width": 434,
+          "height": 466
+        },
+        "trim": {
+          "left": 8,
+          "top": 137,
+          "width": 393,
+          "height": 287
+        }
+      },
+      "sha256": "7c8a8a73df0b3fb38a14db68285d1d7f7362dfc88a35f1f56e83ef7872ce7426"
+    },
+    "store-cold": {
+      "id": "store-cold",
+      "src": "/pangea/buildings/store-cold.webp",
+      "width": 113,
+      "era": 4,
+      "size": {
+        "width": 402,
+        "height": 289
+      },
+      "anchor": {
+        "x": 0.497512,
+        "y": 0.986159
+      },
+      "accent": {
+        "x": 0.5,
+        "y": 0.12
+      },
+      "source": {
+        "sheet": "/assets/ages/modern.webp",
+        "row": 4,
+        "column": 1,
+        "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842",
+        "crop": {
+          "left": 386,
+          "top": 1305,
+          "width": 457,
+          "height": 467
+        },
+        "trim": {
+          "left": 30,
+          "top": 112,
+          "width": 396,
+          "height": 283
+        }
+      },
+      "sha256": "ac576e9dd7435d56c08607ce954bf79eecf49357d78a35fc7777558d8f6faa1b"
+    }
+  }
+}

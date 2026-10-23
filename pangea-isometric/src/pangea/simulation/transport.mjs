@@ -2,7 +2,7 @@ import {TRANSPORT,BUILDINGS,YEAR,RESOURCE_NAMES} from './data.mjs';
 import {globalRoute,entrance} from './world.mjs';
 export function ensureLink(sim,from,to,route=null) {
   const existing=sim.state.links.find(l=>(l.from===from.id&&l.to===to.id)||(l.to===from.id&&l.from===to.id));if(existing)return existing;
-  route||=globalRoute(sim.state.seed,from,to);if(!route?.length)return null;
+  route||=globalRoute(sim.state.seed,from,to,sim.state.generationVersion);if(!route?.length)return null;
   const link={id:sim.state.nextLink++,from:from.id,to:to.id,route:route.map(p=>({lon:p.lon,lat:p.lat})),tier:0,project:null,lastDispatch:-99999,delivered:0,passengers:0,status:'Open foot trail'};
   sim.state.links.push(link);return link;
 }

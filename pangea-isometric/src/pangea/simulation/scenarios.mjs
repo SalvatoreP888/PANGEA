@@ -11,7 +11,7 @@ export function createCityLaboratory(seed=481217,population=1000) {
   const towns=[first];
   for(const delta of [.3,.52]){
     let site=null,route=null;
-    for(let i=0;i<36;i++){const angle=i/36*Math.PI*2,s={lon:first.lon+Math.cos(angle)*delta,lat:first.lat+Math.sin(angle)*delta};if(geoAt(s.lon,s.lat,seed).land&&(route=globalRoute(seed,first,s))?.length){site=s;break;}}
+    for(let i=0;i<36;i++){const angle=i/36*Math.PI*2,s={lon:first.lon+Math.cos(angle)*delta,lat:first.lat+Math.sin(angle)*delta};if(geoAt(s.lon,s.lat,seed,sim.state.planet,sim.state.generationVersion).land&&(route=globalRoute(seed,first,s,sim.state.generationVersion))?.length){site=s;break;}}
     if(site){const t=sim.addTown(site,first.id,{});t.name=towns.length===1?'Stonewater':'Willow Junction';towns.push(t);ensureLink(sim,first,t,route);}
   }
   while(sim.state.people.length<population)sim.addPerson(first,{age:18+(sim.state.people.length%38)});

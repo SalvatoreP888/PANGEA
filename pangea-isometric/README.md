@@ -1,64 +1,63 @@
 # PANGEA — A living world
 
-A playable isometric foundation built in a clone of [amilich/isometric-city](https://github.com/amilich/isometric-city), connected to the existing PANGAEA autonomous civilization simulation.
-
-The world is an isometric continent. Every settlement opens its own seeded city with actual residents, buildings, streets, inventories and work. The interface uses generated medieval architecture and terrain art, dark charcoal surfaces, warm brass details and ivory typography.
+An isometric world of autonomous settlements, built on [IsoCity](https://github.com/amilich/isometric-city) and the existing PANGAEA civilization simulation.
 
 ## Run
 
-Node.js 22 or later:
+Node.js **24.15 or later**:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. The original IsoCity remains available at `/isocity`. The clone retains its original city/coaster source and assets.
+Open `http://localhost:3000`. The original IsoCity remains at `/isocity`.
 
 ```sh
-npm test                  # 56 simulation and migration regressions
-npm run lint:pangea       # Strict checks for the new PANGEA surface
-npx tsc --noEmit           # Whole-repository TypeScript check
-npm run build             # Production Next.js build
+npm test                    # Simulation, terrain, camera, identity, art and persistence
+npm run lint:pangea
+npx tsc --noEmit
+npm run build               # Production Next.js application
 npm start
-npm run build:standalone   # dist/PANGEA.html: self-contained, no runtime network
+npm run build:standalone     # dist/PANGEA.html, including artwork/fonts/credits
+npm run build:site           # dist/index.html for the private static preview
+npm run server              # Optional authoritative Node + SQLite world server
 ```
 
-Browser integration checks require Python Playwright, Chromium, and a running server:
+Browser checks use Python Playwright and Chromium against a running production server:
 
 ```sh
-npm run test:browser
-# Optional: PANGEA_URL=http://127.0.0.1:3001/ npm run test:browser
+PANGEA_URL=http://127.0.0.1:3002/ npm run test:browser
+PANGEA_URL=http://127.0.0.1:3002/ npm run test:evolution
 ```
+
+## The six improvements
+
+1. **World generation.** Each seed selects different continental positions, orientations, islands and mountain belts. An ocean-rooted drainage graph accumulates rainfall into basins and tributaries; geography, founding suitability and rendering share the generated terrain. New worlds use generation 2. Saves without a generation version retain their exact generation 1 geography.
+2. **Architecture progression.** Thirty trimmed, anchored sprites cover 25 building types plus five civic variants triggered by actual discoveries. Industrial housing, mills, mines, furnaces, factories, stations and apartments have separate silhouettes. Existing huts remain huts until the simulation builds their replacements.
+3. **Visible work.** Foundations and scaffolds use actual construction progress and funding. Carried bundles, workshop inventory piles and foot/cart/train trips reflect actual goods and trips. Production effects follow real work or recorded batch completion. Day/dusk/night is a static presentation choice, avoiding flashing at accelerated simulation speeds.
+4. **World/city continuity.** Camera transitions register the selected town to the local hall, remember the world and each city's camera, and yield to dragging, wheel or pinch. Reduced motion switches directly; mobile supports two-finger pan/zoom and double-tap entry.
+5. **Persistence.** IndexedDB stores automatic checkpoints every 15 seconds and when the page becomes hidden, with three rotating checkpoints per world, recovery and legacy manual-save migration. Fresh launches remain random: choose a checkpoint explicitly to continue a saved world. An optional Node/SQLite server provides protected, authoritative worlds with independent ticking, restart catch-up and reconnect from another device. See [server deployment](docs/PERSISTENCE.md).
+6. **Settlement identity.** Profiles derive architectural character, recorded production specializations, current family names, a stable decorative emblem and settlement-scoped history from real state. No invented biographies or prosperity counters. Chronicles use actual event details in newest-first order.
 
 ## Explore
 
-The first screen is an explicitly labelled **constructed preview**, containing 240 people and three cities. Every fresh launch generates a new random seed for the preview. It starts paused. Use the play control to let their work and lives continue. This preview has granted buildings, discoveries and resources; it does not claim to be natural simulation growth.
+Fresh launches open a paused, clearly labelled **constructed preview** with 240 people and three cities. Its granted resources/buildings demonstrate the simulation; they are not claimed as natural growth. World settings → **New world · Four founders** starts a natural world. Leave the seed blank for fresh randomness or enter one for reproducible geography. JSON export/import preserves the full world.
 
-World settings → **New world · Four founders** begins a natural world with a fresh random seed. Leave the optional seed field blank for automatic generation, or enter a seed to recreate its geography. Saves retain their seed and restore the same world. Export the current world first if you want to keep it. The existing simulation's growth, households, species, finite resources, production, transport, research and version 2/3 save migrations are preserved.
+Select a town and enter its settlement; inspect real residents or buildings. Drag to pan, scroll/pinch or use ± to zoom. **F** recentres, **G** opens the world, **C** opens the city, **I** toggles the inspector, **Space** pauses. World settings contains recent checkpoints, server connection, presentation lighting and complete open-source credits.
 
-- Select a settlement marker, then **Enter settlement**. The settlement picker also travels between cities.
-- Click a resident or structure to inspect its real state. The rail opens resources, people, knowledge and history.
-- Drag to pan, scroll or use ± to zoom. **F** recentres, **G** opens the world, **C** opens the city, **I** toggles the inspector, **Space** pauses.
-- World settings supports browser save/load and portable JSON import/export. Malformed imports leave the current world unchanged.
-- The phone layout keeps the map clear until an inspector is opened. Reduced-motion settings disable ambient motion and transitions.
+## Architecture and source credit
 
-## Architecture and provenance
+Simulation owns people, buildings, resources and ticks. React owns the interface; the Canvas renderer reads state. `src/pangea/simulation/` remains independent of browser APIs and also runs on the server. Art preparation and provenance hashes are reproducible with `scripts/prepare-pangea-era-art.mjs`. The self-contained HTML bundles the same app, local art/fonts and full license notices.
 
-`src/pangea/renderer.ts` uses the upstream IsoCity `gridToScreen`, `drawIsometricDiamond`, tile dimensions, and cached image loader. The world is generated from the same seeded geography as the simulation; it is not a screenshot with static buttons. Streets trace actual connected simulation edges. Sprite depth, pointer hit testing, camera transforms and terrain caches live in the renderer.
+The OSS research happened before implementation: twelve local candidate checkouts plus canonical art downloads were inspected, including source-level licenses and separate art rights. Only the selected, narrow pieces were incorporated. [Research and attribution](docs/oss/README.md) records each source/revision, code inspected, adaptations, alternatives and obligations. No upstream contribution or endorsement is claimed.
 
-`src/pangea/simulation/` contains the renderer-independent PANGAEA Realms 0.5 simulation copied from the existing project. `model.ts` supplies a typed boundary; React owns the interface, while the simulation owns every person, inventory and tick. A bounded simulation budget yields to rendering and input.
+PANGEA-specific code is MIT except the explicitly marked Apache-2.0 terrain adaptation. Incorporated sources retain their own MIT, ISC, Apache-2.0 and SIL OFL notices. See [THIRD_PARTY_PANGEA.md](THIRD_PARTY_PANGEA.md), the retained license files, and World settings → Open-source credits. Run `npm run build:credits` after updating an incorporated source to regenerate the bundled notices.
 
-`src/pangea/components/` contains the app shell, inspector and compass artwork. `scripts/build-standalone.mjs` bundles the same React application, sprites, ground material and fonts into one HTML file.
+## Deployment and current limits
 
-Source baseline: IsoCity `b774dd7913103e9dd9ec51b2151893c22683886e`; existing PANGAEA workspace baseline `bd967b4`.
+The private Sites preview is a static application with **device-local** autosaves. Its optional server connection requires a separately running reachable server; the preview does not silently provision a database or claim continuous server operation. The Node server is implemented and integration-tested, with deployment instructions and explicit host/CORS/creation-key configuration. It must run as one authoritative process with durable storage.
 
-## Scope
+World and city remain two map scales registered at the selected settlement; local rivers inherit watershed/climate information but are not an exact geometric zoom of global river cells. Family names describe current surname groups, not inferred ancestry. History reflects the simulation's bounded retained log. People are small procedural figures; combat, multiplayer collaboration and neural agents are outside this change.
 
-This is a browser-local playable foundation, not a finished AAA release or a hosted multiplayer backend. There is no server database, account system or background simulation after the tab closes. World and city are two separate map scales. The new art atlas currently has eight archetypes; several building classes share an illustration, and residents retain small procedural silhouettes. The complete industrial-era art progression, combat and neural/LLM agents are not implemented.
-
-The optional compact source download includes all application code and PANGEA's generated PNG/WebP artwork and fonts. Its PANGEA application runs immediately after npm install. This GitHub tree includes the original IsoCity WebP art sheets and points direct sprite loaders at those files. Full PNG originals remain in the complete workspace clone; run `npm run fetch:upstream-assets` to restore their WebP versions when using `/isocity` from the compact download. This optional command fetches the documented upstream commit.
-
-## Attribution
-
-IsoCity is MIT licensed; see `LICENSE` and `README.upstream.md`. The vendored FlatQueue license remains beside its source. Manrope is included under its SIL Open Font License in `public/pangea/Manrope-OFL.txt`. PANGEA's new building atlas and ground texture were generated for this implementation.
+The compact source download includes all PANGEA assets and runnable code. The complete GitHub tree also contains IsoCity's WebP sheets. `npm run fetch:upstream-assets` restores those sheets at the documented source revision when using `/isocity` from the compact download. Historical `PANGAEA_Project_Full/` files remain preserved in the parent repository.

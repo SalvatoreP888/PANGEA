@@ -13,10 +13,11 @@ import {ensureLink,upgradeLink,workLink,inboundPeople,dispatch,dailyNetwork,arri
 export class Simulation {
   constructor(seed = 481217, options = {}) {
     if (!Number.isInteger(seed)) throw new Error('Seed must be an integer.');
-    this.state = {version:3,ruleset:'realms-0.5',planet:planetSettings(options.planet),economyVersion:2,seed:seed>>>0,rng:(seed^0x85671abc)>>>0,tick:0,nextPerson:1,nextTown:1,nextBuilding:1,nextEvent:1,nextTrip:1,nextLink:1,links:[],
+    if(options.generationVersion!==undefined&&![1,2].includes(options.generationVersion))throw new Error('Unsupported terrain generation version.');
+    this.state = {version:3,generationVersion:options.generationVersion??2,ruleset:'realms-0.5',planet:planetSettings(options.planet),economyVersion:2,seed:seed>>>0,rng:(seed^0x85671abc)>>>0,tick:0,nextPerson:1,nextTown:1,nextBuilding:1,nextEvent:1,nextTrip:1,nextLink:1,links:[],
       people:[],towns:[],trips:[],events:[],history:[],ledger:[],totals:{births:0,deaths:0,buildings:0,migrations:0,deliveries:0,meals:0},
       options:{memory:true,events:true,...options}};
-    const site = findFirstSite(seed), t = this.addTown(site, null, {food:120,meals:8,wood:62,stone:22,tools:0,herbs:4});
+    const site = findFirstSite(seed,this.state.planet,this.state.generationVersion), t = this.addTown(site, null, {food:120,meals:8,wood:62,stone:22,tools:0,herbs:4});
     const founders = [['Iris','F',23,'Kind'],['Rowan','M',26,'Industrious'],['Mara','F',22,'Curious'],['Tomas','M',25,'Cautious']];
     for (const [name,sex,age,trait] of founders) this.addPerson(t, {name,sex,age,trait,species:Object.keys(SPECIES)[this.state.people.length]});
     this.state.people[0].skills.foraging=6; this.state.people[1].skills.building=7;
@@ -65,7 +66,7 @@ export class Simulation {
       res:{...Object.fromEntries(Object.keys(RESOURCE_NAMES).map(k=>[k,0])),...resources},buildings:[],projectId:null,knowledge:[],research:0,
       weather:{kind:'Clear',until:0},policy:'Find shelter',policyReason:'Four people need permanent roofs.',reserve:18,scarcity:0,
       lastMigration:-99999,lastAid:-99999,lastElection:0,leaderId:null,stats:{foodProduced:0,foodConsumed:0,waste:0},lastPlan:-99};
-    t.land=generateLocal(this.state.seed,t,this.state.planet);initializeEconomy(t); this.state.towns.push(t); return t;
+    t.land=generateLocal(this.state.seed,t,this.state.planet,this.state.generationVersion);initializeEconomy(t); this.state.towns.push(t); return t;
   }
   addPerson(t,{name,sex,age=0,trait,parents=[],family,species}={}) {
     const id=this.state.nextPerson++;
@@ -189,7 +190,7 @@ export class Simulation {
     const stoneNeed=(costs.stone||0)+18;
     if(t.res.stone<stoneNeed&&jobs('stone')<Math.max(1,Math.ceil(pop/14)))add('stone',35+clamp((stoneNeed-t.res.stone)/stoneNeed,0,1)*40+p.skills.forestry,`${Math.floor(t.res.stone)} stone available; ${Math.ceil(stoneNeed)} wanted.`);
     if(project?.funded&&!project.complete&&jobs('build')<Math.max(1,Math.ceil(adults.length/6)))add('build',65+(this.capacity(t)<pop?24:0)+p.skills.building*2,`${BUILDINGS[project.type].name} has materials and needs labour.`,{buildingId:project.id});
-    const growingClimate=this._activeTown?.id===t.id?this._activeTown.climate:townClimate(this.state.seed,t,this.state.planet,this.day);
+    const growingClimate=this._activeTown?.id===t.id?this._activeTown.climate:townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion);
     const farms=['farm','wheatfield','flaxfield'].flatMap(type=>this.buildings(t,type)).filter(b=>(b.type==='farm'||t.res[b.type==='wheatfield'?'grain':'flax']<Math.max(40,pop*(b.type==='wheatfield'?8:4)))&&(b.crop.yield>0||(!b.crop.sown&&(this.season!==3||growingClimate.temperature>12))));
     if(farms.length&&jobs('farm')<farms.length){
       const farm=farms.find(b=>!adults.some(q=>q.id!==p.id&&q.task?.buildingId===b.id));
@@ -246,7 +247,7 @@ export class Simulation {
   stepPerson(p,t) {
     const child=p.ageDays<12*YEAR, n=p.needs;
     n.food=clamp(n.food-(child?6.6:10.8),0,100);n.energy=clamp(n.energy-5.6,0,100);n.social=clamp(n.social-1.4,0,100);
-    const localClimate=this._activeTown?.id===t.id?this._activeTown.climate:townClimate(this.state.seed,t,this.state.planet,this.day);
+    const localClimate=this._activeTown?.id===t.id?this._activeTown.climate:townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion);
     const winter=localClimate.temperature<7, warm=this.capacity(t)>=this.residents(t).length || !!p.houseId;
     n.warmth=clamp(n.warmth+(winter?(warm?.6:-3):2),0,100);
     if(n.food<=0){p.health-=.38;p.starveTicks=(p.starveTicks||0)+1;if(p.starveTicks>=8)this.remember(p,'hunger','There was not enough to eat. I do not want to feel that again.',9,-12);}else p.starveTicks=0;
@@ -317,7 +318,7 @@ export class Simulation {
       case 'farm':{
         const b=t.buildings.find(b=>b.id===task.buildingId);if(!b||!b.complete)break;
         if(b.crop.yield>0){const amount=Math.min(b.crop.yield,12*rate*(this.knowledge(t,'agronomy')?2:1));b.crop.yield-=amount;const harvest=b.type==='wheatfield'?'grain':b.type==='flaxfield'?'flax':'food';p.carry[harvest]=(p.carry[harvest]||0)+amount;if(harvest==='food')t.stats.foodProduced+=amount;if(b.crop.yield<.001){b.crop.sown=false;b.crop.growth=0;}done=true;}
-        else if(!b.crop.sown&&(this.season!==3||townClimate(this.state.seed,t,this.state.planet,this.day).temperature>12)){b.crop.sown=true;b.crop.growth=0;done=true;}
+        else if(!b.crop.sown&&(this.season!==3||townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion).temperature>12)){b.crop.sown=true;b.crop.growth=0;done=true;}
         break;
       }
       case 'fish':fishWork(this,p,t,rate);break;
@@ -388,7 +389,7 @@ export class Simulation {
   }
   dailyTown(t) {
     const residents=this.residents(t);if(!residents.length)return;
-    const season=this.season,climate=townClimate(this.state.seed,t,this.state.planet,this.day),cropFactor=cropClimate({...this.state.planet,temperature:climate.temperature});tickEconomy(this,t);
+    const season=this.season,climate=townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion),cropFactor=cropClimate({...this.state.planet,temperature:climate.temperature});tickEconomy(this,t);
     if(t.weather.until<=this.day)t.weather={kind:'Clear',until:0};
     const drought=t.weather.kind==='Drought', winter=climate.temperature<7;
     const regen=(climate.temperature<0?.1:climate.temperature<8?.5:climate.temperature>34?.4:1)*(drought?.2:1);
@@ -451,9 +452,9 @@ export class Simulation {
       let site=null,route=null;
       for(let a=0;a<16;a++){
         const angle=this.random()*Math.PI*2,dist=.22+this.random()*.35;
-        const s={lon:t.lon+Math.cos(angle)*dist,lat:clamp(t.lat+Math.sin(angle)*dist,-1.1,1.1)},g=geoAt(s.lon,s.lat,this.state.seed);
+        const s={lon:t.lon+Math.cos(angle)*dist,lat:clamp(t.lat+Math.sin(angle)*dist,-1.1,1.1)},g=geoAt(s.lon,s.lat,this.state.seed,this.state.planet,this.state.generationVersion);
         if(!g.land||g.field<.08||g.field>.8||this.state.towns.some(v=>Math.hypot(v.lon-s.lon,v.lat-s.lat)<.16))continue;
-        route=globalRoute(this.state.seed,t,s);if(route?.length){site=s;break;}
+        route=globalRoute(this.state.seed,t,s,this.state.generationVersion);if(route?.length){site=s;break;}
       }
       if(!site)continue;
       const duration=Math.min(45,14+route.length),needed=family.length*.82*duration+80;
@@ -470,7 +471,7 @@ export class Simulation {
   tryAid(t) {
     if(this.day-t.lastAid<180||this.foodDays(t)<35)return;
     const target=this.state.towns.find(q=>q.id!==t.id&&this.residents(q).length>0&&this.foodDays(q)<12);
-    if(!target)return;const route=globalRoute(this.state.seed,t,target);if(!route)return;
+    if(!target)return;const route=globalRoute(this.state.seed,t,target,this.state.generationVersion);if(!route)return;
     const amount=Math.min(80,t.res.food*.15);if(amount<10)return;
     this.transaction(t,'food',-amount,'Provision convoy dispatched');
     this.state.trips.push({id:this.state.nextTrip++,kind:'aid',from:t.id,to:target.id,route,start:this.day,arrival:this.day+Math.min(35,route.length+5),cargo:{food:amount},people:[]});t.lastAid=this.day;
@@ -504,7 +505,7 @@ export class Simulation {
       for(const p of this.state.people)if(p.alive)p.ageDays+=1/STEPS_PER_DAY;
       for(const t of this.state.towns){
         const people=this.residents(t),jobs={};for(const p of people)if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;
-        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),climate:townClimate(this.state.seed,t,this.state.planet,this.day),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
+        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),climate:townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
         // Rotate the processing order deterministically so founder #1 cannot monopolize jobs.
         const offset=people.length?this.state.tick%people.length:0;
         for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;trackProductionAssignment(this._activeTown.productionAssignments,p,-1);this.stepPerson(p,t);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;if(p.alive)trackProductionAssignment(this._activeTown.productionAssignments,p,1);}}
@@ -544,6 +545,7 @@ export function validateSave(s) {
   const numeric=v=>typeof v==='number'&&Number.isFinite(v);
   const walk=(obj,depth=0)=>{if(depth>20)fail();if(typeof obj==='number'&&!Number.isFinite(obj))fail();if(typeof obj==='string'&&obj.length>4000)fail();if(Array.isArray(obj)&&obj.length>30000)fail();if(obj&&typeof obj==='object')for(const[k,v]of Object.entries(obj)){if(['__proto__','constructor','prototype'].includes(k))fail();walk(v,depth+1);}};walk(s);
   if(s.planet){try{planetSettings(s.planet);}catch{fail();}}
+  if(s.generationVersion!==undefined&&![1,2].includes(s.generationVersion))fail();
   const ids=new Set();for(const p of s.people){if(!Number.isInteger(p.id)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>80||!numeric(p.ageDays)||p.ageDays<0||!p.needs||!p.skills||!Array.isArray(p.memories)||!Array.isArray(p.parents)||!p.carry)fail();ids.add(p.id);
     if(p.species!==undefined&&(!Object.hasOwn(SPECIES,p.species)||!Array.isArray(p.heritage)||p.heritage.some(id=>!Object.hasOwn(SPECIES,id))))fail();
     if(p.id<1||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=GRID_W||p.y<0||p.y>=GRID_H||!/^#[0-9a-f]{6}$/i.test(p.color)||typeof p.family!=='string'||!['F','M'].includes(p.sex)||!TRAITS.includes(p.trait)||typeof p.alive!=='boolean'||!Array.isArray(p.children)||!Array.isArray(p.choices)||!p.beliefs||!p.lastMemory||!numeric(p.health)||!numeric(p.mood))fail();
@@ -616,14 +618,14 @@ export function validateSave(s) {
 
 /** Ruleset migration retains every existing person, stockpile, save fixture and location. */
 export function migrateSave(data) {
-  validateSave(data);const s=JSON.parse(JSON.stringify(data));s.planet=planetSettings(s.planet);for(const p of s.people){p.species??=Object.keys(SPECIES)[(p.id-1)%4];p.heritage??=[p.species];}
+  validateSave(data);const s=JSON.parse(JSON.stringify(data));s.generationVersion??=1;s.planet=planetSettings(s.planet);for(const p of s.people){p.species??=Object.keys(SPECIES)[(p.id-1)%4];p.heritage??=[p.species];}
   if(s.version===2){
     s.version=3;s.ruleset='cities-0.3';s.links=[];s.nextLink=1;for(const tr of s.trips)tr.route=tr.route.map(p=>({lon:p.lon,lat:p.lat}));
     for(const t of s.towns){
       for(const k of Object.keys(RESOURCE_NAMES))t.res[k]??=0;
       t.land.streets=new Array(GRID_W*GRID_H).fill(0);t.land.navRevision=0;
       // Existing worlds gain finite, reproducible geological seams, never manufactured metal.
-      const generated=generateLocal(s.seed,t);
+      const generated=generateLocal(s.seed,t,s.planet,s.generationVersion);
       for(const n of generated.nodes.filter(n=>['ore','coal','clay'].includes(n.kind))){
         if(!walkable(t,n.x,n.y))continue;
         t.land.nodes.push({...n,id:Math.max(-1,...t.land.nodes.map(n=>n.id))+1});
@@ -635,7 +637,7 @@ export function migrateSave(data) {
   const streetsHost=Object.create(Simulation.prototype);streetsHost.state=s;
   for(const t of s.towns){
     initializeEconomy(t);
-    if(!t.land.nodes.some(n=>n.kind==='clay'))for(const n of generateLocal(s.seed,t,s.planet).nodes.filter(n=>n.kind==='clay'))if(walkable(t,n.x,n.y))t.land.nodes.push({...n,id:Math.max(-1,...t.land.nodes.map(q=>q.id))+1});
+    if(!t.land.nodes.some(n=>n.kind==='clay'))for(const n of generateLocal(s.seed,t,s.planet,s.generationVersion).nodes.filter(n=>n.kind==='clay'))if(walkable(t,n.x,n.y))t.land.nodes.push({...n,id:Math.max(-1,...t.land.nodes.map(q=>q.id))+1});
     repairStreetNetwork(streetsHost,t);
   }
   s.economyVersion=2;s.ruleset='realms-0.5';

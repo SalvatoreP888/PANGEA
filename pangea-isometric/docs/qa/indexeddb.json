@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checks": [
+    "Overlapping autosaves capture each state and retain three atomic checkpoints",
+    "Concurrent connections reject stale optimistic revisions",
+    "Malformed newest checkpoint restores the prior validated world",
+    "Closing and reopening IndexedDB preserves recoverable snapshots",
+    "Legacy localStorage save migrates after successful IndexedDB commit",
+    "A newer legacy save is preserved even when an earlier migration exists"
+  ]
+}
