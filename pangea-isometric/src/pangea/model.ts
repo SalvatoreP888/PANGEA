@@ -8,12 +8,12 @@ export interface Person {
   id: number; name: string; family: string; species: string; alive: boolean; townId: number;
   x: number; y: number; ageDays: number; mood: number; health: number; color: string;
   needs: Record<string, number>; skills: Record<string, number>; carry: Record<string, number>;
-  task: { kind: string; stage: string; buildingId?: number } | null; houseId?: number|null; tripId?: number|null; why: string; reflection: string;
+  task: { kind: string; stage: string; buildingId?: number; path?: {x:number;y:number}[]; index?:number } | null; houseId?: number|null; tripId?: number|null; why: string; reflection: string;
   memories: { day: number; text: string; tag: string }[]; generation: number;
 }
 export interface Building {
   id: number; type: string; x: number; y: number; complete: boolean;
-  progress: number; funded: boolean; crop?: { growth: number; yield: number };
+  progress: number; funded: boolean; crop?: { sown?: boolean; growth: number; yield: number };
   production?: { inputs: Record<string, number>; outputs: Record<string, number>; batches: number };
 }
 export interface Town {

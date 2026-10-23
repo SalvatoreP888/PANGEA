@@ -126,7 +126,12 @@ export function buildingLight(b:ActivityBuilding,a:BuildingActivity,x:number,y:n
 export function drawCityLighting(c:CanvasRenderingContext2D,lights:CityLight[],width:number,height:number,mode:CityLightingMode) {
   if(mode==='day')return;
   const darkness=getDarkness(mode==='dusk'?19:22);
-  c.save();c.fillStyle=`rgba(19,30,49,${darkness*.46})`;c.fillRect(0,0,width,height);
+  c.save();
+  if(mode==='dusk'){
+    const sunset=c.createLinearGradient(0,0,width*.45,height);
+    sunset.addColorStop(0,'rgba(184,116,65,.12)');sunset.addColorStop(.4,'rgba(83,70,72,.17)');sunset.addColorStop(1,`rgba(24,35,55,${darkness*.46})`);c.fillStyle=sunset;
+  }else c.fillStyle=`rgba(19,30,49,${darkness*.46})`;
+  c.fillRect(0,0,width,height);
   c.globalCompositeOperation='screen';
   for(const light of lights){
     const radius=Math.max(7,light.width*.29);

@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "crops": {
+        "unchanged": true,
+        "fallowIgnoresStaleGrowth": true,
+        "growthVisible": true,
+        "matureTypesDistinct": true
+      }
+    },
+    {
+      "residents": {
+        "animated": true,
+        "reduced": true,
+        "direction": true,
+        "unchanged": true,
+        "stationary": true
+      }
+    },
+    {
+      "water": {
+        "unchanged": true,
+        "dryIsland": true,
+        "waterFilled": true,
+        "fordStone": true
+      }
+    }
+  ],
+  "errors": []
+}

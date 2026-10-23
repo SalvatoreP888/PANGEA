@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Self-contained export loads all30 architecture sprites and a valid generation2 world",
+    "Offline settlement navigation and static night presentation work",
+    "Complete incorporated-source license notices are embedded in the export",
+    "No runtime HTTP requests or JavaScript errors"
+  ],
+  "errors": [],
+  "requests": []
+}

@@ -1,0 +1,99 @@
+{
+  "checks": [
+    "desktop: moved/unfinished/removed actual building ground agrees pixel-for-pixel with a forced cache rebuild; original state restored",
+    "desktop: actual paving-to-trail change invalidates road cache; restoration matches original pixels and state",
+    "desktop: actual entities/picks and full state preserved at two city scales and world; terrain raster retained in city and released in world",
+    "phone: moved/unfinished/removed actual building ground agrees pixel-for-pixel with a forced cache rebuild; original state restored",
+    "phone: actual paving-to-trail change invalidates road cache; restoration matches original pixels and state",
+    "phone: actual entities/picks and full state preserved at two city scales and world; terrain raster retained in city and released in world"
+  ],
+  "views": [
+    {
+      "device": "desktop",
+      "view": "city-overview",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": true,
+      "timings": {
+        "baseline": {
+          "cpuMedianMs": 2.300000000745058,
+          "rafMedianMs": 16.699999999999818
+        },
+        "candidate": {
+          "cpuMedianMs": 2.199999999254942,
+          "rafMedianMs": 16.699999999999818
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "view": "city-detail",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": true,
+      "timings": {
+        "baseline": {
+          "cpuMedianMs": 1.7000000029802322,
+          "rafMedianMs": 16.699999999999818
+        },
+        "candidate": {
+          "cpuMedianMs": 1.8999999985098839,
+          "rafMedianMs": 16.699999999999818
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "view": "world",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": false,
+      "timings": {
+        "baseline": {
+          "cpuMedianMs": 8.5,
+          "rafMedianMs": 16.699999999999818
+        },
+        "candidate": {
+          "cpuMedianMs": 8.399999998509884,
+          "rafMedianMs": 16.699999999999818
+        }
+      }
+    },
+    {
+      "device": "phone",
+      "view": "city-overview",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": true
+    },
+    {
+      "device": "phone",
+      "view": "city-detail",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": true
+    },
+    {
+      "device": "phone",
+      "view": "world",
+      "stateUnchanged": true,
+      "hitsExact": true,
+      "picksExact": true,
+      "loadedEnvironment": true,
+      "raster": false
+    }
+  ],
+  "errors": [],
+  "baseline": "feb9cdc / PR7",
+  "measurement": "24 paced frames after6 warmups, paused1000-person constructed city; softwareChromium, one run, CPU submission and RAF interval measured separately; only the timed canvas is visible to avoid occlusion bias."
+}
