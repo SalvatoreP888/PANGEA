@@ -1,0 +1,4 @@
+/** A restrained engraved compass rose for the map chrome. */
+export default function WindRose() {
+  return <svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="34" stroke="currentColor" strokeWidth=".65" opacity=".65"/><circle cx="50" cy="50" r="29" stroke="currentColor" strokeWidth=".3" opacity=".3"/><path d="M50 4V96M4 50H96M18 18L82 82M18 82L82 18" stroke="currentColor" strokeWidth=".6" opacity=".55"/>{[0,90,180,270].map(angle=><g transform={`rotate(${angle} 50 50)`} key={angle}><path d="M50 6L56 44L50 50Z" fill="currentColor" opacity=".9"/><path d="M50 6L44 44L50 50Z" stroke="currentColor" strokeWidth=".7" fill="#203532"/><path d="M24 24L47 43L50 50L43 47Z" fill="currentColor" opacity=".5"/></g>)}<circle cx="50" cy="50" r="3" fill="currentColor"/><text x="0" y="54" fill="currentColor" fontSize="8" fontFamily="Georgia">W</text><text x="94" y="54" fill="currentColor" fontSize="8" fontFamily="Georgia">E</text></svg>;
+}

@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "Selected world-town and city-hall anchors align at semantic handoff",
+    "Returning to the world restores its exact panned and zoomed camera",
+    "Each settlement restores its own independent camera",
+    "Wheel input interrupts the displayed camera without a later animation snap",
+    "Double-clicking the selected map town opens that authoritative settlement",
+    "Reduced motion finishes active camera travel and makes later navigation immediate",
+    "Resizing during travel releases the snapshot and leaves a finite usable camera",
+    "Tiny input during phone-scale travel preserves proportional zoom without a minimum-bound jump",
+    "Real touch input preserves the moving pinch centroid at DPR2 and makes no phantom selection"
+  ],
+  "errors": []
+}
