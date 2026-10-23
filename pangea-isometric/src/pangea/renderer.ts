@@ -247,8 +247,12 @@ export class PangeaRenderer {
     const c=this.ctx,t=this.sim.town(this.townId)!;
     const residents=this.sim.residents(t);this.activity=this.activityTracker.sample(t,residents,realTime);this.cityLights=[];
     c.lineCap='round';c.lineJoin='round';
-    const streetKey=`${t.id}:${t.land.navRevision}`;if(streetKey!==this.streetKey){this.streetPaths=streetPolylines(t) as {points:Point[];tier:number}[];this.streetKey=streetKey;}const paths=this.streetPaths;
-    for(const path of paths){const points=path.points.map(p=>{const v=this.iso(p.x,p.y);return {x:v.x+W/2,y:v.y+H/2};});this.line(points,'#56573c',13);this.line(points,'#aaa080',9);this.line(points,'#c4b99666',3);}
+    const streetKey=`${t.id}:${t.land.navRevision}`;
+    if(streetKey!==this.streetKey){
+      this.streetPaths=(streetPolylines(t) as {points:Point[];tier:number}[]).map(path=>({...path,points:path.points.map(p=>{const v=this.iso(p.x,p.y);return {x:v.x+W/2,y:v.y+H/2};})}));
+      this.streetKey=streetKey;
+    }
+    for(const path of this.streetPaths){this.line(path.points,'#56573c',13);this.line(path.points,'#aaa080',9);this.line(path.points,'#c4b99666',3);}
     if(this.layer==='resources')for(const n of t.land.nodes){if(n.amount<1)continue;const p=this.iso(n.x,n.y);c.fillStyle=n.kind==='wood'?'#b9d499':n.kind==='food'?'#e3c780':n.kind==='stone'?'#e0e0ca':'#b9a5c3';c.strokeStyle='#34483a';c.lineWidth=1;c.beginPath();c.arc(p.x+W/2,p.y+H/2,5,0,Math.PI*2);c.fill();c.stroke();}
 
     const objects: {depth:number; kind:'tree'|'building'|'person';item:Town['land']['nodes'][0]|Building|ReturnType<WorldSimulation['residents']>[0]}[]=[];

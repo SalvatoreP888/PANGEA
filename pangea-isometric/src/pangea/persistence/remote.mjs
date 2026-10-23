@@ -63,16 +63,10 @@ export class RemoteWorldClient {
   async command(command, expectedRevision) {
     if (!this.worldId || !this.token) throw new RemoteWorldError('Connect to a server world first.', 401, 'unauthorized');
     const explicit = expectedRevision !== undefined;
-    const send = () => this.request(`/api/worlds/${encodeURIComponent(this.worldId)}/commands`, { method: 'POST', body: { expectedRevision: expectedRevision ?? this.revision, command } });
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try { return await send(); }
-      catch (error) {
-        // Retry only idempotent controls, preserving CAS on every attempt.
-        if (error.status !== 409 || explicit || command.type === 'import' || attempt === 2) throw error;
-        if (Number.isSafeInteger(error.revision)) this.revision = error.revision;
-        else await this.read();
-      }
-    }
+    // Clock-only advancement is handled atomically by the server. A remaining
+    // conflict means the reviewed controls/world may have changed: never retry
+    // it blindly against a newly imported world or another user's command.
+    return this.request(`/api/worlds/${encodeURIComponent(this.worldId)}/commands`, { method: 'POST', body: { expectedRevision: expectedRevision ?? this.revision, command, ...(!explicit&&command.type!=='import'?{allowClockAdvance:true}:{}) } });
   }
   disconnect() {
     const stored = savedConfiguration();

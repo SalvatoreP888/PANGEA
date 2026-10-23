@@ -1,0 +1,93 @@
+{
+  "checks": [
+    "Eight industrial and transport structures have distinct shipped pixels, positive bounds and loaded images",
+    "Family-name keyboard activation opens the matching actual resident",
+    "Version-2 portable save imports with generationVersion 1 and retains every saved terrain tile and settlement site",
+    "Chronicle renders actual detail text, limits events to the selected town and puts newest source records first",
+    "Fresh worlds use terrain generation version 2; same seed repeats all local geography and a changed seed changes it",
+    "Day/night presentation switches renderer lighting while keeping authoritative simulation time fixed",
+    "Timer autosave writes the later state; checkpoint list survives reload and restores its seed/tick paused",
+    "Real phone touch pinch preserves the moving world centroid at DPR 2 without selecting an object"
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "committedAutosave": [
+    {
+      "id": "2d2b8392-1b33-4961-b334-5e2e053c95d4:1",
+      "worldId": "2d2b8392-1b33-4961-b334-5e2e053c95d4",
+      "revision": 1,
+      "savedAt": 1792766415690,
+      "seed": 90210,
+      "tick": 0,
+      "label": "Alderhaven",
+      "paused": true,
+      "speed": 16
+    },
+    {
+      "id": "2d2b8392-1b33-4961-b334-5e2e053c95d4:2",
+      "worldId": "2d2b8392-1b33-4961-b334-5e2e053c95d4",
+      "revision": 2,
+      "savedAt": 1792766424712,
+      "seed": 90210,
+      "tick": 4,
+      "label": "Alderhaven",
+      "paused": true,
+      "speed": 16
+    },
+    {
+      "id": "af545d01-fc28-4758-b1db-d4fc212c3f6e:1",
+      "worldId": "af545d01-fc28-4758-b1db-d4fc212c3f6e",
+      "revision": 1,
+      "savedAt": 1792766409731,
+      "seed": 90210,
+      "tick": 0,
+      "label": "Alderhaven",
+      "paused": true,
+      "speed": 16
+    }
+  ],
+  "restoreAttempt": {
+    "checkpoint": "Alderhaven \u00b7 Seed 90210\nDay 1 \u00b7 10/23/2026, 2:40:24 PM",
+    "expectedTick": 4,
+    "records": [
+      {
+        "id": "2d2b8392-1b33-4961-b334-5e2e053c95d4:1",
+        "worldId": "2d2b8392-1b33-4961-b334-5e2e053c95d4",
+        "revision": 1,
+        "savedAt": 1792766415690,
+        "seed": 90210,
+        "tick": 0,
+        "label": "Alderhaven",
+        "paused": true,
+        "speed": 16
+      },
+      {
+        "id": "2d2b8392-1b33-4961-b334-5e2e053c95d4:2",
+        "worldId": "2d2b8392-1b33-4961-b334-5e2e053c95d4",
+        "revision": 2,
+        "savedAt": 1792766424712,
+        "seed": 90210,
+        "tick": 4,
+        "label": "Alderhaven",
+        "paused": true,
+        "speed": 16
+      },
+      {
+        "id": "af545d01-fc28-4758-b1db-d4fc212c3f6e:1",
+        "worldId": "af545d01-fc28-4758-b1db-d4fc212c3f6e",
+        "revision": 1,
+        "savedAt": 1792766409731,
+        "seed": 90210,
+        "tick": 0,
+        "label": "Alderhaven",
+        "paused": true,
+        "speed": 16
+      }
+    ],
+    "result": {
+      "seed": 90210,
+      "tick": 4,
+      "toast": null
+    }
+  }
+}

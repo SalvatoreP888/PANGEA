@@ -13,6 +13,12 @@ URL = os.environ.get('PANGEA_URL', 'http://127.0.0.1:3002/')
 parsed = urlparse(URL)
 origin = parsed.scheme + '://' + parsed.netloc
 checks, page_errors = [], []
+commands = []
+def observe_command(response):
+    if not response.url.endswith('/commands'): return
+    data = response.json()
+    commands.append({'status': response.status, 'type': response.request.post_data_json.get('command', {}).get('type'),
+                     'revision': data.get('revision'), 'paused': data.get('paused'), 'error': data.get('code')})
 def settings(page):
     page.locator('.p-rail [aria-label="World settings"]').click()
     page.locator('.world-connection summary').click()
@@ -44,6 +50,7 @@ with tempfile.TemporaryDirectory(prefix='pangea-server-ui-') as folder:
             browser = playwright.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium'), headless=True, args=['--no-sandbox'])
             context = browser.new_context(viewport={'width':1536, 'height':1024})
             page = context.new_page(); page.on('pageerror', lambda error: page_errors.append(str(error)))
+            page.on('response', observe_command)
             page.goto(URL, wait_until='networkidle'); page.wait_for_function('window.PANGEA?.renderer.ready', timeout=60000)
             seed = page.evaluate('PANGEA.simulation.state.seed')
             settings(page)
@@ -63,6 +70,7 @@ with tempfile.TemporaryDirectory(prefix='pangea-server-ui-') as folder:
             assert server_world['snapshot']['tick'] > before
             checks.append('Authoritative simulation advances after the browser page is closed')
             page = context.new_page(); page.on('pageerror', lambda error: page_errors.append(str(error)))
+            page.on('response', observe_command)
             page.goto(URL, wait_until='networkidle'); page.wait_for_function('window.PANGEA?.renderer.ready', timeout=60000)
             assert page.evaluate('PANGEA.simulation.state.seed') != seed
             settings(page)
@@ -73,8 +81,19 @@ with tempfile.TemporaryDirectory(prefix='pangea-server-ui-') as folder:
             assert page.evaluate('PANGEA.simulation.state.tick') >= server_world['snapshot']['tick']
             checks.append('Fresh launch remains random and explicit Rejoin restores server progression')
             page.get_by_role('button', name='Close world settings', exact=True).click()
+            # A command clicked during a pending poll must wait, never disappear.
+            poll_pattern = endpoint + '/api/worlds/' + connection['worldId']; pending_poll = {}
+            def hold_poll(route): pending_poll.update(route=route, response=route.fetch())
+            page.route(poll_pattern, hold_poll); wait_held(page, pending_poll)
             page.get_by_role('button', name='Pause simulation', exact=True).click()
-            page.get_by_role('button', name='Resume simulation', exact=True).wait_for()
+            page.wait_for_timeout(100)
+            pending_poll['route'].fulfill(response=pending_poll['response']); page.unroute(poll_pattern)
+            try:
+                page.get_by_role('button', name='Resume simulation', exact=True).wait_for(timeout=10000)
+            except Exception:
+                print(json.dumps({'commands': commands, 'toast': page.locator('.p-toast').all_text_contents(), 'tick': page.evaluate('PANGEA.simulation.state.tick')}))
+                raise
+            checks.append('Pause clicked during a held polling response executes after the poll instead of being discarded')
             with urlopen(request) as response: paused = json.load(response)
             time.sleep(0.25)
             with urlopen(request) as response: later = json.load(response)

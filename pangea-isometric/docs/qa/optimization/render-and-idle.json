@@ -1,0 +1,112 @@
+{
+  "checks": [
+    "baseline: rendering preserves complete simulation state",
+    "candidate: rendering preserves complete simulation state",
+    "Four isometric views match baseline pixels and complete hit geometry/order",
+    "Paused production UI skips periodic inspector computation and refreshes after advancing"
+  ],
+  "pageErrors": [],
+  "implementations": {
+    "baseline": [
+      {
+        "medianMs": 45.299999952316284,
+        "p95Ms": 47.59999996423721,
+        "population": 1000,
+        "zoom": 0.35,
+        "pixelSha256": "3796adbb7064dd4bbca482182d4798fe626cd13fb1c55a4adf737b3d30422d47",
+        "hitSha256": "ba600e58d3ce15febabebba0d0b93f6b7c2b79cfa95bff40e30a42422b15305a"
+      },
+      {
+        "medianMs": 41,
+        "p95Ms": 44.60000002384186,
+        "population": 1000,
+        "zoom": 0.9,
+        "pixelSha256": "0510325047aba2dc012ee5280020d4f5f1f01cc138135700d70c66617a0c0142",
+        "hitSha256": "3b53e583fbd5fa6b275dd24fe952d47a310672bb0c42d1b185184c5b74aef3dd"
+      },
+      {
+        "medianMs": 51,
+        "p95Ms": 55.30000001192093,
+        "population": 2000,
+        "zoom": 0.35,
+        "pixelSha256": "edd2f75166fa6380d4ef4366ddd09cdcb13edcf2d906be38504476391849b668",
+        "hitSha256": "92d0fa41bc76940a5d59524647ec71a647627cfe44a343393b30bc4ecffe056d"
+      },
+      {
+        "medianMs": 43.30000001192093,
+        "p95Ms": 62.30000001192093,
+        "population": 2000,
+        "zoom": 0.9,
+        "pixelSha256": "e9d2a334b739056868c308d6489c2550fb1b102bc1f6202c040f937448cea6c8",
+        "hitSha256": "84c90ab46ca116569bd10e3f1133129b3d40675c8dd3c300d2807b27b1444443"
+      }
+    ],
+    "candidate": [
+      {
+        "medianMs": 41.299999952316284,
+        "p95Ms": 44.60000002384186,
+        "population": 1000,
+        "zoom": 0.35,
+        "pixelSha256": "3796adbb7064dd4bbca482182d4798fe626cd13fb1c55a4adf737b3d30422d47",
+        "hitSha256": "ba600e58d3ce15febabebba0d0b93f6b7c2b79cfa95bff40e30a42422b15305a"
+      },
+      {
+        "medianMs": 42.89999997615814,
+        "p95Ms": 82.90000003576279,
+        "population": 1000,
+        "zoom": 0.9,
+        "pixelSha256": "0510325047aba2dc012ee5280020d4f5f1f01cc138135700d70c66617a0c0142",
+        "hitSha256": "3b53e583fbd5fa6b275dd24fe952d47a310672bb0c42d1b185184c5b74aef3dd"
+      },
+      {
+        "medianMs": 52.10000002384186,
+        "p95Ms": 58.40000003576279,
+        "population": 2000,
+        "zoom": 0.35,
+        "pixelSha256": "edd2f75166fa6380d4ef4366ddd09cdcb13edcf2d906be38504476391849b668",
+        "hitSha256": "92d0fa41bc76940a5d59524647ec71a647627cfe44a343393b30bc4ecffe056d"
+      },
+      {
+        "medianMs": 43.69999998807907,
+        "p95Ms": 49.90000003576279,
+        "population": 2000,
+        "zoom": 0.9,
+        "pixelSha256": "e9d2a334b739056868c308d6489c2550fb1b102bc1f6202c040f937448cea6c8",
+        "hitSha256": "84c90ab46ca116569bd10e3f1133129b3d40675c8dd3c300d2807b27b1444443"
+      }
+    ]
+  },
+  "comparisons": [
+    {
+      "population": 1000,
+      "zoom": 0.35,
+      "identicalPixels": true,
+      "identicalHits": true,
+      "speedup": 1.0968523003539534
+    },
+    {
+      "population": 1000,
+      "zoom": 0.9,
+      "identicalPixels": true,
+      "identicalHits": true,
+      "speedup": 0.9557109562420961
+    },
+    {
+      "population": 2000,
+      "zoom": 0.35,
+      "identicalPixels": true,
+      "identicalHits": true,
+      "speedup": 0.9788867557900484
+    },
+    {
+      "population": 2000,
+      "zoom": 0.9,
+      "identicalPixels": true,
+      "identicalHits": true,
+      "speedup": 0.9908466824652802
+    }
+  ],
+  "method": "1536x1024 Chromium, paused constructed generation-2 city, fixed time 0.5. Five warm-up draws, 45 measured CPU canvas submissions; not sustained FPS.",
+  "browserVersion": "154.0.8037.57",
+  "idleInspectorFoodQueries": 0
+}

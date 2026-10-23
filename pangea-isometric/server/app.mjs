@@ -104,11 +104,14 @@ export function createWorldServer({ dbPath, allowedOrigins = [], createKey = '',
         else if (match[2] && request.method === 'POST') {
           const body = await readJson(request, bodyLimit);
           if (!Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 1) fail(400, 'revision', 'An expected world revision is required.');
-          if (body.expectedRevision !== entry.row.revision) {
+          const command = bodyObject(body.command),time=now();
+          // Implicit idempotent controls may cross clock commits, never another
+          // control/import. Explicit CAS and all imports retain exact revisions.
+          const clockOnly=body.allowClockAdvance===true&&['pause','resume','speed'].includes(command.type)&&body.expectedRevision>=entry.controlRevision&&body.expectedRevision<=entry.row.revision;
+          if (body.expectedRevision !== entry.row.revision&&!clockOnly) {
             const error = new HttpError(409, 'conflict', 'The world advanced before this command. Refresh its state and try again. Imports require reviewing the latest world first.');
             error.revision = entry.row.revision; throw error;
           }
-          const command = bodyObject(body.command), time = now();
           const updates = { saved_at: time, wallclock: time,
             pending: entry.row.pending + (entry.row.paused ? 0 : Math.max(0, time - entry.row.wallclock) * entry.row.speed * 4 / 1000) };
           if (command.type === 'pause') updates.paused = 1;
@@ -116,7 +119,7 @@ export function createWorldServer({ dbPath, allowedOrigins = [], createKey = '',
           else if (command.type === 'speed') updates.speed = speedValue(command.speed);
           else if (command.type === 'import') { const sim = validatedSimulation(command.snapshot); entry.sim = sim; updates.paused = 1; updates.pending = 0; }
           else fail(400, 'command', 'Unknown world command.');
-          store.commit(entry, updates); result = envelope(entry);
+          store.commit(entry, updates);entry.controlRevision=entry.row.revision;result = envelope(entry);
         } else fail(405, 'method', 'Method not allowed.');
       }
       response.writeHead(status, { 'Content-Type': 'application/json' }); response.end(JSON.stringify(result));

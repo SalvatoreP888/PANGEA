@@ -11,6 +11,7 @@ import Credits from './Credits';
 import WorldConnection from './WorldConnection';
 import { checkpointStore, newWorldId, RemoteWorldClient } from '../persistence/index.mjs';
 import type { RemoteEnvelope, SaveMetadata } from '../persistence/index.mjs';
+import { RemoteRequestQueue } from '../persistence/remote-queue.mjs';
 import './pangea.css';
 
 type Session={sim:WorldSimulation;renderer:PangeaRenderer;paused:boolean;speed:number;accumulator:number;remote:RemoteWorldClient|null;remoteRevision:number};
@@ -23,7 +24,7 @@ export default function Pangea() {
   const [view,setViewState]=useState<View>('world'),[section,setSection]=useState<Section>('overview'),[townId,setTownId]=useState(1),[selection,setSelection]=useState<Selection>(null);
   const [inspectorOpen,setInspectorOpen]=useState(true),[settings,setSettings]=useState(false),[toast,setToast]=useState(''),[confirmNew,setConfirmNew]=useState(false),[seed,setSeed]=useState('');
   const [checkpoints,setCheckpoints]=useState<SaveMetadata[]>([]),[lastSaved,setLastSaved]=useState<number|null>(null),[remoteConnected,setRemoteConnected]=useState(false),[lighting,setLighting]=useState<'day'|'dusk'|'night'>('day');
-  const worldIdRef=useRef(''),checkpointRevision=useRef<number|undefined>(undefined),saveBusy=useRef(false),autosaveFailed=useRef(false),remoteBusy=useRef<RemoteWorldClient|null>(null);
+  const worldIdRef=useRef(''),checkpointRevision=useRef<number|undefined>(undefined),saveBusy=useRef(false),autosaveFailed=useRef(false),remoteQueue=useRef(new RemoteRequestQueue());
   const [paused,setPaused]=useState(true),[speed,setSpeed]=useState(16),[layer,setLayer]=useState<'natural'|'fertility'|'resources'>('natural'),[labels,setLabels]=useState(true);
   const toastTimer=useRef<ReturnType<typeof setTimeout>|null>(null),settingsRef=useRef(false),dialogRef=useRef<HTMLElement>(null);
   const notify=useCallback((message:string)=>{setToast(message);if(toastTimer.current)clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToast(''),4500);},[]);
@@ -31,12 +32,12 @@ export default function Pangea() {
   const selectTown=useCallback((id:number)=>{const s=sessionRef.current;if(!s)return;s.renderer.setTown(id);setTownId(id);s.renderer.selected=null;setSelection(null);setSection('overview');setInspectorOpen(true);},[]);
   const select=useCallback((selected:Selection)=>{const s=sessionRef.current;if(!s)return;s.renderer.selected=selected;setSelection(selected);setInspectorOpen(true);},[]);
   const applyRemote=useCallback((envelope:RemoteEnvelope,forceReset=false)=>{const s=sessionRef.current;if(!s)return;const next=loadWorld(envelope.snapshot),before=s.sim.state,oldTown=s.sim.town(s.renderer.townId),newTown=next.town(s.renderer.townId);const changed=forceReset||before.seed!==next.state.seed||before.generationVersion!==next.state.generationVersion||JSON.stringify(before.planet)!==JSON.stringify(next.state.planet)||!newTown||JSON.stringify(oldTown?.land.tiles)!==JSON.stringify(newTown.land.tiles);s.sim=next;if(changed){s.renderer.reset(next);setTownId(s.renderer.townId);setSelection(null);}else s.renderer.sim=next;s.remoteRevision=envelope.revision;s.paused=envelope.paused;s.speed=envelope.speed;setPaused(s.paused);setSpeed(s.speed);if(window.PANGEA)window.PANGEA.simulation=next;refresh(n=>n+1);},[]);
-  const remoteCommand=useCallback(async(command:Parameters<RemoteWorldClient['command']>[0])=>{const s=sessionRef.current;if(!s?.remote||remoteBusy.current===s.remote)return false;const client=s.remote;remoteBusy.current=client;try{const envelope=await client.command(command,command.type==='import'?s.remoteRevision:undefined);if(sessionRef.current?.remote!==client)return false;applyRemote(envelope,command.type==='import');return true;}catch(error){if(sessionRef.current?.remote===client)notify(error instanceof Error?error.message:'The server could not be reached.');return false;}finally{if(remoteBusy.current===client)remoteBusy.current=null;}},[applyRemote,notify]);
+  const remoteCommand=useCallback(async(command:Parameters<RemoteWorldClient['command']>[0])=>{const s=sessionRef.current;if(!s?.remote)return false;const client=s.remote,expectedRevision=command.type==='import'?s.remoteRevision:undefined;try{return await remoteQueue.current.run(client,async()=>{if(sessionRef.current?.remote!==client)return false;const envelope=await client.command(command,expectedRevision);if(sessionRef.current?.remote!==client)return false;applyRemote(envelope,command.type==='import');return true;});}catch(error){if(sessionRef.current?.remote===client)notify(error instanceof Error?error.message:'The server could not be reached.');return false;}},[applyRemote,notify]);
   const togglePause=useCallback(()=>{const s=sessionRef.current;if(!s)return;if(s.remote){void remoteCommand({type:s.paused?'resume':'pause'});return;}s.paused=!s.paused;setPaused(s.paused);},[remoteCommand]);
   const replaceWorld=useCallback((sim:WorldSimulation)=>{const s=sessionRef.current;if(!s)return;s.remote=null;setRemoteConnected(false);worldIdRef.current=newWorldId();checkpointRevision.current=undefined;s.sim=sim;s.renderer.reset(sim);s.paused=true;s.accumulator=0;setPaused(true);setTownId(sim.state.towns[0].id);setSelection(null);setSection('overview');setSettings(false);setConfirmNew(false);refresh(n=>n+1);if(window.PANGEA)window.PANGEA.simulation=sim;},[]);
   useEffect(()=>{
     if(!canvasRef.current)return;
-    let disposed=false,request=0,last=0,lastUi=0;
+    let disposed=false,request=0,last=0,lastUi=0,lastUiTick=-1,lastUiSim:WorldSimulation|null=null;
     const sim=makeShowcase();
     const renderer=new PangeaRenderer(canvasRef.current,sim);const session:Session={sim,renderer,paused:true,speed:16,accumulator:0,remote:null,remoteRevision:0};sessionRef.current=session;worldIdRef.current=newWorldId();checkpointRevision.current=undefined;
     renderer.onReady=()=>{if(!disposed)setReady(true);};
@@ -45,7 +46,12 @@ export default function Pangea() {
     function frame(now:number){if(disposed)return;const dt=last?Math.min((now-last)/1000,.1):0;last=now;
       if(!session.remote&&!session.paused&&!document.hidden&&!settingsRef.current){session.accumulator=Math.min(session.accumulator+dt*session.speed*4,1200);const start=performance.now();let steps=0;while(session.accumulator>=1&&steps<160&&performance.now()-start<9){session.sim.step();session.accumulator--;steps++;}}
       if(renderer.ready)renderer.draw(now/1000);
-      if(now-lastUi>450){refresh(n=>n+1);lastUi=now;}
+      if(now-lastUi>450){
+        // Controls and remote commands refresh themselves; unchanged paused worlds
+        // need no periodic React/inspector work while the canvas keeps animating.
+        if(lastUiSim!==session.sim||lastUiTick!==session.sim.state.tick){refresh(n=>n+1);lastUiSim=session.sim;lastUiTick=session.sim.state.tick;}
+        lastUi=now;
+      }
       request=requestAnimationFrame(frame);
     }
     request=requestAnimationFrame(frame);
@@ -54,7 +60,7 @@ export default function Pangea() {
   },[replaceWorld,switchView]);
   const saveCheckpoint=useCallback(async(manual=false)=>{const s=sessionRef.current;if(!s||saveBusy.current)return;saveBusy.current=true;const id=worldIdRef.current;try{const meta=await checkpointStore.save(s.sim.snapshot(),{worldId:id,expectedRevision:checkpointRevision.current,label:s.sim.state.towns[0]?.name,paused:s.paused,speed:s.speed});if(id===worldIdRef.current){checkpointRevision.current=meta.revision;setLastSaved(meta.savedAt);}setCheckpoints(await checkpointStore.list());autosaveFailed.current=false;if(manual)notify('World checkpoint saved on this device.');}catch(error){if(manual||!autosaveFailed.current)notify(error instanceof Error?error.message:'Autosave is unavailable. Export your world to keep it.');autosaveFailed.current=true;}finally{saveBusy.current=false;}},[notify]);
   useEffect(()=>{void checkpointStore.list().then(setCheckpoints).catch(()=>{});const timer=setInterval(()=>{void saveCheckpoint();},15000);const hide=()=>{if(document.hidden)void saveCheckpoint();};document.addEventListener('visibilitychange',hide);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide);};},[saveCheckpoint]);
-  useEffect(()=>{if(!remoteConnected)return;let disposed=false;const timer=setInterval(async()=>{const s=sessionRef.current;if(!s?.remote||remoteBusy.current===s.remote)return;const client=s.remote;remoteBusy.current=client;try{const envelope=await client.read();if(!disposed&&sessionRef.current?.remote===client)applyRemote(envelope);}catch{if(!disposed&&sessionRef.current?.remote===client)notify('Server connection interrupted. The server keeps its world; reconnect to refresh.');}finally{if(remoteBusy.current===client)remoteBusy.current=null;}},2000);return()=>{disposed=true;clearInterval(timer);};},[remoteConnected,applyRemote,notify]);
+  useEffect(()=>{if(!remoteConnected)return;let disposed=false;const timer=setInterval(async()=>{const s=sessionRef.current;if(!s?.remote||remoteQueue.current.busy(s.remote))return;const client=s.remote;try{await remoteQueue.current.run(client,async()=>{const envelope=await client.read();if(!disposed&&sessionRef.current?.remote===client)applyRemote(envelope);});}catch{if(!disposed&&sessionRef.current?.remote===client)notify('Server connection interrupted. The server keeps its world; reconnect to refresh.');}},2000);return()=>{disposed=true;clearInterval(timer);};},[remoteConnected,applyRemote,notify]);
   const connectRemote=useCallback((client:RemoteWorldClient,envelope:RemoteEnvelope)=>{const s=sessionRef.current;if(!s)return;const next=loadWorld(envelope.snapshot);s.sim=next;s.renderer.reset(next);s.remote=client;s.remoteRevision=envelope.revision;s.paused=envelope.paused;s.speed=envelope.speed;worldIdRef.current=newWorldId();checkpointRevision.current=undefined;setTownId(next.state.towns[0].id);setSelection(null);setPaused(s.paused);setSpeed(s.speed);setRemoteConnected(true);if(window.PANGEA)window.PANGEA.simulation=next;notify('Connected to the server world. Its clock runs on the server.');refresh(n=>n+1);},[notify]);
   const disconnectRemote=useCallback(()=>{const s=sessionRef.current;if(!s)return;s.remote?.disconnect();s.remote=null;s.paused=true;worldIdRef.current=newWorldId();checkpointRevision.current=undefined;setRemoteConnected(false);setPaused(true);notify('Disconnected. This device keeps a paused local copy.');},[notify]);
   useEffect(()=>{settingsRef.current=settings;if(!settings)return;const previous=document.activeElement as HTMLElement|null;const dialog=dialogRef.current;dialog?.querySelector<HTMLButtonElement>('button')?.focus();

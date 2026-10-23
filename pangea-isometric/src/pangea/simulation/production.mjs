@@ -1,4 +1,4 @@
-import {RECIPES,BUILDINGS,RESOURCE_NAMES} from './data.mjs';
+import {RECIPES,BUILDINGS,RESOURCE_NAMES,YEAR} from './data.mjs';
 import {entrance} from './world.mjs';
 
 // Small workshop buffers make carrying distance part of the economy. These are
@@ -7,11 +7,14 @@ export function productionBuffer(b) {
   return b.production??={inputs:{},outputs:{},batches:0};
 }
 export function productionReady(b,r) {
-  return Object.entries(r.inputs).every(([k,v])=>(b.production?.inputs[k]||0)>=v);
+  for(const k in r.inputs)if(Object.hasOwn(r.inputs,k)&&!((b.production?.inputs[k]||0)>=r.inputs[k]))return false;
+  return true;
 }
 export function productionFull(b,r) {
-  return Object.entries(r.outputs).some(([k,v])=>(b.production?.outputs[k]||0)+v>v*4+1e-8);
+  for(const k in r.outputs)if(Object.hasOwn(r.outputs,k)&&(b.production?.outputs[k]||0)+r.outputs[k]>r.outputs[k]*4+1e-8)return true;
+  return false;
 }
+function productionHasOutput(b){if(b.production)for(const k in b.production.outputs)if(Object.hasOwn(b.production.outputs,k)&&b.production.outputs[k]>0)return true;return false;}
 function productionShipment(t,b,r) {
   if(productionReady(b,r))return null;
   const costs=Object.fromEntries(Object.entries(r.inputs).map(([k,v])=>[k,Math.max(0,Math.min(t.res[k],v*2-(b.production?.inputs[k]||0)))]));
@@ -19,13 +22,15 @@ function productionShipment(t,b,r) {
 }
 /** Derived once per town/tick, then updated around each resident's turn. */
 export function productionAssignments(people,omitId) {
-  const index={tasks:new Map(),inbound:new Map()};
+  const index={tasks:new Map(),inbound:new Map(),nodes:new Map(),adultBuildings:new Map()};
   for(const p of people)if(p.id!==omitId)trackProductionAssignment(index,p,1);
   return index;
 }
 export function trackProductionAssignment(index,p,delta) {
   const adjust=(map,key)=>{const count=(map.get(key)||0)+delta;if(count)map.set(key,count);else map.delete(key);};
   if(p.task?.buildingId!==undefined)adjust(index.tasks,`${p.task.buildingId}:${p.task.kind}`);
+  if(p.task?.buildingId!==undefined&&p.ageDays>=18*YEAR)adjust(index.adultBuildings,p.task.buildingId);
+  if(p.task?.nodeId!==undefined)adjust(index.nodes,p.task.nodeId);
   if(p.productionDelivery!==undefined)adjust(index.inbound,p.productionDelivery);
 }
 function productionDemand(sim,t,r,pop) {
@@ -43,7 +48,7 @@ export function productionActions(sim,p,t,add,jobs) {
     const producers=sim.buildings(t,r.building),wanted=productionDemand(sim,t,r,pop);
     for(const b of producers){
       const occupied=job=>(assignments.tasks.get(`${b.id}:${job}`)||0)>0;
-      if(Object.values(b.production?.outputs||{}).some(v=>v>0)&&!occupied('haulOutput'))add('haulOutput',74+p.skills.building,'Collect finished goods; they are not in the common store yet.',{buildingId:b.id,recipeKind:kind});
+      if(productionHasOutput(b)&&!occupied('haulOutput'))add('haulOutput',74+p.skills.building,'Collect finished goods; they are not in the common store yet.',{buildingId:b.id,recipeKind:kind});
       if(!wanted)continue;
       if(productionReady(b,r)&&!productionFull(b,r)&&!occupied(kind)&&jobs(kind)<Math.max(1,Math.ceil(pop/35)))add(kind,60+p.skills.building*2,'Use materials delivered to this workshop. Finished goods need collection.',{buildingId:b.id});
       const inbound=(assignments.inbound.get(b.id)||0)>0||occupied('supply');
