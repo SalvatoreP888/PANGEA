@@ -362,10 +362,9 @@ export class Simulation {
         if(mentor){const top=SKILLS.reduce((a,b)=>mentor.skills[a]>mentor.skills[b]?a:b);p.skills[top]=Math.min(mentor.skills[top],p.skills[top]+.035);this.bond(p,mentor,.5);}p.needs.social=clamp(p.needs.social+17,0,100);break;
       }
       case 'social':case 'play':{
-        let pool;
-        if(this._activeTown?.id===t.id)pool=this._activeTown.residentIndex.nearby(p,20,true);
-        else {const others=this.residents(t).filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<20),compatible=others.filter(q=>(q.ageDays>=18*YEAR)===(p.ageDays>=18*YEAR));pool=compatible.length?compatible:others;}
-        const q=pool.length?pool[this.integer(0,pool.length-1)]:null;
+        let q;
+        if(this._activeTown?.id===t.id)q=this._activeTown.residentIndex.socialContact(p,this._activeTown.chooseSocial);
+        else {const others=this.residents(t).filter(q=>q.id!==p.id&&Math.hypot(q.x-p.x,q.y-p.y)<20),compatible=others.filter(q=>(q.ageDays>=18*YEAR)===(p.ageDays>=18*YEAR)),pool=compatible.length?compatible:others;q=pool.length?pool[this.integer(0,pool.length-1)]:null;}
         p.needs.social=clamp(p.needs.social+48,0,100);
         if(q){q.needs.social=clamp(q.needs.social+18,0,100);this.bond(p,q,p.trait==='Kind'?5:3.5);if(this.relationship(p,q)>30)this.remember(p,'friendship',`Sharing time with ${q.name} makes this place feel like home.`,5,5,[q.id]);}
         break;
@@ -525,7 +524,7 @@ export class Simulation {
       for(const p of this.state.people)if(p.alive)p.ageDays+=1/STEPS_PER_DAY;
       for(const t of this.state.towns){
         const people=this.residents(t),jobs={};for(const p of people)if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;
-        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),residentIndex:new ResidentIndex(people),farmRevision:0,climate:townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
+        this._activeTown={id:t.id,people,jobs,productionAssignments:productionAssignments(people),residentIndex:new ResidentIndex(people),chooseSocial:size=>this.integer(0,size-1),farmRevision:0,climate:townClimate(this.state.seed,t,this.state.planet,this.day,this.state.generationVersion),adults:people.filter(p=>p.ageDays>=18*YEAR),foodDemand:people.reduce((n,p)=>n+(p.ageDays<12*YEAR?.48:.82),0)};
         // Rotate the processing order deterministically so founder #1 cannot monopolize jobs.
         const offset=people.length?this.state.tick%people.length:0;
         for(let j=0;j<people.length;j++){const p=people[(j+offset)%people.length];if(p.alive){const old=p.task?.kind;trackProductionAssignment(this._activeTown.productionAssignments,p,-1);this.stepPerson(p,t);this._activeTown.residentIndex.move(p);if(old)jobs[old]--;if(p.task)jobs[p.task.kind]=(jobs[p.task.kind]||0)+1;if(p.alive)trackProductionAssignment(this._activeTown.productionAssignments,p,1);}}

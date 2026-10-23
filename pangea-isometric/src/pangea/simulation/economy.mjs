@@ -33,7 +33,7 @@ export function tickEconomy(sim,t) {
     for(const b of t.buildings)if(b.production)for(const bin of [b.production.inputs,b.production.outputs])if(bin[key]){const lost=bin[key]*fraction;bin[key]-=lost;t.stats.waste+=lost;}
   }
   const winter=climate.temperature<7;
-  if(winter){const amount=Math.min(t.res.cloth,sim.residents(t).length/900);if(amount>0){sim.transaction(t,'cloth',-amount,'Cloth worn for winter warmth');for(const p of sim.residents(t))p.needs.warmth=clamp(p.needs.warmth+amount/Math.max(1,sim.residents(t).length)*500,0,100);}}
+  if(winter){const residents=sim.residents(t),amount=Math.min(t.res.cloth,residents.length/900);if(amount>0){sim.transaction(t,'cloth',-amount,'Cloth worn for winter warmth');for(const p of residents)p.needs.warmth=clamp(p.needs.warmth+amount/Math.max(1,residents.length)*500,0,100);}}
 }
 export function cropClimate(planet) {
   const p=planet||DEFAULT_PLANET;

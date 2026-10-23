@@ -1,4 +1,64 @@
-# PANGEA 0.7.1 optimization
+# PANGEA 0.7.2 optimization
+
+23 October 2026. This follow-up compares against the already optimized main commit `b5cbecf99269a55ff74f92f053e656f78f6d0f93` (0.7.1). The measurements below are additional gains on the same cloud machine, not comparisons against the original simulation.
+
+## Simulation and persistence
+
+Three alternating baseline/candidate samples compare complete snapshots after every timed run. Setup, hashing, invariants and save/resume are outside the timed section. Node v24.19.0, Linux, Intel Xeon Platinum 8370C; simulation execution remains single-threaded.
+
+| Starting people / workload | 0.7.1 median | 0.7.2 median | Additional speedup |
+|---|---:|---:|---:|
+| 4 founders, 30 days | 51.1 ms | 47.2 ms | 1.08× |
+| 250, constructed city, 3 days | 101.8 ms | 79.2 ms | 1.29× |
+| 1,000, constructed city, 3 days | 515.1 ms | 378.9 ms | 1.36× |
+| 2,000, constructed city, 3 days | 1,307.5 ms | 816.8 ms | 1.60× |
+| 2,000, constructed city, 15 days | 7,444.2 ms | 4,952.2 ms | 1.50× |
+| 2,000, constructed winter, 15 days | 8,986.9 ms | 5,087.3 ms | 1.77× |
+
+These final runner results include exact save/resume checks between samples, outside timing. A separate advance-only paired run measured 1.59×/1.85× for the 1,000/2,000-person three-day cases and 2.14× for winter. Repeated runs therefore show approximately 1.4–1.9× on the large three-day workloads, with timing and garbage-collection variability; no single multiplier applies to every world.
+
+The winter case explicitly starts on day 270 with planet temperature −15°C. These are constructed scale workloads; they do not establish natural city growth or guarantee throughput on other machines. Social contact selection uses a bounded 32-query, tick-local ordered bitset cache with incremental movement updates. It retains resident order, group preference, the existing same-tick death behavior and RNG consumption. Winter clothing delivery takes one resident snapshot instead of repeatedly rebuilding it for every person. All derived indexes stay out of saves.
+
+The server retains the committed snapshot JSON for HTTP responses and serializes state once per durable commit. Complete localhost HTTP reads, including body transfer, measure 3.2–3.5× faster at 240/2,000 people across two paired runs; eight SQLite WAL/FULL commits measure 1.4–2.0× faster. The final run measures reads at 550.6→157.1 ms / 836.1→254.4 ms and commits at 523.5→368.0 ms / 899.2→471.7 ms, respectively. These timings exclude simulation stepping, fixture setup and client validation. Historical checkpoint bytes, authentication, command revisions and response JSON remain preserved. The browser still validates received snapshots, but unchanged paused polls retain the current simulation and renderer instead of rebuilding them.
+
+Storage regressions also fixed two failure paths: a rejected `BEGIN IMMEDIATE` restores the last committed simulation, and recovery from an older checkpoint advances the authoritative revision. Recovery retains the historical checkpoint rows, pauses the world and clears its elapsed backlog. Clients therefore observe recovery as a new world state.
+
+## Rendering and verification
+
+A settled settlement camera retains one transparent, device-resolution terrain raster of at most eight million pixels (about 32 MB of RGBA storage). Moving cameras draw terrain directly. Camera, viewport/DPR, terrain replacement, map layer, settlement and world replacement invalidate the cache; world view and oversized viewports release it. Roads use native cached paths and viewport culling, while ocean motion, people, crops, roads, weather and lighting remain live. Hit lookup no longer copies/reverses the hit list.
+
+Rendering results vary by view and run. An isolated paced run improved about 1.25× in three views, with a fourth 1.69× result affected by a baseline outlier. The final production acceptance repeat measured 1,000-person views at 46.2→49.3 and 43.4→44.1 ms per frame (flat to slightly slower), while 2,000-person views improved 59.4→53.1 and 55.9→45.1 ms (1.12–1.24×). Both use 48 animation frames after ten warm-ups. Final median CPU draw submissions fell from 19.8–25.2 ms to 4.2–9.1 ms, freeing main-thread time, but deferred canvas/GPU work limits presentation throughput. Across these runs, tight batches including a synchronous flush ranged from 0.95× to 1.51×. Raw submission medians alone are not a valid overall speedup claim. Panning and cold/rebuild frames do not receive the settled-camera benefit. These paused, software-Chromium measurements do not establish end-to-end simulation FPS.
+
+All 121 Node tests pass, including ordered contact/RNG/movement cases and five server serialization, legacy load, rollback, lock and recovery tests. Strict PANGEA lint, TypeScript, production and offline builds pass. Complete baseline snapshots, invariants and save/resume remain exact in all 36 measured simulation samples and seven additional natural, legacy-generation, migrated-save and scarcity continuations. Final standalone SHA-256: `1fabbe93c35bbb4def5ea11727c67ed6775317413357e557462b768d3355ceeb`.
+
+The final production build passes 67 browser acceptance checks: 30 general, eight evolution, nine camera, six IndexedDB, ten server and four offline-export checks. The added server check observes a real paused poll and verifies that it retains the loaded simulation object and tick. Desktop and phone production screenshots were visually inspected.
+
+The paced comparison/idle harness also passes all four checks: both implementations leave simulation state unchanged; the four views preserve complete hit geometry/order within the explicit pixel bounds; paused inspector queries stay at zero and resume after advancing.
+
+The separate renderer regression passes 32 desktop/phone views with exact complete hit geometry/order, sampled picks and unchanged simulation state. Moving-camera, world and oversized fallback frames are pixel exact. Cached alpha compositing introduces small rounding differences: maximum 7/255 per channel; the worst fractional camera changes 0.905% of pixels, mostly by at most 2/255, with RMS 0.063/255. The four fixed performance views match exactly in three cases; the remaining view changes 0.0043% of pixels, maximum 6/255. Desktop and phone screenshots were visually inspected. No art, world rules or save format changed.
+
+## Reproduce this follow-up
+
+Run from `pangea-isometric/`; generated reports and screenshots default to temporary directories.
+
+```sh
+mkdir -p /tmp/pangaea-071-baseline
+git -C .. archive b5cbecf99269a55ff74f92f053e656f78f6d0f93:pangea-isometric | tar -x -C /tmp/pangaea-071-baseline
+npm test
+npm run lint:pangea
+npx tsc --noEmit
+npm run build
+npm run build:standalone
+npm run benchmark:optimization -- --baseline /tmp/pangaea-071-baseline --seasonal --out /tmp/pangaea-072-simulation.json
+npm run benchmark:server -- --baseline /tmp/pangaea-071-baseline --out /tmp/pangaea-072-server.json
+npm run test:renderer:browser -- --baseline /tmp/pangaea-071-baseline
+# Optional production UI/idle check with a running frontend:
+npm run test:optimization-browser -- --baseline /tmp/pangaea-071-baseline --max-channel-delta 8 --max-changed-pixel-ratio 0.0001 --url http://127.0.0.1:3010/
+```
+
+The renderer regression runner compares desktop and DPR-2 phone views, complete hit geometry/order and actual picks. It also checks camera changes, terrain layers, navigation changes, reset, live ocean motion, lighting/weather and world-view cache release. Chromium is the tested engine; physical devices and other engines remain unverified.
+
+## Historical 0.7.1 results
 
 23 October 2026. This patch optimizes the active isometric app against main commit `9d37e49104201fd53a135db8f0b0b579bfc5a4e8`. It preserves the newer terrain, architecture, activity, camera, persistence and identity work. The earlier Canvas app also has an independently verified optimization patch under `PANGAEA_Project_Full/`; its drawing measurements describe that renderer only.
 
@@ -43,7 +103,7 @@ From `pangea-isometric/`, archive the baseline without replacing the checkout:
 
 ```sh
 mkdir -p /tmp/pangaea-isometric-opt-baseline
-git archive 9d37e49104201fd53a135db8f0b0b579bfc5a4e8:pangea-isometric | tar -x -C /tmp/pangaea-isometric-opt-baseline
+git -C .. archive 9d37e49104201fd53a135db8f0b0b579bfc5a4e8:pangea-isometric | tar -x -C /tmp/pangaea-isometric-opt-baseline
 npm ci
 npm test
 npm run lint:pangea

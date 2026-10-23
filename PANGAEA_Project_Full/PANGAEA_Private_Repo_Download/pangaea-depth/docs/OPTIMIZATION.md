@@ -44,7 +44,7 @@ From the application directory, archive the baseline without replacing the check
 
 ```sh
 mkdir -p /tmp/pangaea-opt-baseline
-git archive bd967b422bba2466e1e27e2f52c51bd36a7110eb:PANGAEA_Project_Full/PANGAEA_Private_Repo_Download/pangaea-depth | tar -x -C /tmp/pangaea-opt-baseline
+git -C ../../.. archive bd967b422bba2466e1e27e2f52c51bd36a7110eb:PANGAEA_Project_Full/PANGAEA_Private_Repo_Download/pangaea-depth | tar -x -C /tmp/pangaea-opt-baseline
 node /tmp/pangaea-opt-baseline/build.mjs
 npm run build
 npm test
