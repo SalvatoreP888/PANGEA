@@ -1,0 +1,5 @@
+
+> pangea-isometric@0.7.1 build:standalone
+> node scripts/build-standalone.mjs
+
+Built self-contained PANGEA: /workspace/PANGEA/pangea-isometric/dist/PANGEA.html (4.2 MB)

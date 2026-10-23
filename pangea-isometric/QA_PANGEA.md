@@ -1,4 +1,8 @@
-# PANGEA 0.7 verification — October 23, 2026
+# PANGEA verification
+
+The 0.7.1 optimization follow-up passes 115 Node tests, strict lint, TypeScript, production and standalone builds. Current performance, parity and browser evidence is documented in [OPTIMIZATION.md](docs/OPTIMIZATION.md). The 0.7 release results below remain historical evidence for the six-track evolution.
+
+## PANGEA 0.7 — October 23, 2026
 
 The six-track evolution passes 105 automated Node tests, the production Next.js build, whole-repository TypeScript checks and strict PANGEA lint. Original simulation regressions remain included. Historical `PANGAEA_Project_Full/` files are unchanged.
 

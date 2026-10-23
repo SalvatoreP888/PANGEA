@@ -1,0 +1,181 @@
+{
+  "measuredAt": "2026-10-23T14:16:12.518Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+  "availableParallelism": 4,
+  "buildSha256": null,
+  "sourceSha256": "47f0c2ae1824a6d75d5f1f6d83ed201307995ed62262135e7972f8229894b620",
+  "baseline": {
+    "sourceSha256": "718f16d4db3b7acac2c07f5f8f3bc86f14de5f917beaf526e9f94ed97f57d246",
+    "buildSha256": null,
+    "gitRevision": "9d37e49104201fd53a135db8f0b0b579bfc5a4e8"
+  },
+  "method": "Three samples per implementation, alternating baseline/candidate order in one process after warm-up. Complete snapshot SHA-256 equality, invariant and exact save/resume checks are outside the timed section.",
+  "measurements": [
+    {
+      "kind": "natural four-founder opening",
+      "population": 4,
+      "days": 30,
+      "ticks": 120,
+      "baselineMs": [
+        62.436819000000014,
+        51.68338300000005,
+        29.69525500000009
+      ],
+      "candidateMs": [
+        60.175400999999965,
+        31.703435000000127,
+        24.587638000000425
+      ],
+      "candidateMedianMs": 31.703435000000127,
+      "snapshotSha256": "759aaacff8c020c1d85a5009804cac4e4372ae64bfa8b503e2e2511c39509329",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 51.68338300000005,
+      "speedup": 1.630213981544897,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 250,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        161.0640830000002,
+        176.5697650000002,
+        147.16238499999963
+      ],
+      "candidateMs": [
+        87.77850999999964,
+        76.17286400000012,
+        75.75411799999983
+      ],
+      "candidateMedianMs": 76.17286400000012,
+      "snapshotSha256": "8a1e7dfc19ae3d72d45f4ffb7817acdd0dedfa0e7dbb7ad1d76afb1a96c69b39",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 161.0640830000002,
+      "speedup": 2.1144548667620002,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 1000,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        879.2883849999998,
+        849.5079830000013,
+        910.9364490000007
+      ],
+      "candidateMs": [
+        521.0482580000007,
+        475.4214400000001,
+        506.92786299999716
+      ],
+      "candidateMedianMs": 506.92786299999716,
+      "snapshotSha256": "a101a7fb8cd75fe4a71c20a9e655855a2c47ddeec4564a0b7664882045a41beb",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 879.2883849999998,
+      "speedup": 1.7345434117516731,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 2000,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        2249.0393860000004,
+        2176.0620740000013,
+        2007.678939999998
+      ],
+      "candidateMs": [
+        1300.5989910000026,
+        1330.2048579999973,
+        1199.7502709999972
+      ],
+      "candidateMedianMs": 1300.5989910000026,
+      "snapshotSha256": "b12ecd48872fa169dfa3c40bb7d0d5466b58c58bfdffbfd4ebea8360d282084f",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 2176.0620740000013,
+      "speedup": 1.673122991066504,
+      "exactBaselineSnapshot": true
+    }
+  ],
+  "parity": [
+    {
+      "name": "natural seed 481217, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "e25560733829a2ee363b51fbcaade9a46145885d3e9920d6fccd87e585167cb5",
+      "living": 5,
+      "deaths": 0
+    },
+    {
+      "name": "natural seed 17, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "06213fb058bb8fcb0f84d0f41d037cb28b29a952c27a5fd5a29b41e492cce77a",
+      "living": 6,
+      "deaths": 0
+    },
+    {
+      "name": "natural seed 9901, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "b6c69cde98ff767b9a711bdec5a30a6970cbc746c2da2d82215c8723210b88cc",
+      "living": 5,
+      "deaths": 0
+    },
+    {
+      "name": "Explicit generation 1 natural opening",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "36cba16182405db47a091a626986f4ff818952811855e325fa14a6272be8de2c",
+      "living": 6,
+      "deaths": 0
+    },
+    {
+      "name": "Legacy v2 40-year save migration",
+      "days": 45,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "71487f53f601fe4394824e1b4b1b57e75f69e70811f124ed9ac7d43d9bc3008e",
+      "living": 29,
+      "deaths": 0
+    },
+    {
+      "name": "Cities century save migration",
+      "days": 15,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "bf96cf5b877c70701be90424bf988f7636d4e3f071dd9ad06f03e80dea91a31f",
+      "living": 310,
+      "deaths": 15
+    },
+    {
+      "name": "Constructed scarcity, illness, interrupted work, death and paving",
+      "days": 10,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "0419b84957a26ee5d360a52ff5e9c89125c3c6e9aa4588c939015bcbdfecb103",
+      "living": 243,
+      "deaths": 7
+    }
+  ]
+}

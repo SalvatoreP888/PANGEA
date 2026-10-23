@@ -56,8 +56,11 @@ export class WorldRenderer {
     this.transition={snapshot,from:this.mode,to:mode,start:performance.now(),duration:1000,anchor:townPoint};this.mode=mode;
   }
   draw(time){
-    const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);this.hits=[];
+    const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);this.hits=[];this.personHits=[];
     if(this.mode==='globe')this.drawGlobe(time);else this.drawTown(time);
+    // People retain reverse draw priority without repeated O(n) array prepends.
+    if(this.personHits.length)this.hits=this.personHits.reverse().concat(this.hits);
+    this.personHits=null;this.frameTown=null;this.frameResidents=null;
     if(this.transition){
       const t=this.transition,p=clamp((performance.now()-t.start)/t.duration,0,1),ease=p*p*(3-2*p);
       if(p>=1){this.transition=null;return;}
@@ -180,6 +183,7 @@ export class WorldRenderer {
   }
   drawTown(time){
     const c=this.ctx,t=this.town,W=this.width,H=this.height,z=this.camera.zoom;c.fillStyle='#122d37';c.fillRect(0,0,W,H);
+    const residents=this.sim.residents(t);this.frameTown=t;this.frameResidents=residents;
     c.save();c.translate(W/2,H/2);c.scale(z,z);c.translate(-this.camera.x,-this.camera.y);c.imageSmoothingEnabled=false;c.drawImage(this.baseTerrain(t),0,0);
     const bounds={x0:Math.floor((this.camera.x-W/2/z)/TILE)-4,x1:Math.ceil((this.camera.x+W/2/z)/TILE)+4,y0:Math.floor((this.camera.y-H/2/z)/TILE)-4,y1:Math.ceil((this.camera.y+H/2/z)/TILE)+4};
     this.drawStreets(t,bounds);
@@ -187,7 +191,7 @@ export class WorldRenderer {
     const objects=[];
     for(const n of t.land.nodes)if(n.x>=bounds.x0&&n.x<=bounds.x1&&n.y>=bounds.y0&&n.y<=bounds.y1)objects.push({y:n.y,kind:'node',item:n});
     for(const b of t.buildings)if(b.x>=bounds.x0-4&&b.x<=bounds.x1+4&&b.y>=bounds.y0-4&&b.y<=bounds.y1+4)objects.push({y:b.y+1,kind:'building',item:b});
-    for(const p of this.sim.residents(t))if(p.x>=bounds.x0&&p.x<=bounds.x1&&p.y>=bounds.y0&&p.y<=bounds.y1)objects.push({y:p.y+.5,kind:'person',item:p});
+    for(const p of residents)if(p.x>=bounds.x0&&p.x<=bounds.x1&&p.y>=bounds.y0&&p.y<=bounds.y1)objects.push({y:p.y+.5,kind:'person',item:p});
     objects.sort((a,b)=>a.y-b.y);
     for(const o of objects){if(o.kind==='node')this.drawNode(o.item,time);else if(o.kind==='building')this.drawBuilding(o.item,time);else this.drawPerson(o.item,time);}
     if(this.selected?.kind==='person'){
@@ -281,7 +285,7 @@ export class WorldRenderer {
     c.strokeStyle='#554d443a';c.lineWidth=.6;for(let yy=roof+2;yy<roof+10;yy+=3){c.beginPath();c.moveTo(px+1,yy);c.lineTo(px+w-1,yy);c.stroke();}
     if(industry){c.fillStyle='#746e61';c.fillRect(px+w-8,roof-9,4,14);this.smoke(px+w-6,roof-10,time,b.id);c.fillStyle='#8b8062';c.fillRect(px-3,py+h-3,6,4);}
     if(b.type==='mill'){
-      c.save();c.translate(px+w/2,roof+6);c.strokeStyle='#d6ccac';c.lineWidth=2;const turning=this.sim.residents(this.town).some(p=>p.task?.kind==='mill');c.rotate(turning?this.sim.state.tick*.07:.4);for(let j=0;j<4;j++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(0,-12);c.stroke();c.fillStyle='#b8b79a';c.fillRect(-3,-12,3,8);}c.restore();
+      c.save();c.translate(px+w/2,roof+6);c.strokeStyle='#d6ccac';c.lineWidth=2;const turning=(this.frameTown===this.town?this.frameResidents:this.sim.residents(this.town)).some(p=>p.task?.kind==='mill');c.rotate(turning?this.sim.state.tick*.07:.4);for(let j=0;j<4;j++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(0,-12);c.stroke();c.fillStyle='#b8b79a';c.fillRect(-3,-12,3,8);}c.restore();
     }
     if(b.type==='fishery'){c.fillStyle='#8e7957';c.fillRect(px-2,py+h,w+4,5);c.strokeStyle='#bbac80';c.lineWidth=.6;for(let j=2;j<w;j+=4){c.beginPath();c.moveTo(px+j,py+h);c.lineTo(px+j,py+h+5);c.stroke();}c.fillStyle='#476e70';c.beginPath();c.ellipse(px+w-3,py+h+8,8,3,-.15,0,TAU);c.fill();}
     if(b.type==='station'){
@@ -306,8 +310,8 @@ export class WorldRenderer {
     if(p.sick){c.fillStyle='#cad2a0';c.fillRect(6,-25,3,3);}
     c.restore();
     if(selected){c.strokeStyle='#ffe2a0';c.lineWidth=1; c.beginPath();c.ellipse(x,y+1,6,3,0,0,TAU);c.stroke();}
-    if(this.labels&&(selected||this.camera.zoom>1.45&&this.sim.residents(this.town).length<80)){c.font=`${selected?'600 ':''}10px system-ui`;c.textAlign='center';const w=c.measureText(p.name).width;c.fillStyle='#19382ec9';c.fillRect(x-w/2-4,y-20,w+8,14);c.fillStyle=selected?'#fff1c8':'#e4e5d1';c.fillText(p.name,x,y-10);c.textAlign='left';}
-    const pt=this.screen(p.x,p.y);this.hits.unshift({x:pt.x,y:pt.y-3*this.camera.zoom,r:Math.max(3,4*this.camera.zoom),kind:'person',id:p.id});
+    if(this.labels&&(selected||this.camera.zoom>1.45&&(this.frameTown===this.town?this.frameResidents:this.sim.residents(this.town)).length<80)){c.font=`${selected?'600 ':''}10px system-ui`;c.textAlign='center';const w=c.measureText(p.name).width;c.fillStyle='#19382ec9';c.fillRect(x-w/2-4,y-20,w+8,14);c.fillStyle=selected?'#fff1c8':'#e4e5d1';c.fillText(p.name,x,y-10);c.textAlign='left';}
+    const pt=this.screen(p.x,p.y),hit={x:pt.x,y:pt.y-3*this.camera.zoom,r:Math.max(3,4*this.camera.zoom),kind:'person',id:p.id};if(this.personHits)this.personHits.push(hit);else this.hits.unshift(hit);
   }
   hit(x,y){return this.hits.find(h=>Math.hypot(h.x-x,h.y-y)<=h.r)||null;}
   pan(dx,dy){if(this.mode==='globe'){this.orbit.lon-=dx/this.width*4;this.orbit.lat=clamp(this.orbit.lat+dy/this.height*2.5,-1.3,1.3);this.dirty=true;}else{this.camera.x=clamp(this.camera.x-dx/this.camera.zoom,0,GRID_W*TILE);this.camera.y=clamp(this.camera.y-dy/this.camera.zoom,0,GRID_H*TILE);}}

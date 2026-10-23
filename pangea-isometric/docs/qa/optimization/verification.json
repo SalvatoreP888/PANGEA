@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-23",
+  "version": "0.7.1",
+  "baselineRevision": "9d37e49104201fd53a135db8f0b0b579bfc5a4e8",
+  "simulationSourceSha256": "47f0c2ae1824a6d75d5f1f6d83ed201307995ed62262135e7972f8229894b620",
+  "standaloneSha256": "388977799024f5af71f6aefe57b6a4e7da1c18c29410788f067799b7c1f420fb",
+  "files": {
+    "src/pangea/renderer.ts": "6e0156502cd7471d3195cdea01be80e01e10f25d31b572fa9b31d3cc054fb137",
+    "src/pangea/components/Pangea.tsx": "db7ab3f2ff63995b0605ab1d63735a94270974251412058839e06cb98188ecdc",
+    "src/pangea/persistence/remote.mjs": "eb0685d166859ea6d49de0a6265502f4e957d97a06f53d34247bfe3705fb77bf",
+    "src/pangea/persistence/remote-queue.mjs": "562d23e6bcfd326df89e97b901a8f12d823cded61d03daf6771039b30436c4ca",
+    "server/app.mjs": "87ce0b25e0498ee3be8fbeb335a507c38a07cd22a1042afd322418048b4f3c9f",
+    "server/store.mjs": "8e748474d8e4dd4d5db02ba431ea680236486e4fd417bf209fb7a3974c214961",
+    "package-lock.json": "4c2d7c1ed6e65a7ecccf582a2e13c0638144864310a19b9cfe3936e1ffbe9440"
+  },
+  "checks": {
+    "unitPassed": 115,
+    "unitFailed": 0,
+    "unitSkipped": 0,
+    "lint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "standaloneBuild": "passed",
+    "browser": {
+      "general": 30,
+      "evolution": 8,
+      "camera": 9,
+      "indexeddb": 6,
+      "server": 9,
+      "standalone": 4
+    },
+    "browserTotal": 66,
+    "renderAndIdle": 4
+  },
+  "exactBaselineMeasuredPopulations": [
+    4,
+    250,
+    1000,
+    2000
+  ],
+  "exactExtraContinuationCases": 7,
+  "identicalIsometricPixelAndHitViews": 4,
+  "independentReview": {
+    "blockers": [],
+    "controlClockCommitsCrossed": 4,
+    "staleResumeAfterImport": "409 once; imported world remains paused, revision unchanged"
+  },
+  "screenshotsVisuallyInspected": [
+    "final desktop settlement1536x1024",
+    "final mobile settlement390x844",
+    "constructed2000-person close city",
+    "desktop world/identity"
+  ],
+  "artifactsOutsideCheckout": "/tmp/pangaea-optimization/",
+  "limits": [
+    "Single-thread simulation; no all-core execution",
+    "Cloud observations, not hardware-independent guarantees",
+    "Constructed city workloads do not establish natural metropolitan growth",
+    "Isometric canvas draw times roughly unchanged; no sustained FPS claim",
+    "Chromium only; no Safari/Firefox or physical devices",
+    "No deployed preview or persistent server updated"
+  ]
+}

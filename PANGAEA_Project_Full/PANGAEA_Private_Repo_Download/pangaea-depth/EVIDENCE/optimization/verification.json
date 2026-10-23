@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-23",
+  "version": "0.5.1",
+  "baselineRevision": "bd967b422bba2466e1e27e2f52c51bd36a7110eb",
+  "buildSha256": "231db236f65ef0a3790fce5f83af2de4661a3923ce9eaf2d8be9bb2bf4b14009",
+  "sourceSha256": "a9e358f6ec495b6e7b7dff14ae39ebb0f4b050567eb0664aecf3badc749c0012",
+  "unit": {
+    "passed": 61,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "components": {
+      "original": 19,
+      "cities": 14,
+      "realms": 14,
+      "production": 8
+    },
+    "passed": 55,
+    "pageErrors": [],
+    "optimizationChecks": 6,
+    "engine": "154.0.8037.57"
+  },
+  "exactBaselineMeasuredPopulations": [
+    4,
+    250,
+    1000,
+    2000
+  ],
+  "exactAdditionalContinuationCases": 7,
+  "renderViewsWithIdenticalPixelsAndHitPriority": 4,
+  "screenshotsVisuallyInspected": [
+    "desktop supply 1600x1000",
+    "mobile supply 390x844",
+    "2000-person city close view"
+  ],
+  "screenshotDirectory": "/tmp/pangaea-optimization/final-browser",
+  "independentReview": {
+    "routeComparisons": 1200,
+    "orderedSocialPoolComparisons": 143,
+    "patientComparisons": 1000,
+    "blockers": []
+  },
+  "scopeLimits": [
+    "Cloud CPU timings; no hardware-independent guarantee",
+    "Canvas draw submission timings, not sustained FPS",
+    "Overview drawing roughly unchanged",
+    "Simulation remains single-threaded",
+    "Constructed workloads do not establish natural metropolitan growth",
+    "Chromium only; no Safari/Firefox or physical touch hardware"
+  ]
+}

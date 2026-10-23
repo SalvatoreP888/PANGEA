@@ -1,6 +1,6 @@
 # PANGAEA — Many Peoples, One World
 
-**Realms 0.5** is an autonomous fantasy settlement simulation: human, elf, dwarf and orc founders build a shared village that can grow into a connected industrial civilization. People are persistent individuals with needs, work, families, memories and mixed heritage.
+**Realms 0.5.1** is an autonomous fantasy settlement simulation: human, elf, dwarf and orc founders build a shared village that can grow into a connected industrial civilization. People are persistent individuals with needs, work, families, memories and mixed heritage.
 
 ## Run
 
@@ -43,13 +43,15 @@ Fresh natural example: import `saves/logistics-seed-481217-after-30-years.json`.
 ## Verify
 
 ```sh
-npm test                         # 56 simulation/city/economy/climate regressions
+npm test                         # 61 simulation/city/economy/climate regressions
 npm run test:browser              # Python Playwright + /usr/bin/chromium
 npm run benchmark                # synthetic scale checks and exact save/resume
 npm run scenarios -- 481217 30    # natural run; optional --save writes a separate fixture
 node tests/production-scenarios.mjs # three natural 30-year runs, separate current fixture
+npm run benchmark:optimization   # repeatable scale timings and exact save/resume
+npm run test:optimization-browser # render/inspector checks; artifacts under /tmp
 ```
 
-[Fresh verification](docs/LOGISTICS_QA.md) · [Nine-game research and next work](docs/DEEP_RESEARCH.md) · [Earlier Realms changes](docs/REALMS_CHANGES.md) · [Architecture](docs/ARCHITECTURE.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+[Performance and current verification](docs/OPTIMIZATION.md) · [Physical logistics verification](docs/LOGISTICS_QA.md) · [Nine-game research and next work](docs/DEEP_RESEARCH.md) · [Earlier Realms changes](docs/REALMS_CHANGES.md) · [Architecture](docs/ARCHITECTURE.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 The old scenario runners can overwrite preserved v0.2 fixtures; use the city/production runners for new runs. Renderer and simulation performance are measured separately. District warehouses, storage filters/capacity, permanent hauling crews, vehicle ownership and worker-thread execution remain future work. Basic hearth cooking and primitive toolmaking retain communal-input production; the eight industrial recipes use physical buffers and hauling.

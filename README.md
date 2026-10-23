@@ -2,6 +2,8 @@
 
 PANGEA is an autonomous civilization simulation with an isometric world and individual city views. The active playable application is in **[pangea-isometric](pangea-isometric/README.md)**, built on a clone of [IsoCity](https://github.com/amilich/isometric-city) and connected to the existing PANGAEA Realms 0.5 simulation.
 
+The 0.7.1 optimization patch makes the measured constructed-city simulation about 1.7–2.1× faster, preserves exact world outcomes and city pixels, and skips idle inspector work. [Performance results and reproduction](pangea-isometric/docs/OPTIMIZATION.md) cover the active app; the earlier Canvas project retains its separate optimization evidence.
+
 ![PANGEA settlement view](pangea-isometric/docs/screenshots/settlement.png)
 
 Fresh launches and new worlds generate random seeds. Enter an optional seed to recreate the same starting geography; saved games preserve their seed, terrain, people and settlements. Each settlement opens its own city with real streets, residents, construction, resources, research and production.

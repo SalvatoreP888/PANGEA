@@ -118,28 +118,42 @@ export function walkable(town,x,y) {
   return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<GRID_W&&y<GRID_H&&!navigation(town).blocked[y*GRID_W+x];
 }
 export function entrance(b) {const f=footprint(b);return {x:b.x,y:f.y0+f.h};}
+// Scratch state belongs to the local map, never a save or a returned route.
+// Searches are synchronous; each result owns its point objects.
+const pathScratch=new WeakMap(),PATH_DX=[1,-1,0,0],PATH_DY=[0,0,1,-1],PATH_CACHE_LIMIT=512;
 /** Four-neighbour A*: no corner cutting, no water crossing; foot traffic lowers cost. */
 export function findPath(town, ax, ay, bx, by) {
   const sx = Math.round(ax), sy = Math.round(ay), tx = Math.round(bx), ty = Math.round(by);
   if (!walkable(town, tx, ty)) return null;
   const start = sy * GRID_W + sx, goal = ty * GRID_W + tx;
   if (start === goal) return [];
-  const g = new Float32Array(GRID_W * GRID_H); g.fill(Infinity); g[start] = 0;
-  const parent = new Int32Array(g.length); parent.fill(-1); const closed = new Uint8Array(g.length), open = new FlatQueue();
+  let scratch=pathScratch.get(town);
+  if(!scratch){const size=GRID_W*GRID_H;scratch={g:new Float32Array(size),parent:new Int32Array(size),closed:new Uint8Array(size),open:new FlatQueue(),routes:new Map()};pathScratch.set(town,scratch);}
+  const {g,parent,closed,open,routes}=scratch,blocked=navigation(town).blocked,tiles=town.land.tiles,streets=town.land.streets;
+  if(scratch.blocked!==blocked||scratch.tiles!==tiles||scratch.streets!==streets){routes.clear();scratch.blocked=blocked;scratch.tiles=tiles;scratch.streets=streets;}
+  const routeKey=start*(GRID_W*GRID_H)+goal;
+  if(routes.has(routeKey)){
+    const route=routes.get(routeKey);routes.delete(routeKey);routes.set(routeKey,route);
+    return route===null?null:Array.from(route,id=>({x:id%GRID_W,y:Math.floor(id/GRID_W)}));
+  }
+  const rememberRoute=path=>{routes.set(routeKey,path===null?null:Uint16Array.from(path,p=>p.y*GRID_W+p.x));if(routes.size>PATH_CACHE_LIMIT)routes.delete(routes.keys().next().value);return path;};
+  g.fill(Infinity);g[start]=0;parent.fill(-1);closed.fill(0);open.clear();
   open.push(start, 0); let count = 0;
   while (open.length && count++ < 6000) {
     const id = open.pop(); if (closed[id]) continue; closed[id] = 1;
-    if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return path.reverse(); }
+    if (id === goal) { const path = []; let j = goal; while (j !== start) { path.push({ x: j % GRID_W, y: Math.floor(j / GRID_W) }); j = parent[j]; if (j < 0) return null; } return rememberRoute(path.reverse()); }
     const x = id % GRID_W, y = Math.floor(id / GRID_W);
-    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
-      if (!walkable(town, nx, ny)) continue;
-      const ni = ny * GRID_W + nx, tile = town.land.tiles[ni];
-      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, (town.land.streets?.[ni]||0) * .08);
+    for (let direction=0;direction<4;direction++) {
+      const nx=x+PATH_DX[direction],ny=y+PATH_DY[direction];
+      if(nx<0||ny<0||nx>=GRID_W||ny>=GRID_H)continue;
+      const ni=ny*GRID_W+nx;if(blocked[ni])continue;
+      const tile=tiles[ni];
+      const cost = (tile.type === 'ford' ? 1.8 : tile.type === 'rock' ? 1.25 : 1) - Math.min(.25, (streets?.[ni]||0) * .08);
       const value = g[id] + cost;
       if (value < g[ni]) { g[ni] = value; parent[ni] = id; open.push(ni, value + .75 * (Math.abs(tx - nx) + Math.abs(ty - ny))); }
     }
   }
-  return null;
+  return rememberRoute(null);
 }
 /** Migration routes stay on a coarse land grid; detailed local maps are separate views. */
 export function globalRoute(seed, from, to) {

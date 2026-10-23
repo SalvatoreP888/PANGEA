@@ -1,0 +1,48 @@
+{
+  "checks": [
+    "Fresh launches generate different random worlds",
+    "Three settlements and 240 actual individuals boot with valid simulation state",
+    "Constructed preview is explicitly labelled",
+    "World-to-city action opens the selected live settlement",
+    "Canvas building hit testing opens the authoritative structure inspector",
+    "Resident inspector exposes live needs, decision, memory and skills",
+    "All 36 real discoveries are inspectable",
+    "Supply inspector shows real inventories and transport counts",
+    "Chronicle shows only actual settlement events or an honest empty state",
+    "World map settlement labels select the matching live city",
+    "Each settlement opens its own seeded terrain, population and buildings",
+    "Pointer pan, wheel zoom and recenter change the camera",
+    "Natural, fertility and resource overlays respond",
+    "Map label toggle responds",
+    "Playback advances real simulation ticks; pause freezes them",
+    "Speed control changes the simulation rate",
+    "Portable JSON export contains the authoritative state",
+    "Settings trap keyboard focus, close with Escape and restore focus",
+    "Browser save restores exact simulation time",
+    "Portable import restores the exported world",
+    "Save import retains the original world seed",
+    "Malformed import is rejected without replacing the current world",
+    "Natural new worlds start with four individual founders and one settlement",
+    "Each automatic new world changes its seed and generated terrain",
+    "An explicit seed reproduces the same initial world exactly",
+    "Laptop viewport has no horizontal overflow",
+    "The original IsoCity game remains available at /isocity",
+    "Phone layout protects the playfield and supports entering and inspecting a city",
+    "Reduced-motion mode and mobile layout preserve all primary controls",
+    "No JavaScript errors, failed HTTP assets or external requests in PANGEA"
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "externalRequests": [],
+  "viewports": [
+    "1536 \u00d7 1024",
+    "1280 \u00d7 800",
+    "390 \u00d7 844"
+  ],
+  "renderMilliseconds": {
+    "median": 12.65,
+    "maxSample": 21.3,
+    "context": "240-person constructed world; one selected settlement; headless software Chromium"
+  },
+  "browser": "154.0.8037.57"
+}

@@ -2,6 +2,8 @@
 
 An isometric world of autonomous settlements, built on [IsoCity](https://github.com/amilich/isometric-city) and the existing PANGAEA civilization simulation.
 
+**0.7.1** improves measured constructed-city simulation throughput by about 1.7–2.1× with identical world states, saves, pixels and click targets in tested cases. Paused worlds skip periodic React inspector work; roads reuse their projected geometry. [Optimization results and reproduction](docs/OPTIMIZATION.md) document the measured workloads and limits.
+
 ## Run
 
 Node.js **24.15 or later**:
@@ -30,6 +32,8 @@ Browser checks use Python Playwright and Chromium against a running production s
 PANGEA_URL=http://127.0.0.1:3002/ npm run test:browser
 PANGEA_URL=http://127.0.0.1:3002/ npm run test:evolution
 ```
+
+`npm run benchmark:optimization` runs isolated scale and exact save/resume checks. Add `-- --baseline /path/to/archived/app --out /tmp/benchmark.json` for a paired comparison and natural/migration/stress continuations. The optional `test:optimization-browser` runner compares isometric pixels/hit geometry to the archived app and checks the paused production inspector; see the performance document for its arguments.
 
 ## The six improvements
 

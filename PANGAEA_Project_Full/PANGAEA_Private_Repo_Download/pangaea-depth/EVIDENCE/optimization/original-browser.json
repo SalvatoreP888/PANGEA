@@ -1,0 +1,88 @@
+{
+  "checks": [
+    {
+      "name": "Boot with four founders and no external requests",
+      "pass": true
+    },
+    {
+      "name": "Pause freezes simulation",
+      "pass": true
+    },
+    {
+      "name": "Space resumes and pauses",
+      "pass": true
+    },
+    {
+      "name": "View buttons and G/C shortcuts",
+      "pass": true
+    },
+    {
+      "name": "40-year checkpoint restores 29 people in four settlements",
+      "pass": true
+    },
+    {
+      "name": "Person selection displays needs, utility scores, memories and family",
+      "pass": true
+    },
+    {
+      "name": "Knowledge inspector",
+      "pass": true
+    },
+    {
+      "name": "Chronicle inspector",
+      "pass": true
+    },
+    {
+      "name": "Fertility/resource/activity layer toggle",
+      "pass": true
+    },
+    {
+      "name": "Pointer drag and wheel change town camera",
+      "pass": true
+    },
+    {
+      "name": "A building on the canvas opens its live inspector",
+      "pass": true
+    },
+    {
+      "name": "Portable JSON download",
+      "pass": true
+    },
+    {
+      "name": "Portable JSON import round-trip",
+      "pass": true
+    },
+    {
+      "name": "Drought intervention changes authoritative weather",
+      "pass": true
+    },
+    {
+      "name": "Local-storage action reports success or unavailable-storage fallback, never crashes",
+      "pass": true
+    },
+    {
+      "name": "Help dialog opens and closes",
+      "pass": true
+    },
+    {
+      "name": "Desktop has no horizontal page overflow",
+      "pass": true
+    },
+    {
+      "name": "390px mobile canvas remains available and does not overflow",
+      "pass": true
+    },
+    {
+      "name": "Mobile observation sheet and person selection",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "networkRequests": [],
+  "limitations": [
+    "This baseline runner uses set_content. HTTP boot, file launching and localStorage are checked separately by the city browser runner.",
+    "Only Chromium was tested; Safari/Firefox and real touch hardware were not tested."
+  ],
+  "bootSeconds": 1.487,
+  "browserVersion": "154.0.8037.57"
+}

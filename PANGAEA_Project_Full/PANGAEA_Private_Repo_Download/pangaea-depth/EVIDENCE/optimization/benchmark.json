@@ -1,0 +1,181 @@
+{
+  "measuredAt": "2026-10-23T14:02:37.710Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+  "availableParallelism": 4,
+  "buildSha256": "231db236f65ef0a3790fce5f83af2de4661a3923ce9eaf2d8be9bb2bf4b14009",
+  "sourceSha256": "a9e358f6ec495b6e7b7dff14ae39ebb0f4b050567eb0664aecf3badc749c0012",
+  "baseline": {
+    "sourceSha256": "6f5ee258b75775ca667b658fbbcf32f5f7c9d4176600daf9b13cbad766d941e9",
+    "buildSha256": "32d491b2dcf25547b15b65280392ce054dbe80ae633e0e7759bc6ecce205ed15",
+    "gitRevision": "bd967b422bba2466e1e27e2f52c51bd36a7110eb"
+  },
+  "method": "Three samples per implementation, alternating baseline/candidate order in one process after warm-up. Complete snapshot SHA-256 equality, invariant and exact save/resume checks are outside the timed section.",
+  "measurements": [
+    {
+      "kind": "natural four-founder opening",
+      "population": 4,
+      "days": 30,
+      "ticks": 120,
+      "baselineMs": [
+        64.02833299999998,
+        56.20971200000008,
+        48.6269749999999
+      ],
+      "candidateMs": [
+        71.42168600000014,
+        41.02251700000011,
+        29.00578200000018
+      ],
+      "candidateMedianMs": 41.02251700000011,
+      "snapshotSha256": "66d69c6fdfc2a389a82a494df2a1c1ebf52617a8c32e10b0d4d7901b82b91d69",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 56.20971200000008,
+      "speedup": 1.370216069384527,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 250,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        238.49810200000002,
+        170.71014900000046,
+        148.5815900000007
+      ],
+      "candidateMs": [
+        113.28079899999966,
+        86.85397499999999,
+        86.93087199999991
+      ],
+      "candidateMedianMs": 86.93087199999991,
+      "snapshotSha256": "29106609882bc697271bac84cd742708f1af9b08b346c5b485ca6a2c54cdced1",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 170.71014900000046,
+      "speedup": 1.9637459635743748,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 1000,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        809.4118199999994,
+        930.2694919999994,
+        851.8750989999971
+      ],
+      "candidateMs": [
+        617.3529609999987,
+        543.2954310000005,
+        498.68239800000083
+      ],
+      "candidateMedianMs": 543.2954310000005,
+      "snapshotSha256": "f02c26c67ee82c0fe090848492cae780c440e91ebc477755c5bb38a0160eb227",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 851.8750989999971,
+      "speedup": 1.567977660758197,
+      "exactBaselineSnapshot": true
+    },
+    {
+      "kind": "constructed city",
+      "population": 2000,
+      "days": 3,
+      "ticks": 12,
+      "baselineMs": [
+        2269.4774660000003,
+        2545.7694300000003,
+        2249.5315409999967
+      ],
+      "candidateMs": [
+        1293.5531209999972,
+        1272.0813809999963,
+        1226.1163959999976
+      ],
+      "candidateMedianMs": 1272.0813809999963,
+      "snapshotSha256": "a81de7a84e15dcd7f9e1c1e76026298031078376ad3ef6f2562d1943d2151565",
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "baselineMedianMs": 2269.4774660000003,
+      "speedup": 1.7840662554277311,
+      "exactBaselineSnapshot": true
+    }
+  ],
+  "parity": [
+    {
+      "name": "natural seed 481217, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "6894b4d7ea6927b1302cd4fdda2ac481e6d9e0cb5499870d3beff3e21d9affed",
+      "living": 6,
+      "deaths": 0
+    },
+    {
+      "name": "natural seed 17, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "86f0b8f972e5a1a19d661e73fb87718c5f345ae744d88225cf463a1f53941a42",
+      "living": 6,
+      "deaths": 0
+    },
+    {
+      "name": "natural seed 9901, events enabled",
+      "days": 720,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "a8a4f550a2f1f9b5a8d0d50ad7a257f9ee06005923713637af84e94074b6fd2a",
+      "living": 6,
+      "deaths": 0
+    },
+    {
+      "name": "Realms 0.5 natural 30-year save",
+      "days": 180,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "d794b3f1f95b9ef9525031341e296b59e3af48593d69f2e0e7d208168b4b7f66",
+      "living": 23,
+      "deaths": 0
+    },
+    {
+      "name": "Legacy v2 40-year save migration",
+      "days": 45,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "a923df648c9aeb21bf2901ee8cf076d291794ee36499fa34734bdf0c90d0268a",
+      "living": 29,
+      "deaths": 0
+    },
+    {
+      "name": "Cities century save migration",
+      "days": 15,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "846e232850d5170f55442512a3211e8cc10a5f57e7727fef13f1de8b9eb20bd9",
+      "living": 310,
+      "deaths": 15
+    },
+    {
+      "name": "Constructed scarcity, illness, interrupted work, death and paving",
+      "days": 10,
+      "exactBaselineSnapshot": true,
+      "exactSaveResume": true,
+      "invariantIssues": [],
+      "snapshotSha256": "e53ac49d39736d79eb7d60d0de720a2073bce5ff81a2591bbb8cf63fb92ecd9d",
+      "living": 244,
+      "deaths": 6
+    }
+  ]
+}

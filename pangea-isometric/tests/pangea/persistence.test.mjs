@@ -63,6 +63,32 @@ test('independent server scheduler advances a running world with no client conne
   await delay(80); assert.equal((await client.read()).snapshot.tick, paused.snapshot.tick);
 });
 
+test('Implicit controls cross clock revisions, while explicit CAS, intervening controls and imports remain strict',async t=>{
+  let time=1000000;
+  const f=await fixture(t,{now:()=>time}),client=f.client(),created=await client.create({seed:481217,paused:false,speed:16});
+  const path=`/api/worlds/${created.worldId}/commands`,send=(revision,command,allowClockAdvance=true)=>request(f.endpoint,path,{token:client.token,body:{expectedRevision:revision,command,allowClockAdvance}});
+  for(let i=0;i<4;i++){time+=100;f.app.runTick();}
+  assert.equal((await send(created.revision,{type:'pause'},false)).status,409,'explicit revision cannot cross clock commits');
+  assert.equal((await send(created.revision,{type:'import',snapshot:created.snapshot})).status,409,'imports never auto-rebase');
+  const paused=await client.command({type:'pause'});assert.ok(paused.paused);assert.ok(paused.snapshot.tick>0);
+  assert.equal((await send(created.revision,{type:'speed',speed:64})).status,409,'another control requires reviewing its newer revision');
+  assert.equal((await send(paused.revision+100,{type:'resume'})).status,409,'future revisions cannot bypass CAS');
+  await client.command({type:'resume'});const reviewed=client.revision;time+=100;f.app.runTick();
+  await assert.rejects(client.command({type:'pause'},reviewed),error=>error.status===409);
+  await f.restart();assert.equal((await send(reviewed,{type:'pause'})).status,409,'restart conservatively invalidates pre-load revisions');
+  const reconnected=new RemoteWorldClient(f.endpoint,{token:client.token,worldId:client.worldId});reconnected.revision=reviewed;
+  await assert.rejects(reconnected.command({type:'pause'}),error=>error.status===409);
+  await reconnected.read();assert.ok((await reconnected.command({type:'pause'})).paused,'reviewing the restarted world permits a control');
+});
+
+test('An implicit stale control cannot retry itself onto an unseen imported world',async t=>{
+  const f=await fixture(t),a=f.client(),created=await a.create({seed:17});
+  const b=new RemoteWorldClient(f.endpoint,{token:a.token,worldId:a.worldId});await b.read();
+  const replacement=new Simulation(9901);await b.command({type:'import',snapshot:replacement.snapshot()});
+  await assert.rejects(a.command({type:'resume'}),error=>error.status===409);
+  const retained=await b.read();assert.equal(retained.snapshot.seed,9901);assert.ok(retained.paused);assert.equal(retained.revision,created.revision+1);
+});
+
 test('SQLite restart retains keys and paused state; crash downtime catchup is bounded and explicit', async t => {
   let time = 1000000;
   const f = await fixture(t, { now: () => time, maxBatchSteps: 7, batchBudgetMs: 100 });

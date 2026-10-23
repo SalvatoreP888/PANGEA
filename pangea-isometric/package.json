@@ -1,6 +1,6 @@
 {
   "name": "pangea-isometric",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -23,7 +23,9 @@
     "test:server:browser": "python3 tests/pangea/server-browser.py",
     "test:persistence:browser": "python3 tests/pangea/persistence-browser.py",
     "test:standalone": "python3 tests/pangea/standalone-browser.py",
-    "test:camera:browser": "python3 tests/pangea/camera-browser.py"
+    "test:camera:browser": "python3 tests/pangea/camera-browser.py",
+    "benchmark:optimization": "node tests/pangea/optimization-benchmark.mjs",
+    "test:optimization-browser": "python3 tests/pangea/optimization-browser.py"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",

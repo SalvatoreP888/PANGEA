@@ -31,7 +31,8 @@ export function openWorldStore(path) {
       row.pending = 0; row.paused = 1; row.wallclock = Date.now();
       db.prepare('UPDATE worlds SET snapshot=?,paused=1,pending=0,wallclock=? WHERE id=?').run(row.snapshot, row.wallclock, row.id);
     }
-    entries.set(row.id, { row, sim });
+    // On restart conservatively require a revision at least as new as this load.
+    entries.set(row.id, { row, sim, controlRevision:row.revision });
   }
   const checkpoint = row => {
     db.prepare('INSERT INTO world_checkpoints(world_id,revision,snapshot,saved_at) VALUES (?,?,?,?)').run(row.id, row.revision, row.snapshot, row.saved_at);
@@ -45,7 +46,7 @@ export function openWorldStore(path) {
         db.prepare('INSERT INTO worlds VALUES (?,?,?,?,?,?,?,?,?)').run(row.id, row.token_hash, row.snapshot, row.revision, row.paused, row.speed, row.wallclock, row.pending, row.saved_at);
         checkpoint(row); db.exec('COMMIT');
       } catch (error) { if (db.isTransaction) db.exec('ROLLBACK'); throw error; }
-      const entry = { row, sim }; entries.set(row.id, entry); return entry;
+      const entry = { row, sim, controlRevision:row.revision }; entries.set(row.id, entry); return entry;
     },
     commit(entry, updates) {
       const row = { ...entry.row, ...updates, snapshot: JSON.stringify(entry.sim.snapshot()), revision: entry.row.revision + 1 };

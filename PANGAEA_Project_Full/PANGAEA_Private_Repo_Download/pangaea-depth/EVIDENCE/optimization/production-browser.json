@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "Supply view distinguishes common storage from empty workshop inputs",
+    "An actual resident carries the reserved grain while the inspector reports hauling",
+    "Delivery changes the visible workshop buffer without duplicating storage",
+    "Finished flour remains uncollected and unavailable to the town",
+    "Visible workshop inventories and unfinished delivery state round-trip exactly",
+    "Selecting the mill shows its own input and output inventory",
+    "Collected flour reaches shared storage exactly once without invariant failures",
+    "Mobile supply cards stay inside the viewport"
+  ],
+  "pageErrors": [],
+  "externalRequests": [],
+  "constructed": true,
+  "buildSha256": "231db236f65ef0a3790fce5f83af2de4661a3923ce9eaf2d8be9bb2bf4b14009",
+  "browserVersion": "154.0.8037.57"
+}
