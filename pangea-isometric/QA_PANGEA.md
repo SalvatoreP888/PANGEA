@@ -1,3 +1,9 @@
+# PANGEA 0.8 visual verification
+
+This visual pass starts at GitHub PR #6/main `741e8f4fbd569024b23d68ee9f043d77bdd384e2`. The 121 Node regressions pass, together with strict PANGEA lint, TypeScript, production/offline builds and browser checks. New visual checks preserve complete simulation snapshots, city hit geometry/picks and world entity markers across desktop and DPR 2 phone views. Moved/unfinished/removed building ground matches a forced cache rebuild pixel-for-pixel.
+
+See [VISUALS.md](docs/VISUALS.md) and [visual evidence](docs/qa/visuals.json). World label positions and all terrain/art pixels intentionally change; the older renderer pixel-exact optimization comparison is historical evidence, not an acceptance target for redesigned artwork. The simulation/server source is unchanged.
+
 # PANGEA verification
 
 The 0.7.2 optimization follow-up passes 121 Node tests, 67 production browser checks, 32 focused renderer views, strict lint, TypeScript, production and standalone builds. Current performance, parity and browser verification is documented in [OPTIMIZATION.md](docs/OPTIMIZATION.md). The 0.7 release results below remain historical evidence for the six-track evolution.

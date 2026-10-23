@@ -35,6 +35,12 @@ PANGEA_URL=http://127.0.0.1:3002/ npm run test:evolution
 
 `npm run benchmark:optimization` runs isolated scale and exact save/resume checks. Add `-- --baseline /path/to/archived/app --out /tmp/benchmark.json` for a paired comparison and natural/migration/stress continuations. The optional `test:optimization-browser` runner compares isometric pixels/hit geometry to the archived app and checks the paused production inspector; see the performance document for its arguments.
 
+## Visual update 0.8
+
+Built on the latest performance merge, PR #6 (`741e8f4`). The world now uses a continuous clipped terrain surface, interpolated coastline, translucent shallow-water shelves and smoothly blended material colors. Eight original painted environment sprites replace repeated tree/mountain stickers. Cities gain warmer roads, worn plot materials and contact/cast shadows. World labels stay inside the visible map.
+
+Simulation, saves, server behavior and the 0.7.2 optimizations are preserved. Expensive material work stays in terrain rebuilds; plot/shadow work shares the existing bounded settled-camera raster. [Visual direction and verification](docs/VISUALS.md) includes fixed-seed before/after images and measured limits.
+
 ## The six improvements
 
 1. **World generation.** Each seed selects different continental positions, orientations, islands and mountain belts. An ocean-rooted drainage graph accumulates rainfall into basins and tributaries; geography, founding suitability and rendering share the generated terrain. New worlds use generation 2. Saves without a generation version retain their exact generation 1 geography.

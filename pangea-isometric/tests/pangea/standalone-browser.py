@@ -14,6 +14,7 @@ with sync_playwright() as p:
     page.set_content((root/'dist/PANGEA.html').read_text(), wait_until='networkidle')
     page.wait_for_function('window.PANGEA?.renderer.ready')
     assert page.evaluate('PANGEA.renderer.artImages.size') == 30
+    assert page.evaluate('PANGEA.renderer.environment.length===8&&PANGEA.renderer.environment.every(image=>image.naturalWidth>0)')
     assert page.evaluate('PANGEA.snapshot().generationVersion') == 2
     assert page.evaluate('PANGEA.inspect().issues') == []
     report['checks'].append('Self-contained export loads all30 architecture sprites and a valid generation2 world')

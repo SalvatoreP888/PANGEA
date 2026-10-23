@@ -38,3 +38,5 @@ The first screen is a labelled 240-person constructed preview, initially paused.
 - `PANGAEA_Project_Full/` — preserved earlier simulation project, research, historical saves and evidence.
 
 Version 0.7 adds varied seeded continents and river basins,30 distinct architecture sprites, real work/cargo effects, registered world/city camera transitions with mobile pinch, autosaves with an optional authoritative SQLite server, and grounded settlement identity. The private preview uses device-local autosaves; continuous cross-device ticking requires separately running the implemented server. See [server deployment](pangea-isometric/docs/PERSISTENCE.md) and [six-track OSS research and contribution record](pangea-isometric/docs/oss/README.md). Full source credits and license notices also ship inside World settings.
+
+Visual update 0.8 builds on the latest PR #6 performance merge: continuous terrain/coasts, painted environment art, warmer city materials and cached contact shadows. See [before/after and verification](pangea-isometric/docs/VISUALS.md).

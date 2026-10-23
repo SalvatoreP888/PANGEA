@@ -5,13 +5,15 @@ import { drawIsometricDiamond } from '@/components/game/drawing';
 import { loadImage } from '@/components/game/imageLoader';
 import { TILE_WIDTH, TILE_HEIGHT } from '@/components/game/types';
 import { streetPolylines } from './simulation/city.mjs';
-import { geography, hash, noise, worldRivers } from './simulation/world.mjs';
+import { geography, hash, worldRivers } from './simulation/world.mjs';
 import type { WorldSimulation, Town, Selection, View, Building } from './model';
 import { CameraTransition, zoomAt } from './camera.mjs';
 import { buildingArt, buildingArtRect, loadBuildingArt, type BuildingArtImages } from './art';
 import { settlementEmblem } from './simulation/identity.mjs';
 import { CityActivityTracker, drawConstruction, drawBuildingActivity, drawCarrierCargo, drawTrip, buildingLight, drawCityLighting, type CityLight, type CityLightingMode } from './cityLife';
+import { paintWorldSurface, localMaterial, paintGroundGrain } from './landscape';
 
+const ENVIRONMENT_SOURCES=['/pangea/environment/0.webp','/pangea/environment/1.webp','/pangea/environment/2.webp','/pangea/environment/3.webp','/pangea/environment/4.webp','/pangea/environment/5.webp','/pangea/environment/6.webp','/pangea/environment/7.webp'];
 const NX = 104, NY = 96, PAD = 240;
 const GW = 96, GH = 80;
 const W = TILE_WIDTH, H = TILE_HEIGHT;
@@ -54,6 +56,9 @@ export class PangeaRenderer {
   private lastTerrainFrameKey='';
   private rasterTerrain:HTMLCanvasElement|null=null;
   private artImages:BuildingArtImages = new Map();
+  private groundPads:HTMLCanvasElement[]=[];
+  private artShadows:Map<string,HTMLCanvasElement> = new Map();
+  private environment:HTMLImageElement[]=[];
   private activityTracker=new CityActivityTracker();
   private activity:ReturnType<CityActivityTracker['sample']>|null=null;
   private cityLights:CityLight[]=[];
@@ -70,6 +75,9 @@ export class PangeaRenderer {
   async init() {
     const [atlas,ground,art]=await Promise.all([loadImage('/pangea/atlas.png'),loadImage('/pangea/ground.png'),loadBuildingArt(loadImage)]);
     this.artImages=art;
+    this.groundPads=['154,137,98','150,146,125','125,128,113'].map(color=>{const pad=document.createElement('canvas');pad.width=256;pad.height=128;const pc=pad.getContext('2d')!;pc.scale(1,.5);const gradient=pc.createRadialGradient(128,128,16,128,128,128);gradient.addColorStop(0,`rgba(${color},.72)`);gradient.addColorStop(.55,`rgba(${color},.46)`);gradient.addColorStop(1,`rgba(${color},0)`);pc.fillStyle=gradient;pc.fillRect(0,0,256,256);return pad;});
+    for(const [src,image]of art){const shadow=document.createElement('canvas');shadow.width=image.width;shadow.height=image.height;const sc=shadow.getContext('2d')!;sc.drawImage(image,0,0);sc.globalCompositeOperation='source-in';sc.fillStyle='#14261d';sc.fillRect(0,0,shadow.width,shadow.height);this.artShadows.set(src,shadow);}
+    this.environment=await Promise.all(ENVIRONMENT_SOURCES.map(src=>loadImage(src)));
     this.atlas=atlas; this.groundPattern=this.ctx.createPattern(ground,'repeat');this.groundPattern?.setTransform(new DOMMatrix().scale(.35));
     this.ready = true; this.rebuild(); this.focus(); this.onReady?.();
   }
@@ -113,6 +121,10 @@ export class PangeaRenderer {
     c.save(); c.globalAlpha=alpha;
     c.drawImage(this.atlas,(index%4)*sw,Math.floor(index/4)*sh,sw,sh,x-width/2,y-h,width,h);c.restore();
   }
+  private environmentSprite(c:CanvasRenderingContext2D,index:number,x:number,y:number,width:number) {
+    const image=this.environment[index];if(!image)return;
+    const height=width*image.height/image.width;c.drawImage(image,x-width/2,y-height,width,height);
+  }
   private diamond(c: CanvasRenderingContext2D,x: number,y: number,fill: string) { drawIsometricDiamond(c,x,y,colors(fill),{drawStroke:false}); }
   private texture(c:CanvasRenderingContext2D,x:number,y:number) {
     if(!this.groundPattern||this.layer!=='natural')return;
@@ -134,33 +146,19 @@ export class PangeaRenderer {
   private worldTerrain(c: CanvasRenderingContext2D) {
     const seed=this.sim.state.seed,planet=this.sim.state.planet;
     const version=this.sim.state.generationVersion||1;
-    const data=Array.from({length:NY},(_,y)=>Array.from({length:NX},(_,x)=>geo(x/NX,y/NY,seed,planet,version)));
-    let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-    // Ocean contour bands follow the same seeded land mask as the simulation.
-    for(let y=0;y<NY;y++)for(let x=0;x<NX;x++){
-      const g=data[y][x];if(g.land)continue;const p=this.iso(x,y);
-      const shore=[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>data[y+dy]?.[x+dx]?.land);
-      if(shore){this.diamond(c,p.x,p.y,'#43727a');c.strokeStyle='#bed2bf33';c.lineWidth=1;c.beginPath();c.moveTo(p.x+5,p.y+H/2);c.lineTo(p.x+W/2,p.y+H-3);c.lineTo(p.x+W-5,p.y+H/2);c.stroke();}
-    }
+    const sample=(x:number,y:number)=>geo(x/NX,y/NY,seed,planet,version);
+    const bounds=paintWorldSurface(c,{nx:NX,ny:NY,seed,layer:this.layer,sample,
+      project:(x,y,g)=>{const p=this.iso(x,y);return {x:p.x+W/2,y:p.y-this.elevation(g)};},texture:this.groundPattern});
+    // Larger, less repetitive ridges and organic groves replace sticker rows.
     for(let sum=0;sum<NX+NY;sum++)for(let y=0;y<NY;y++){
-      const x=sum-y;if(x<0||x>=NX)continue;const g=data[y][x];if(!g.land)continue;
-      const p=this.iso(x,y),e=this.elevation(g),q=random(x,y,seed),smooth=noise(x*.12,y*.12,seed);
-      minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x+W);minY=Math.min(minY,p.y-e-80);maxY=Math.max(maxY,p.y+H);
-      // Visible cliff faces supply actual height and depth, rather than a flat diamond map.
-      c.fillStyle='#62674c';c.beginPath();c.moveTo(p.x,p.y+H/2-e);c.lineTo(p.x+W/2,p.y+H-e);c.lineTo(p.x+W/2,p.y+H+7);c.lineTo(p.x,p.y+H/2+7);c.fill();
-      c.fillStyle='#454d40';c.beginPath();c.moveTo(p.x+W/2,p.y+H-e);c.lineTo(p.x+W,p.y+H/2-e);c.lineTo(p.x+W,p.y+H/2+7);c.lineTo(p.x+W/2,p.y+H+7);c.fill();
-      const nearCoast=g.field<.12;
-      let fill=nearCoast?`hsl(48 25% ${50+smooth*4}%)`:`hsl(${62+g.moisture*28} ${21+g.moisture*9}% ${31+smooth*4+(1-g.moisture)*7}%)`;
-      if(g.biome==='Desert')fill=`hsl(42 31% ${52+smooth*6}%)`;
-      if(g.biome==='Ice cap'||g.biome==='Tundra')fill=`hsl(80 8% ${52+smooth*5}%)`;
-      if(this.layer==='fertility')fill=`hsl(${35+g.moisture*95} 35% ${30+q*6}%)`;
-      this.diamond(c,p.x,p.y-e,fill);this.texture(c,p.x,p.y-e);
-      // Fine meadow grain, cached once; geometry is always generated from the world's seed.
-      for(let j=0;j<5;j++){const rx=random(x*9+j,y,seed+12),ry=random(x,y*8+j,seed+23);c.fillStyle=j%2?'#e1d19c14':'#293c2825';c.fillRect(p.x+W/2+(rx-.5)*35,p.y-e+H/2+(ry-.5)*14,2+q*3,.8);}
-      const cityNear=this.sim.state.towns.some(t=>{const a=this.worldGrid(t);return Math.hypot(a.x-x,a.y-y)<2.5;});
+      const x=sum-y;if(x<0||x>=NX)continue;const g=sample(x,y);if(!g.land)continue;
+      const p=this.iso(x,y),e=this.elevation(g),q=random(x,y,seed);
+      const cityNear=this.sim.state.towns.some(t=>{const a=this.worldGrid(t);return Math.hypot(a.x-x,a.y-y)<2.6;});
       if(this.layer==='resources'&&g.ridge>.54&&q>.9){c.fillStyle='#e5d8a9';c.beginPath();c.arc(p.x+W/2,p.y+H/2-e,4,0,Math.PI*2);c.fill();}
-      if(!cityNear&&g.ridge>.54&&g.field>.35&&q>.64)this.sprite(c,5,p.x+W/2,p.y+H/2-e+6,95+q*55);
-      else if(!cityNear&&g.moisture>.43&&g.field>.15&&q>.28){this.sprite(c,g.moisture>.54?4:6,p.x+W/2,p.y+H/2-e+8,32+q*25);if(q>.77)this.sprite(c,4,p.x+W/2-17,p.y+H/2-e+12,34);}
+      if(cityNear)continue;
+      if(g.ridge>.57&&g.field>.3&&q>.79)this.environmentSprite(c,g.ridge>.65?4:5,p.x+W/2,p.y+H/2-e+6,120+q*50);
+      else if(g.moisture>.43&&g.field>.16&&q>.50)this.environmentSprite(c,g.moisture>.63?1:q>.76?0:2,p.x+W/2+(q-.5)*14,p.y+H/2-e+7,25+q*25);
+      else if(g.field>.18&&q>.97)this.environmentSprite(c,g.ridge>.49?3:6,p.x+W/2,p.y+H/2-e+4,20+q*10);
     }
     // Join authoritative drainage edges into continuous, softly curved channels.
     // This smooths their presentation without changing a basin or river mouth.
@@ -178,16 +176,16 @@ export class PangeaRenderer {
       for(let i=1;i<points.length-1;i++)c.quadraticCurveTo(points[i].x,points[i].y,(points[i].x+points[i+1].x)/2,(points[i].y+points[i+1].y)/2);
       c.lineTo(points.at(-1)!.x,points.at(-1)!.y);c.strokeStyle='#263f3b80';c.lineWidth=width+2;c.stroke();c.strokeStyle='#668f93';c.lineWidth=width;c.stroke();
     }
-    this.worldBounds={minX,maxX,minY,maxY};
+    this.worldBounds=bounds;
   }
   private localTerrain(c: CanvasRenderingContext2D,t: Town) {
     const seed=this.sim.state.seed+t.id*1987;
     for(let sum=0;sum<GW+GH;sum++)for(let y=0;y<GH;y++){
-      const x=sum-y;if(x<0||x>=GW)continue;const tile=t.land.tiles[y*GW+x];const p=this.iso(x,y),q=random(x,y,seed),smooth=noise(x*.11,y*.11,seed);
-      let fill=['water','river','ford'].includes(tile.type)?`hsl(192 29% ${30+smooth*4}%)`:tile.type==='sand'?`hsl(46 27% ${53+smooth*5}%)`:tile.type==='rock'?`hsl(75 9% ${40+smooth*8}%)`:`hsl(${73+tile.fertility*10} 26% ${34+smooth*5}%)`;
-      if(this.layer==='fertility'&&tile.walkable)fill=`hsl(${tile.fertility*110} 36% 37%)`;
+      const x=sum-y;if(x<0||x>=GW)continue;const tile=t.land.tiles[y*GW+x];const p=this.iso(x,y),q=random(x,y,seed);
+      const fill=localMaterial(tile.type,tile.fertility,x,y,seed,this.layer);
       this.diamond(c,p.x,p.y,fill);if(tile.walkable)this.texture(c,p.x,p.y);
       if(tile.walkable)for(let j=0;j<5;j++){c.fillStyle=j%2?'#d8d2a81c':'#233c3225';const xx=p.x+W/2+(random(x*8+j,y,seed)-.5)*36,yy=p.y+H/2+(random(x,y*8+j,seed)-.5)*17;c.fillRect(xx,yy,1+q*3,.8);}
+      if(tile.walkable)paintGroundGrain(c,p.x+W/2,p.y+H/2,seed);
       else{c.strokeStyle='#c7ded21a';c.lineWidth=.6;c.beginPath();c.moveTo(p.x+15,p.y+H/2);c.lineTo(p.x+28,p.y+H/2+2);c.stroke();}
     }
   }
@@ -216,34 +214,50 @@ export class PangeaRenderer {
     c.setLineDash([]);
     for(const path of this.streetPaths){
       if(path.maxX<x0||path.minX>x1||path.maxY<y0||path.minY>y1)continue;
-      c.strokeStyle='#56573c';c.lineWidth=13;c.stroke(path.geometry);
-      c.strokeStyle='#aaa080';c.lineWidth=9;c.stroke(path.geometry);
-      c.strokeStyle='#c4b99666';c.lineWidth=3;c.stroke(path.geometry);
+      c.strokeStyle='#3a443547';c.lineWidth=18;c.stroke(path.geometry);
+      c.strokeStyle='#786c4c';c.lineWidth=12;c.stroke(path.geometry);
+      c.strokeStyle='#b5a17b';c.lineWidth=8.5;c.stroke(path.geometry);
+      c.strokeStyle='#dacaa04d';c.lineWidth=2.2;c.stroke(path.geometry);
     }
+  }
+  private plotGround(c:CanvasRenderingContext2D) {
+    if(this.view!=='settlement')return;const t=this.sim.town(this.townId)!;
+    const x0=this.camera.x-this.width/2/this.camera.zoom,x1=this.camera.x+this.width/2/this.camera.zoom,y0=this.camera.y-this.height/2/this.camera.zoom,y1=this.camera.y+this.height/2/this.camera.zoom;
+    // Material transitions belong to actual completed plots; no decorative
+    // buildings, extra streets or residents are added to simulation state.
+    for(const b of t.buildings){if(!b.complete||['farm','wheatfield','flaxfield','fire'].includes(b.type))continue;const p=this.iso(b.x,b.y),x=p.x+W/2,y=p.y+H/2;if(x<x0-150||x>x1+150||y<y0-150||y>y1+150)continue;const art=buildingArt(b.type,t.knowledge),width=(art?.width||90)*1.6,index=['factory','furnace','steelworks','mine','kiln'].includes(b.type)?2:['hall','market','station','university'].includes(b.type)?1:0;c.drawImage(this.groundPads[index],x-width/2,y-width*.27,width,width*.5);}
+    for(const b of t.buildings){if(!b.complete)continue;const p=this.iso(b.x,b.y),x=p.x+W/2,y=p.y+H/2;if(x<x0-150||x>x1+150||y<y0-180||y>y1+180)continue;this.structureShadow(c,b.type,t,x,y);}
+  }
+  private structureShadow(c:CanvasRenderingContext2D,type:string,town:Town,x:number,y:number,scale=1) {
+    const art=buildingArt(type,town.knowledge);if(!art)return;const rect=buildingArtRect(art,x,y,scale),shadow=this.artShadows.get(art.src);
+    if(shadow){c.save();c.translate(x,y);c.transform(1,.1,-.42,-.16,0,0);c.globalAlpha=.12;c.drawImage(shadow,rect.x-x,rect.y-y,rect.width,rect.height);c.restore();}
+    c.fillStyle='#4b473438';c.beginPath();c.ellipse(x,y-2*scale,art.width*.43*scale,art.width*.17*scale,0,0,Math.PI*2);c.fill();
   }
   private drawTerrain() {
     const terrain=this.terrain;if(!terrain)return;
     const c=this.ctx,{x,y,zoom}=this.camera;
-    const key=`${this.canvas.width}:${this.canvas.height}:${this.width}:${this.height}:${this.dpr}:${x}:${y}:${zoom}`;
+    const t=this.view==='settlement'?this.sim.town(this.townId):undefined;
+    const plots=t?`${t.id}:${t.land.navRevision}:${t.knowledge.join(',')}:${t.buildings.map(b=>`${b.id},${b.type},${b.complete},${b.x},${b.y}`).join(';')}`:'';
+    const key=`${plots}:${this.canvas.width}:${this.canvas.height}:${this.width}:${this.height}:${this.dpr}:${x}:${y}:${zoom}`;
     const stable=key===this.lastTerrainFrameKey&&this.rasterTerrain===terrain;
     if(!stable){this.terrainRasterKey='';this.lastTerrainFrameKey=key;this.rasterTerrain=terrain;}
     const fits=this.canvas.width>0&&this.canvas.height>0&&this.canvas.width*this.canvas.height<=8_000_000;
     if(!fits||this.view==='world')this.terrainRaster=null;
     // Moving cameras draw directly: no duplicate raster work during gestures or
     // transitions. A settled city keeps one transparent viewport layer (≤32MB).
-    if(!stable||this.transition.active||!fits||this.view!=='settlement'){c.drawImage(terrain,0,0);return;}
+    if(!stable||this.transition.active||!fits||this.view!=='settlement'){c.drawImage(terrain,0,0);this.plotGround(c);return;}
     if(this.terrainRasterKey!==key){
       this.terrainRaster??=document.createElement('canvas');
       if(this.terrainRaster.width!==this.canvas.width)this.terrainRaster.width=this.canvas.width;
       if(this.terrainRaster.height!==this.canvas.height)this.terrainRaster.height=this.canvas.height;
       const layer=this.terrainRaster.getContext('2d');
-      if(!layer){c.drawImage(terrain,0,0);return;}
+      if(!layer){c.drawImage(terrain,0,0);this.plotGround(c);return;}
       layer.setTransform(1,0,0,1,0,0);layer.clearRect(0,0,this.canvas.width,this.canvas.height);
-      layer.setTransform(c.getTransform());layer.drawImage(terrain,0,0);this.terrainRasterKey=key;
+      layer.setTransform(c.getTransform());layer.drawImage(terrain,0,0);this.plotGround(layer);this.terrainRasterKey=key;
     }
     // Copy device pixels 1:1. Ocean motion, roads, people, crops, weather and
     // lighting stay outside this cache and continue to reflect current state.
-    const raster=this.terrainRaster;if(!raster){c.drawImage(terrain,0,0);return;}
+    const raster=this.terrainRaster;if(!raster){c.drawImage(terrain,0,0);this.plotGround(c);return;}
     c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(raster,0,0);c.restore();
   }
   draw(time: number) {
@@ -253,7 +267,7 @@ export class PangeaRenderer {
     this.rebuild();const c=this.ctx;this.hits=[];
     c.setTransform(this.dpr,0,0,this.dpr,0,0);
     const bg=c.createRadialGradient(this.width*.5,this.height*.45,30,this.width*.5,this.height*.5,this.width*.85);
-    bg.addColorStop(0,'#31545c');bg.addColorStop(.65,'#1a3a47');bg.addColorStop(1,'#132c37');c.fillStyle=bg;c.fillRect(0,0,this.width,this.height);
+    bg.addColorStop(0,'#41777d');bg.addColorStop(.6,'#244e5d');bg.addColorStop(1,'#142f40');c.fillStyle=bg;c.fillRect(0,0,this.width,this.height);
     // Subtle ocean movement. Reduced-motion preferences also stop ambient animation.
     const clock=this.reduceMotion?0:time;
     c.strokeStyle='#abc6bd0d';c.lineWidth=.7;
@@ -297,7 +311,7 @@ export class PangeaRenderer {
       this.streetKey=streetKey;
     }
     // Keep the widest round stroke plus two CSS pixels when culling paths.
-    const margin=6.5+2/this.camera.zoom,x0=this.camera.x-this.width/2/this.camera.zoom-margin,x1=this.camera.x+this.width/2/this.camera.zoom+margin,y0=this.camera.y-this.height/2/this.camera.zoom-margin,y1=this.camera.y+this.height/2/this.camera.zoom+margin;
+    const margin=9+2/this.camera.zoom,x0=this.camera.x-this.width/2/this.camera.zoom-margin,x1=this.camera.x+this.width/2/this.camera.zoom+margin,y0=this.camera.y-this.height/2/this.camera.zoom-margin,y1=this.camera.y+this.height/2/this.camera.zoom+margin;
     this.strokeStreets(c,x0,x1,y0,y1);
     if(this.layer==='resources')for(const n of t.land.nodes){if(n.amount<1)continue;const p=this.iso(n.x,n.y);c.fillStyle=n.kind==='wood'?'#b9d499':n.kind==='food'?'#e3c780':n.kind==='stone'?'#e0e0ca':'#b9a5c3';c.strokeStyle='#34483a';c.lineWidth=1;c.beginPath();c.arc(p.x+W/2,p.y+H/2,5,0,Math.PI*2);c.fill();c.stroke();}
 
@@ -308,7 +322,7 @@ export class PangeaRenderer {
     objects.sort((a,b)=>a.depth-b.depth);
     for(const o of objects){const p=this.iso(o.item.x,o.item.y),x=p.x+W/2,y=p.y+H/2;
       const screen=this.screen({x,y});if(screen.x< -180||screen.x>this.width+180||screen.y< -180||screen.y>this.height+180)continue;
-      if(o.kind==='tree'){this.sprite(c,random(o.item.x,o.item.y,t.id)>.25?4:6,x,y+9,58+random(o.item.x,o.item.y,12)*28);}
+      if(o.kind==='tree'){this.environmentSprite(c,random(o.item.x,o.item.y,t.id)>.55?1:random(o.item.x,o.item.y,t.id)>.2?0:2,x,y+7,46+random(o.item.x,o.item.y,12)*26);}
       else if(o.kind==='building')this.building(o.item as Building,x,y,time);
       else{const person=o.item as ReturnType<WorldSimulation['residents']>[0];const selected=this.selected?.kind==='person'&&this.selected.id===person.id;
         if(selected){c.strokeStyle='#f3d39a';c.lineWidth=1.5;c.beginPath();c.ellipse(x,y+1,7,3,0,0,Math.PI*2);c.stroke();}
@@ -338,7 +352,8 @@ export class PangeaRenderer {
   private structure(c:CanvasRenderingContext2D,type:string,town:Town,x:number,y:number,scale=1) {
     const art=buildingArt(type,town.knowledge),image=art&&this.artImages.get(art.src);
     if(!art||!image){this.sprite(c,type==='hall'?1:type==='mill'?2:0,x,y,85*scale);return;}
-    const rect=buildingArtRect(art,x,y,scale);c.drawImage(image,rect.x,rect.y,rect.width,rect.height);
+    const rect=buildingArtRect(art,x,y,scale);if(this.view==='world')this.structureShadow(c,type,town,x,y,scale);
+    c.drawImage(image,rect.x,rect.y,rect.width,rect.height);
     if(type==='hall'||type==='station'){const emblem=settlementEmblem(this.sim.state.seed,town.id),xx=rect.x+rect.width*art.accent.x,yy=rect.y+rect.height*art.accent.y;c.strokeStyle='#b6a57b';c.lineWidth=1*scale;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx,yy-16*scale);c.stroke();c.fillStyle=emblem.field;c.fillRect(xx,yy-16*scale,12*scale,7*scale);c.fillStyle=emblem.accent;c.fillRect(xx+2*scale,yy-14*scale,6*scale,2*scale);}
   }
   private smoke(c: CanvasRenderingContext2D,x: number,y: number,time: number,id: number) {
@@ -348,10 +363,12 @@ export class PangeaRenderer {
     const c=this.ctx,placed:{x:number;y:number;w:number;h:number}[]=[];
     if(this.view==='world'&&this.labels)for(const t of this.sim.state.towns){const p=this.screen(this.worldPoint(t)),selected=t.id===this.townId;
       const name=t.name;c.font='14px Georgia,serif';const tw=c.measureText(name).width+28;
-      let xx=p.x-tw/2,yy=p.y+18;
-      for(let tries=0;tries<10;tries++){if(!placed.some(r=>xx<r.x+r.w+8&&xx+tw>r.x-8&&yy<r.y+r.h+6&&yy+30>r.y-6))break;yy+=36;}
-      xx=clamp(xx,8,this.width-tw-8);placed.push({x:xx,y:yy,w:tw,h:30});
-      if(yy>p.y+25){c.strokeStyle='#d2b77d88';c.lineWidth=.8;c.beginPath();c.moveTo(p.x,p.y+8);c.lineTo(xx+tw/2,yy);c.stroke();}
+      if(p.x< -70||p.x>this.width+70||p.y< -70||p.y>this.height+70)continue;
+      const candidates=[[p.x-tw/2,p.y+18],[p.x-tw/2,p.y-48],[p.x+22,p.y-15],[p.x-tw-22,p.y-15],[p.x-tw/2,p.y-84],[p.x-tw/2,p.y+54]];
+      let xx=0,yy=0,best=Infinity;
+      for(const [cx,cy]of candidates){const x=clamp(cx,8,Math.max(8,this.width-tw-8)),y=clamp(cy,75,Math.max(75,this.height-78));const overlaps=placed.filter(r=>x<r.x+r.w+8&&x+tw>r.x-8&&y<r.y+r.h+6&&y+30>r.y-6).length;const score=overlaps*10000+Math.hypot(x+tw/2-p.x,y+15-p.y);if(score<best){best=score;xx=x;yy=y;}}
+      placed.push({x:xx,y:yy,w:tw,h:30});
+      if(Math.hypot(xx+tw/2-p.x,yy+15-p.y)>35){c.strokeStyle='#d2b77d88';c.lineWidth=.8;c.beginPath();c.moveTo(p.x,p.y+5);c.lineTo(xx+tw/2,yy+15);c.stroke();}
       c.fillStyle=selected?'#1d2928f2':'#1d2928dc';c.strokeStyle=selected?'#cbb17f':'#cbb17f55';c.lineWidth=1;c.fillRect(xx,yy,tw,30);c.strokeRect(xx,yy,tw,30);
       c.fillStyle='#eaddbd';c.textAlign='center';c.fillText(name,xx+tw/2,yy+19);c.textAlign='left';
       this.hits.push({x:xx+tw/2,y:yy+15,kind:'town',id:t.id,r:tw/2,rect:{w:tw,h:30}});

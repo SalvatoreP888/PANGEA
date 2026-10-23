@@ -40,8 +40,8 @@
     "390 \u00d7 844"
   ],
   "renderMilliseconds": {
-    "median": 5.45,
-    "maxSample": 5.9,
+    "median": 0.65,
+    "maxSample": 0.7,
     "context": "240-person constructed world; one selected settlement; headless software Chromium"
   },
   "browser": "154.0.8037.57"
