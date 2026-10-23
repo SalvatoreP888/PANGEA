@@ -13,5 +13,5 @@ const records=[
 ];
 const credits=records.map(([name,url,revision,license,use,path])=>({name,url,revision,license,use,text:readFileSync(path,'utf8')}));
 writeFileSync('src/pangea/credits.json',JSON.stringify(credits,null,2)+'\n');
-writeFileSync('public/pangea/licenses.txt',credits.map(c=>`${c.name}\n${c.url}\nRevision: ${c.revision}\n${c.use}\n\n${c.text}`).join('\n\n----------------------------------------\n\n'));
+writeFileSync('public/pangea/licenses.txt',credits.map(c=>`${c.name}\n${c.url}\nRevision: ${c.revision}\n${c.use}\n\n${c.text}`).join('\n\n----------------------------------------\n\n').replace(/[ \t]+$/gm,''));
 console.log(`Bundled ${credits.length} license notices.`);

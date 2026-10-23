@@ -5,6 +5,8 @@ from playwright.sync_api import sync_playwright
 
 URL=os.environ.get('PANGEA_URL','http://127.0.0.1:3002')
 report={'checks':[],'errors':[]}
+OUTPUT=Path(__file__).resolve().parents[2]/'work'
+OUTPUT.mkdir(parents=True,exist_ok=True)
 
 def ok(message):
     report['checks'].append(message)
@@ -106,5 +108,5 @@ with sync_playwright() as p:
     assert not report['errors'],report['errors']
     browser.close()
 
-(Path(__file__).resolve().parents[2]/'work/camera-browser-report.json').write_text(json.dumps(report,indent=2))
+(OUTPUT/'camera-browser-report.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))
